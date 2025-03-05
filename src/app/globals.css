@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+  width: 100%;
+  background-color: black;
+  color: white;
+}
+
+.font-chewy {
+  font-family: 'Chewy', cursive;
+}
