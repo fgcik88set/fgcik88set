@@ -106,8 +106,8 @@ export default function MemorabiliaSection({ items }: NostalgicGalleryProps) {
                   <Image
                     src={item.src || "/placeholder.svg"}
                     alt={item.alt}
-                    width={0}
-                    height={0}
+                    layout="fill"
+                    objectFit="cover"
                     className="w-full h-full object-contain"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">

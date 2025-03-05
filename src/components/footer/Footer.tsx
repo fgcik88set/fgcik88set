@@ -57,19 +57,23 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="w-full lg:w-auto">
-            <h3 className="text-xl font-semibold mb-4 text-center lg:text-left">
-              Stay Connected
-            </h3>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-3 bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-darkBlue w-full sm:w-64"
-              />
-              <button className="bg-darkBlue text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors">
-                Subscribe
-              </button>
+          <div className="w-full justify-center lg:w-auto">
+            <div>
+              <h3 className="text-xl font-semibold text-center lg:text-left">
+                Stay Connected
+              </h3>
+              <p className="text-gray-400 text-sm">
+                For Dues,Registration and welfare related activities{" "}
+              </p>
+            </div>
+<br />
+            <div className="flex items-center lg:items-start">
+              <Link
+                href="#"
+                className="w-full text-sm text-center bg-darkBlue text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
+              >
+                Make Payment
+              </Link>
             </div>
           </div>
         </div>

@@ -58,17 +58,17 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
+    { href: "#", label: "About" },
     {
       href: "#",
       label: "Executives",
       hasDropdown: true,
       dropdownItems: [
-        { href: "/executives", label: "All Executives" },
-        { href: "/board-of-trustees", label: "Board of Trustees" },
+        { href: "#", label: "All Executives" },
+        { href: "#", label: "Board of Trustees" },
       ],
     },
-    { href: "/memories", label: "Memorabilia" },
+    { href: "#", label: "Memorabilia" },
   ]
 
   return (
