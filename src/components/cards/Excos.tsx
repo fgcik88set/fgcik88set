@@ -3,7 +3,7 @@
 import { IoMdMail } from "react-icons/io";
 import { FaLinkedin } from "react-icons/fa";
 import { ExcosProps } from "../constants/interfaces";
-import { useState } from "react";
+
 import Link from "next/link";
 
 export default function ExcosHomepageSection({
@@ -13,12 +13,12 @@ export default function ExcosHomepageSection({
     linkedIn,
     email,
   }: ExcosProps) {
-    const [isHovered, setIsHovered] = useState(false)
+    
+    
     return (
         <div
           className="overflow-hidden transition-all duration-300 hover:shadow-lg max-w-sm w-full rounded-lg bg-white border border-gray-200"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          
         >
           <div className="relative h-64 bg-cover bg-center" style={{ backgroundImage: `url(${image})` }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -31,15 +31,15 @@ export default function ExcosHomepageSection({
             
     
             {(email || linkedIn ) && (
-              <div className="pt-2 flex flex-wrap gap-2">
+              <div className="pt-2 flex flex-wrap gap-3">
                 {email && (
                   <Link
                     href={`mailto:${email}`}
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-blue-600"
                     aria-label={`Email ${name}`}
                   >
-                    <IoMdMail className="h-4 w-4" />
-                    <span className={isHovered ? "underline" : ""}>Email</span>
+                    <IoMdMail className="h-6 w-6" />
+                    <span className= "sr-only">Email</span>
                   </Link>
                 )}
     
@@ -48,11 +48,11 @@ export default function ExcosHomepageSection({
                     href={linkedIn}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-blue-600"
                     aria-label={`${name}'s LinkedIn profile`}
                   >
-                    <FaLinkedin className="h-4 w-4" />
-                    <span className={isHovered ? "underline" : ""}>LinkedIn</span>
+                    <FaLinkedin className="h-5 w-5" />
+                    <span className= "sr-only">LinkedIn</span>
                   </Link>
                 )}
     

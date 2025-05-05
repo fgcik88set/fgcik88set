@@ -1,4 +1,4 @@
-import { ExcosProps } from "./interfaces";
+import { ExcosProps, MemorabiliaItem } from "./interfaces";
 
 export const ExcosHomeSection: ExcosProps[] = [
   {
@@ -35,7 +35,7 @@ export const ExcosHomeSection: ExcosProps[] = [
   },
 ];
 
-export const MemorabiliaData = [
+export const MemoriesData = [
     {
         id: "1",
         type: "image" as const,
@@ -69,7 +69,7 @@ export const footerSections = [
       title: "About Us",
       links: [
         { href: "#", label: "Our Story" },
-        // { href: "/mission", label: "Mission & Vision" },
+        { href: "#", label: "Events" },
         // { href: "/history", label: "Our History" },
         // { href: "/achievements", label: "Achievements" }
       ]
@@ -88,7 +88,7 @@ export const footerSections = [
       id: "resources",
       title: "Resources",
       links: [
-        { href: "#", label: "Photo Gallery" },
+        { href: "#", label: "Memories" },
         { href: "#", label: "Memorabilia" },
         
       ]
@@ -103,4 +103,55 @@ export const footerSections = [
     //     { href: "/membership", label: "Membership" }
     //   ]
     // }
+  ]
+
+  export const memorabiliaItems: MemorabiliaItem[] = [
+    {
+      id: "1",
+      name: "Vintage Yearbook Collection",
+      image: "/images/mem2.webp",
+      price: "$45.00",
+      category: "books",
+      description: "Relive the memories with our beautifully preserved yearbooks from 1980-1995.",
+    },
+    {
+      id: "2",
+      name: "Commemorative Gold Pin",
+      image: "/images/mem1.webp",
+      price: "$24.99",
+      category: "accessories",
+      description: "Limited edition 50th anniversary pin featuring our original school emblem.",
+    },
+    {
+      id: "3",
+      name: "Retro Varsity Jacket",
+      image: "/images/mem2.webp",
+      price: "$89.99",
+      category: "apparel",
+      description: "Authentic recreation of our 1985 championship team jacket with embroidered logo.",
+    },
+    {
+      id: "4",
+      name: "Heritage Coffee Mug",
+      image: "/images/mem1.webp",
+      price: "$18.50",
+      category: "homeware",
+      description: "Ceramic mug featuring historical photos from our school's founding years.",
+    },
+    {
+      id: "5",
+      name: "Commemorative Photo Book",
+      image: "/images/mem2.webp",
+      price: "$35.00",
+      category: "books",
+      description: "120-page hardcover book showcasing our community's rich history through photographs.",
+    },
+    {
+      id: "6",
+      name: "Anniversary Medal",
+      image: "/images/mem2.webp",
+      price: "$29.99",
+      category: "accessories",
+      description: "Solid brass commemorative medal celebrating our centennial anniversary.",
+    },
   ]
