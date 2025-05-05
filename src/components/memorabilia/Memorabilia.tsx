@@ -1,234 +1,132 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { NostalgicGalleryProps } from "../constants/interfaces";
-import { useEffect, useRef, useState } from "react";
-import { BiChevronLeft, BiChevronRight, BiPause, BiPlay } from "react-icons/bi";
+import Image from "next/image"
+import { useRef, useState } from "react"
+import { memorabiliaItems } from "../constants/data"
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi"
+import { CgShoppingCart } from "react-icons/cg"
+import Link from "next/link"
 
-export default function MemorabiliaSection({ items }: NostalgicGalleryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+export default function MemorabiliaSection() {
+    const [activeCategory, setActiveCategory] = useState<string>("all")
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Check if we're on mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+  const categories = [
+    { id: "all", name: "All Items" },
+    { id: "books", name: "Books & Albums" },
+    { id: "accessories", name: "Accessories" },
+    { id: "apparel", name: "Apparel" },
+    { id: "homeware", name: "Homeware" },
+  ]
 
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
+  const filteredItems =
+    activeCategory === "all" ? memorabiliaItems : memorabiliaItems.filter((item) => item.category === activeCategory)
 
-  // Auto-play carousel on mobile
-    // useEffect(() => {
-    //   if (!isMobile || !isPlaying || items.length <= 1) return
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const { current } = scrollContainerRef
+      const scrollAmount = 320 // Approximate width of a card + gap
 
-    //   const interval = setInterval(() => {
-    //     goToNext()
-    //   }, autoPlayInterval)
-
-    //   return () => clearInterval(interval)
-    // }, [isMobile, isPlaying, items.length, autoPlayInterval])
-
-  const goToPrevious = () => {
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? items.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const goToNext = () => {
-    const isLastSlide = currentIndex === items.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const goToSlide = (slideIndex: number) => {
-    setCurrentIndex(slideIndex);
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  // Handle touch events for swiping
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {
-      // Swipe left
-      goToNext();
+      if (direction === "left") {
+        current.scrollBy({ left: -scrollAmount, behavior: "smooth" })
+      } else {
+        current.scrollBy({ left: scrollAmount, behavior: "smooth" })
+      }
     }
-
-    if (touchStart - touchEnd < -50) {
-      // Swipe right
-      goToPrevious();
-    }
-  };
-
-  // Handle video refs
-  const setVideoRef = (element: HTMLVideoElement | null, index: number) => {
-    videoRefs.current[index] = element;
-  };
+  }
 
   return (
-    <div className="w-[95%] mx-auto py-8">
-      {/* Mobile Carousel View */}
-      <div className={`${isMobile ? "block" : "hidden"}`}>
-        <div
-          className="relative h-[60vh] overflow-hidden rounded-lg shadow-lg bg-gray-100"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
-                index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+    <section className="">
+      <div className="container mx-auto px-4">
+        
+
+        {/* Category filters */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                activeCategory === category.id
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              {item.type === "image" ? (
-                <div className="relative w-full h-full">
-                  <Image
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
-                    layout="fill"
-                    objectFit="cover"
-                    className="w-full h-full object-contain"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-sm">{item.year}</p>
-                    <p className="text-white font-medium">{item.description}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative w-full h-full">
-                  <video
-                    ref={(el) => setVideoRef(el, index)}
-                    src={item.src}
-                    poster={item.thumbnail}
-                    controls
-                    className="w-full h-full object-contain"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-sm">{item.year}</p>
-                    <p className="text-white font-medium">{item.description}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+              {category.name}
+            </button>
           ))}
+        </div>
 
-          {/* Carousel Controls */}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
-            {items.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-2.5 h-2.5 rounded-full ${
-                  index === currentIndex ? "bg-white" : "bg-white/50"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-
+        {/* Mobile scroll controls */}
+        <div className="flex justify-end gap-2 mb-4 md:hidden">
           <button
-            onClick={goToPrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
-            aria-label="Previous slide"
+            onClick={() => scroll("left")}
+            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
+            aria-label="Scroll left"
           >
-            <BiChevronLeft className="w-6 h-6" />
+            <BiChevronLeft className="w-5 h-5" />
           </button>
-
           <button
-            onClick={goToNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
-            aria-label="Next slide"
+            onClick={() => scroll("right")}
+            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
+            aria-label="Scroll right"
           >
-            <BiChevronRight className="w-6 h-6" />
-          </button>
-
-          <button
-            onClick={togglePlayPause}
-            className="absolute top-4 right-4 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
-            aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
-          >
-            {isPlaying ? (
-              <BiPause className="w-5 h-5" />
-            ) : (
-              <BiPlay className="w-5 h-5" />
-            )}
+            <BiChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </div>
 
-      {/* Desktop Grid View */}
-      <div className={`${isMobile ? "hidden" : "block"}`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item) => (
+        {/* Memorabilia items - scrollable on mobile, grid on desktop */}
+        <div
+          ref={scrollContainerRef}
+          className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto pb-6 md:overflow-visible snap-x snap-mandatory md:snap-none"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 bg-gray-100 aspect-square"
+              className="min-w-[280px] w-[280px] md:w-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 snap-start"
             >
-              {item.type === "image" ? (
-                <div className="relative w-full h-full group">
-                  <Image
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white text-xl font-medium">
-                      {item.description}
-                    </p>
-                  </div>
+              <div className="relative h-64 overflow-hidden bg-gray-200">
+                <Image
+                  src={item.image || "/placeholder.svg"}
+                  alt={item.name}
+                  fill
+                  placeholder="blur"
+                  blurDataURL="/placeholder.svg?height=400&width=300"
+                  className="object-contain transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                  <span className="font-bold text-blue-600">{item.price}</span>
                 </div>
-              ) : (
-                <div className="relative w-full h-full group">
-                  <video
-                    src={item.src}
-                    poster={item.thumbnail}
-                    controls
-                    className="w-full h-full object-cover"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                    <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white text-xl font-medium">
-                      {item.description}
-                    </p>
-                  </div>
+                <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium px-2.5 py-0.5 rounded bg-blue-100 text-blue-800 capitalize">
+                    {item.category}
+                  </span>
+                  <button className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                    <CgShoppingCart className="w-4 h-4" />
+                    Add to Cart
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
 
-        
+        {/* View all button */}
+        <div className="text-center mt-10">
+          <Link
+            href="/memorabilia"
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-darkBlue hover:bg-blue-700 transition-colors"
+          >
+            View All Memorabilia
+          </Link>
+        </div>
       </div>
-      
-    </div>
-  );
+    </section>
+  )
 }

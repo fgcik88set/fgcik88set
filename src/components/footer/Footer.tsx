@@ -19,10 +19,10 @@ export default function Footer() {
   };
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-offBlack text-white pt-12 pb-6">
+    <footer className="bg-darkBlue text-white pt-12 pb-6">
       <div className="w-full lg:w-[95%] mx-auto px-4">
         {/* Top section with logo and newsletter */}
-        <div className="flex flex-col lg:flex-row justify-between items-center mb-10 gap-6">
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-10 gap-6 h-[30vh]">
           <div className="flex flex-col items-center lg:items-start gap-4">
             <Image
               src={logo || "/placeholder.svg"}
@@ -30,14 +30,14 @@ export default function Footer() {
               width={70}
               height={100}
             />
-            <p className="text-gray-400 max-w-xs text-center lg:text-left">
+            <p className="text-white max-w-xs text-center lg:text-left">
               Fostering community, preserving heritage, and building a brighter
               future together.
             </p>
           </div>
 
           {/* Main footer links - desktop */}
-          <div className="hidden lg:grid grid-cols-3 gap-8 py-8 border-t border-b border-gray-800">
+          <div className="hidden lg:grid grid-cols-3 gap-8 py-8 ">
             {footerSections.map((section) => (
               <div key={section.id}>
                 <h4 className="font-semibold text-lg mb-4">{section.title}</h4>
@@ -46,7 +46,7 @@ export default function Footer() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-gray-400 hover:text-mainYellow transition-colors"
+                        className="text-white hover:text-mainYellow transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -62,35 +62,36 @@ export default function Footer() {
               <h3 className="text-xl font-semibold text-center lg:text-left">
                 Stay Connected
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-white text-sm">
                 For Dues,Registration and welfare related activities{" "}
               </p>
             </div>
-<br />
+            <br />
             <div className="flex items-center lg:items-start">
               <Link
                 href="#"
-                className="w-full text-sm text-center bg-darkBlue text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
+                className="w-full text-sm text-center bg-white text-darkBlue px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
               >
                 Make Payment
               </Link>
             </div>
           </div>
         </div>
+        <br className="md:hidden" />
 
         {/* Main footer links - mobile accordion */}
-        <div className="lg:hidden border-t border-gray-800">
+        <div className="lg:hidden">
           {footerSections.map((section) => (
-            <div key={section.id} className="border-b border-gray-800">
+            <div key={section.id} className="">
               <button
                 className="w-full py-4 flex justify-between items-center"
                 onClick={() => toggleSection(section.id)}
               >
                 <h4 className="font-semibold">{section.title}</h4>
                 {expandedSection === section.id ? (
-                  <IoIosArrowUp className="h-5 w-5 text-gray-400" />
+                  <IoIosArrowUp className="h-5 w-5 text-white" />
                 ) : (
-                  <IoIosArrowDown className="h-5 w-5 text-gray-400" />
+                  <IoIosArrowDown className="h-5 w-5 text-white" />
                 )}
               </button>
 
@@ -100,7 +101,7 @@ export default function Footer() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-gray-400 hover:text-mainYellow transition-colors"
+                        className="text-white hover:text-mainYellow transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -113,8 +114,8 @@ export default function Footer() {
         </div>
 
         {/* Social links and copyright */}
-        <div className="mt-8 flex flex-col md:flex-row justify-center items-center gap-6">
-          <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-sm text-gray-400">
+        <div className="py-4 flex flex-col md:flex-row justify-center items-center gap-6 border-t border-white">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-sm text-white">
             <p>© {currentYear} FGCIK. All rights reserved.</p>
             <div className="flex gap-4">
               <Link

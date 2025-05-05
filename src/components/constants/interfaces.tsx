@@ -34,3 +34,12 @@ export type NostalgicGalleryProps = {
   items: MediaItem[];
   autoPlayInterval?: number;
 };
+
+export interface MemorabiliaItem  {
+  id: string
+  name: string
+  image: string
+  price: string
+  category: string
+  description: string
+}
