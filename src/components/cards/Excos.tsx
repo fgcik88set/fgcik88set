@@ -3,7 +3,7 @@
 import { IoMdMail } from "react-icons/io";
 import { FaLinkedin } from "react-icons/fa";
 import { ExcosProps } from "../constants/interfaces";
-import { useState } from "react";
+
 import Link from "next/link";
 
 export default function ExcosHomepageSection({
@@ -13,13 +13,12 @@ export default function ExcosHomepageSection({
     linkedIn,
     email,
   }: ExcosProps) {
-    const [isHovered, setIsHovered] = useState(false)
+    
     
     return (
         <div
           className="overflow-hidden transition-all duration-300 hover:shadow-lg max-w-sm w-full rounded-lg bg-white border border-gray-200"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          
         >
           <div className="relative h-64 bg-cover bg-center" style={{ backgroundImage: `url(${image})` }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
