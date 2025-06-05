@@ -42,8 +42,8 @@ export default function Footer() {
               <div key={section.id}>
                 <h4 className="font-semibold text-lg mb-4">{section.title}</h4>
                 <ul className="space-y-2">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
+                  {section.links.map((link, index) => (
+                    <li key={index}>
                       <Link
                         href={link.href}
                         className="text-white hover:text-mainYellow transition-colors"
@@ -97,8 +97,8 @@ export default function Footer() {
 
               {expandedSection === section.id && (
                 <ul className="space-y-2 pb-4">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
+                  {section.links.map((link, index) => (
+                    <li key={index}>
                       <Link
                         href={link.href}
                         className="text-white hover:text-mainYellow transition-colors"
