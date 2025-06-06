@@ -38,8 +38,7 @@ export default function MemorabiliaSection() {
 
   return (
     <section className="">
-      <div className="container mx-auto px-4">
-        
+      <div className="relative">
 
         {/* Category filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -49,7 +48,7 @@ export default function MemorabiliaSection() {
               onClick={() => setActiveCategory(category.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 activeCategory === category.id
-                  ? "bg-blue-600 text-white"
+                  ? "bg-darkBlue text-white"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
               }`}
             >
@@ -59,17 +58,17 @@ export default function MemorabiliaSection() {
         </div>
 
         {/* Mobile scroll controls */}
-        <div className="flex justify-end gap-2 mb-4 md:hidden">
+        <div className="w-full flex justify-between gap-2 mb-4 md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-50">
           <button
             onClick={() => scroll("left")}
-            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
+            className="p-2 rounded-full bg-darkBlue text-white border border-gray-200 shadow-sm hover:bg-darkBlue/80"
             aria-label="Scroll left"
           >
             <BiChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => scroll("right")}
-            className="p-2 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50"
+            className="p-2 rounded-full bg-darkBlue text-white border border-gray-200 shadow-sm hover:bg-darkBlue"
             aria-label="Scroll right"
           >
             <BiChevronRight className="w-5 h-5" />
@@ -85,7 +84,7 @@ export default function MemorabiliaSection() {
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="min-w-[280px] w-[280px] md:w-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 snap-start"
+              className="min-w-[300px] w-[300px] md:w-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 snap-start"
             >
               <div className="relative h-64 overflow-hidden bg-gray-200">
                 <Image
@@ -109,7 +108,7 @@ export default function MemorabiliaSection() {
                   </span>
                   <button className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
                     <CgShoppingCart className="w-4 h-4" />
-                    Add to Cart
+                    Place an Order
                   </button>
                 </div>
               </div>

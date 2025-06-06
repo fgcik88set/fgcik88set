@@ -1,10 +1,11 @@
 interface SectionHeaderTextProps {
     text: string;
+    className?: string;
 }
 
-export default function SectionHeaderText({text}:SectionHeaderTextProps) {
+export default function SectionHeaderText({text, className}:SectionHeaderTextProps) {
     return (
-        <p className="font-chewy text-[3rem] lg:text-[4rem] text-center">
+        <p className={`font-chewy text-[2rem] lg:text-[3rem] text-center ${className || ""}`}>
             {text}
         </p>
     )

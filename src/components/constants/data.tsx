@@ -65,7 +65,7 @@ export const MemoriesData = [
 
 export const footerSections = [
     {
-      id: "about",
+      id: "1",
       title: "About Us",
       links: [
         { href: "#", label: "Our Story" },
@@ -75,7 +75,7 @@ export const footerSections = [
       ]
     },
     {
-      id: "executives",
+      id: "2",
       title: "Leadership",
       links: [
         { href: "#", label: "All Executives" },
@@ -85,7 +85,7 @@ export const footerSections = [
       ]
     },
     {
-      id: "resources",
+      id: "3",
       title: "Resources",
       links: [
         { href: "#", label: "Memories" },

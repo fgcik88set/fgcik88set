@@ -1,18 +1,23 @@
-export default function About() {
+import CoreValues from "@/components/about/core-values";
+import AboutHero from "@/components/about/hero";
+import JoinCTA from "@/components/about/join-cta";
+import Leadership from "@/components/about/leadership";
+import AboutMain from "@/components/about/main";
+import MissionVision from "@/components/about/mission-vision";
+import Testimonials from "@/components/about/testimonials";
+import Timeline from "@/components/about/timeline";
+
+export default function AboutUs() {
     return (
         <main>
-            <p> Welcome to the official website of the Federal Government College
-            Ikot Ekpene Class of 1988. More than just an alumni group, we are a
-            close-knit community bound by shared experiences, lifelong
-            friendships, and a commitment to excellence. Over the years, we have
-            grown into a network of professionals, leaders, and changemakers
-            across various industries, united by our desire to stay connected
-            and give back. Through reunions, mentorship programs, and community
-            initiatives, we continue to uphold the values instilled in us during
-            our time at FGC Ikot Ekpene. Whether you’re looking to reconnect,
-            collaborate, or contribute, this platform is your home. Together, we
-            celebrate our past, embrace the present, and shape the
-            future—because true bonds last a lifetime.</p>
+            <AboutHero />
+            <AboutMain />
+            <MissionVision />
+            <CoreValues />
+            <Timeline />
+            <Leadership />   
+            <Testimonials />
+            <JoinCTA />
         </main>
     )
 }

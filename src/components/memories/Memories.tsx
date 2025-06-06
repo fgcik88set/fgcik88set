@@ -27,16 +27,6 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
     };
   }, []);
 
-  // Auto-play carousel on mobile
-    // useEffect(() => {
-    //   if (!isMobile || !isPlaying || items.length <= 1) return
-
-    //   const interval = setInterval(() => {
-    //     goToNext()
-    //   }, autoPlayInterval)
-
-    //   return () => clearInterval(interval)
-    // }, [isMobile, isPlaying, items.length, autoPlayInterval])
 
   const goToPrevious = () => {
     const isFirstSlide = currentIndex === 0;
@@ -85,7 +75,7 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
   };
 
   return (
-    <div className="w-[95%] mx-auto py-8">
+    <div className="py-8">
       {/* Mobile Carousel View */}
       <div className={`${isMobile ? "block" : "hidden"}`}>
         <div
@@ -111,8 +101,8 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
                     className="w-full h-full object-contain"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-sm">{item.year}</p>
-                    <p className="text-white font-medium">{item.description}</p>
+                    <p className="text-white  text-sm">{item.year}</p>
+                    <p className="text-sm text-white font-medium">{item.description}</p>
                   </div>
                 </div>
               ) : (
@@ -127,8 +117,8 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
                     Your browser does not support the video tag.
                   </video>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-sm">{item.year}</p>
-                    <p className="text-white font-medium">{item.description}</p>
+                    <p className="text-white  text-sm">{item.year}</p>
+                    <p className="text-white font-medium text-sm">{item.description}</p>
                   </div>
                 </div>
               )}
@@ -151,7 +141,7 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
 
           <button
             onClick={goToPrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-darkBlue hover:bg-darkBlue/50 text-white rounded-full p-2 z-20"
             aria-label="Previous slide"
           >
             <BiChevronLeft className="w-6 h-6" />
@@ -159,7 +149,7 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
 
           <button
             onClick={goToNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-darkBlue hover:bg-darkBlue/50 text-white rounded-full p-2 z-20"
             aria-label="Next slide"
           >
             <BiChevronRight className="w-6 h-6" />
@@ -181,7 +171,7 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
 
       {/* Desktop Grid View */}
       <div className={`${isMobile ? "hidden" : "block"}`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {items.map((item) => (
             <div
               key={item.id}
@@ -197,9 +187,9 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
                     className="transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
                     <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white text-xl font-medium">
+                    <p className="text-white font-medium">
                       {item.description}
                     </p>
                   </div>
@@ -214,9 +204,9 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
                   >
                     Your browser does not support the video tag.
                   </video>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
                     <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white text-xl font-medium">
+                    <p className="text-white font-medium">
                       {item.description}
                     </p>
                   </div>

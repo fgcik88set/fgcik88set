@@ -6,7 +6,7 @@ import SectionHeaderText from "../typography/SectionHeaderText";
 export default function MemoriesSectionDisplay() {
   return (
     <section className="w-[95%] mx-auto">
-      <div className="py-8 lg:py-12">
+      <div className="pt-4 pb-8">
         <SectionHeaderText text="Reliving The Moments" />
         <p className="text-center italic max-w-3xl mx-auto">
           A collection of treasured memories that remind us of our shared

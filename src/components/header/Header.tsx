@@ -62,20 +62,20 @@ export default function Header() {
 
   const navLinks = [
     { id: 1, href: "/", label: "Home" },
-    { id: 2, href: "#", label: "About" },
+    { id: 2, href: "/about", label: "About" },
     {
       id: 3,
       href: "#",
       label: "Executives",
       hasDropdown: true,
       dropdownItems: [
-        { id: 31, href: "#", label: "All Executives" },
-        { id: 32, href: "#", label: "Board of Trustees" },
+        { id: 10, href: "/executives", label: "All Executives" },
+        { id: 11, href: "/board-of-trustees", label: "Board of Trustees" },
       ],
     },
-    { id: 4, href: "#", label: "Moments" },
-    { id: 5, href: "#", label: "Memorabilia" },
-    { id: 6, href: "#", label: "Events" },
+    { id: 4, href: "/moments", label: "Moments" },
+    { id: 5, href: "/memorabilia", label: "Memorabilia" },
+    { id: 6, href: "/events", label: "Events" },
   ];
 
   const isLoggedIn: boolean = false;
@@ -90,17 +90,15 @@ export default function Header() {
     >
       <div className="w-full lg:w-[95%] mx-auto">
         <nav
-          className={`flex justify-between items-center h-[12vh] rounded-lg px-4 md:px-0 ${
+          className={`flex justify-between items-center h-[10vh] md:h-[12vh] rounded-lg px-4 md:px-0 ${
             isScrolled ? "shadow-md text-white" : ""
           }`}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-[18%] md:w-[6%]">
             <Image
               src={logo || "/placeholder.svg"}
               alt="logo"
-              width={80}
-              height={80}
-              layout="intrinsic"
+              
             />
           </div>
 
@@ -144,7 +142,7 @@ export default function Header() {
                       <div className="absolute top-full left-0 mt-2 w-48 bg-black border border-gray-700 rounded-md shadow-lg z-50">
                         {link.dropdownItems?.map((item) => (
                           <Link
-                            key={item.href}
+                            key={item.id}
                             href={item.href}
                             className={`block px-4 py-2 text-sm hover:bg-gray-800 transition-colors text-[18px] ${
                               pathname === item.href
@@ -162,7 +160,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <Link
-                    key={link.href}
+                    key={link.id}
                     href={link.href}
                     className={`transition-colors ${
                       pathname === link.href
@@ -189,7 +187,7 @@ export default function Header() {
         {/* Mobile slide-down menu */}
         <div
           className={`fixed top-0 left-0 w-full h-auto bg-darkBlue text-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-            isMenuOpen ? "translate-y-[12vh]" : "translate-y-[-100%]"
+            isMenuOpen ? "translate-y-[10vh]" : "translate-y-[-100%]"
           } lg:hidden z-40`}
         >
           <div className="flex flex-col gap-6 p-4 pt-6">
@@ -224,7 +222,7 @@ export default function Header() {
                       <div className="mt-2 flex flex-col items-center space-y-3 py-2">
                         {link.dropdownItems?.map((item) => (
                           <Link
-                            key={item.href}
+                            key={item.id}
                             href={item.href}
                             className={`text-sm transition-colors ${
                               pathname === item.href
@@ -243,7 +241,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <Link
-                    key={link.href}
+                    key={link.id}
                     href={link.href}
                     className={`transition-colors ${
                       pathname === link.href

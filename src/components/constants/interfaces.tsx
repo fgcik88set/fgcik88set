@@ -20,7 +20,7 @@ export interface ExcosProps {
   email?: string;
 }
 
-type MediaItem = {
+export type MediaItem = {
   id: string;
   type: "image" | "video";
   src: string;

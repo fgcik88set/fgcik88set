@@ -5,9 +5,9 @@ import { BackgroundButton } from "../buttons/Buttons";
 import ExcosHomepageSection from "../cards/Excos";
 import { ExcosHomeSection } from "../constants/data";
 import SectionHeaderText from "../typography/SectionHeaderText";
+import MobileCarouselWrapper from "../mobile-carousel-wrapper";
 
 export default function ExcosSection() {
-  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,9 +32,9 @@ export default function ExcosSection() {
     <section className="h-auto relative overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Decorative elements */}
       <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-blue-100/50 blur-3xl" />
-      <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-amber-100/50 blur-3xl" />
+      <div className="hidden md:block absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-amber-100/50 blur-3xl" />
       <div className="w-[95%] mx-auto py-8 lg:py-12">
-        <div>
+        <div className="mb-6">
           <SectionHeaderText text="Meet Our Excos" />
 
           <p className="text-center italic max-w-3xl mx-auto">
@@ -46,27 +46,25 @@ export default function ExcosSection() {
         </div>
 
         <motion.div
-          className="mb-20"
+          className="mb-10"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
           <div className="relative mb-8 flex items-center">
-            <div className="h-px flex-grow bg-blue-200"></div>
-            <h2 className="font-chewy text-3xl font-medium text-darkBlue mt-4">
+            <div className="h-px flex-grow bg-mainYellow"></div>
+            <h2 className="font-chewy text-2xl md:text-3xl font-medium text-darkBlue">
               Our Current Executives
             </h2>
-            <div className="h-px flex-grow bg-blue-200"></div>
+            <div className="h-px flex-grow bg-mainYellow"></div>
           </div>
 
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 "
-            variants={containerVariants}
-          >
-            {ExcosHomeSection.map((executive) => (
-              <motion.div key={executive.id} variants={itemVariants}>
+          <motion.div variants={itemVariants}>
+            <MobileCarouselWrapper>
+              {ExcosHomeSection.map((executive) => (
                 <ExcosHomepageSection
+                  key={executive.id}
                   id={executive.id}
                   image={executive.image}
                   name={executive.name}
@@ -74,8 +72,8 @@ export default function ExcosSection() {
                   email={executive.email}
                   linkedIn={executive.linkedIn}
                 />
-              </motion.div>
-            ))}
+              ))}
+            </MobileCarouselWrapper>
           </motion.div>
 
           <div className="mt-10 flex justify-center">
@@ -94,17 +92,18 @@ export default function ExcosSection() {
           variants={containerVariants}
         >
           <div className="relative mb-8 flex items-center">
-            <div className="h-px flex-grow bg-amber-200"></div>
-            <p className="font-chewy text-[2rem] font-medium text-darkBlue mt-4">
+            <div className="h-px flex-grow bg-mainYellow"></div>
+            <p className="font-chewy text-2xl md:text-3xl font-medium text-darkBlue">
               Board of Trustees
             </p>
-            <div className="h-px flex-grow bg-amber-200"></div>
+            <div className="h-px flex-grow bg-mainYellow"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-3 mb-6">
-            {ExcosHomeSection.map((executive) => (
-              <motion.div key={executive.id} variants={itemVariants}>
+          <motion.div variants={containerVariants}>
+            <MobileCarouselWrapper>
+              {ExcosHomeSection.map((executive) => (
                 <ExcosHomepageSection
+                  key={executive.id}
                   id={executive.id}
                   image={executive.image}
                   name={executive.name}
@@ -112,14 +111,14 @@ export default function ExcosSection() {
                   email={executive.email}
                   linkedIn={executive.linkedIn}
                 />
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </MobileCarouselWrapper>
+          </motion.div>
 
           <div className="mt-10 flex justify-center">
             <BackgroundButton
               text="View All BOT"
-              link="/executives"
+              link="/board-of-trustees"
               btnWidth="w-full lg:w-1/4"
             />
           </div>
