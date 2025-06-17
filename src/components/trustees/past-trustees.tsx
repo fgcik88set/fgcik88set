@@ -78,7 +78,7 @@ export default function PastTrustees() {
   const hasActiveFilters = searchTerm || selectedTerm || selectedPosition
 
   return (
-    <section ref={sectionRef} className="relative pb-20 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+    <section id="past" ref={sectionRef} className="relative pb-20 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-100/30 blur-3xl"></div>

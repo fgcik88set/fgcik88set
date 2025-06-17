@@ -3,9 +3,10 @@ import AboutSection from "@/components/home-sections/About";
 import ExcosSection from "@/components/home-sections/Excos";
 
 import MemoriesSectionDisplay from "@/components/home-sections/Memories";
-import MemorabiliaSectionDisplay from "@/components/home-sections/Memorabilia";
+// import MemorabiliaSectionDisplay from "@/components/home-sections/Memorabilia";
 
 export default function Home() {
+  
   return (
     <main className="">
       <HeroSection />
@@ -16,7 +17,7 @@ export default function Home() {
 
       <MemoriesSectionDisplay />
 
-      <MemorabiliaSectionDisplay />
+      {/* <MemorabiliaSectionDisplay /> */}
     </main>
   );
 }
