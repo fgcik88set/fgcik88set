@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import { AuthProvider } from "@/providers/session-provider";
+import HeaderWrapper from "@/components/header/HeaderWrapper";
+import FooterWrapper from "@/components/footer/FooterWrapper";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -10,7 +11,6 @@ const poppins = Poppins({
   variable: "--font-poppins",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
-
 
 export const metadata: Metadata = {
   title: "FGC IK '88",
@@ -24,12 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${poppins.className} antialiased`}
-      >
-        <Header />
-        {children}
-        <Footer />
+      <body className={`${poppins.className} antialiased`}>
+        <AuthProvider>
+          <HeaderWrapper />
+          {children}
+          <FooterWrapper />
+        </AuthProvider>
       </body>
     </html>
   );
