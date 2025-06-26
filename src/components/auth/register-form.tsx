@@ -71,7 +71,7 @@ export function RegisterForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/dashboard" })
+      await signIn("google", { callbackUrl: "/" })
     } catch (error) {
       setError("Google sign in failed")
       setIsLoading(false)

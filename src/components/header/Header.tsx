@@ -8,6 +8,9 @@ import { usePathname } from "next/navigation";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdClose } from "react-icons/md";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { useAuth } from "@/providers/session-provider";
+import { CircleUser, LogOut, User } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 // Define dropdown state type
 type DropdownState = {
@@ -22,10 +25,12 @@ export default function Header() {
   const [dropdownsOpen, setDropdownsOpen] = useState<DropdownState>({
     executives: false,
     board: false,
-    more: false
+    more: false,
   });
+  const [openProfile, setOpenProfile] = useState<boolean>(false);
   const pathname = usePathname();
   const headerRef = useRef<HTMLDivElement>(null);
+  const { user, status } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -33,11 +38,11 @@ export default function Header() {
   };
 
   const toggleDropdown = (dropdown: keyof DropdownState) => {
-    setDropdownsOpen(prev => ({
+    setDropdownsOpen((prev) => ({
       executives: false,
       board: false,
       more: false,
-      [dropdown]: !prev[dropdown]
+      [dropdown]: !prev[dropdown],
     }));
   };
 
@@ -47,7 +52,10 @@ export default function Header() {
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+      if (
+        headerRef.current &&
+        !headerRef.current.contains(event.target as Node)
+      ) {
         setDropdownsOpen({ executives: false, board: false, more: false });
       }
     };
@@ -76,8 +84,8 @@ export default function Header() {
       dropdownKey: "executives" as const,
       dropdownItems: [
         { id: 31, href: "/executives", label: "Current Executives" },
-        { id: 32, href: "/executives#past", label: "Past Executives" }
-      ]
+        { id: 32, href: "/executives#past", label: "Past Executives" },
+      ],
     },
     {
       id: 4,
@@ -85,9 +93,13 @@ export default function Header() {
       label: "Board of Trustees",
       dropdownKey: "board" as const,
       dropdownItems: [
-        { id: 41, href: "/board-of-trustees", label: "Current Board of Trustees" },
-        { id: 42, href: "/board-of-trustees#past", label: "Past Boards" }
-      ]
+        {
+          id: 41,
+          href: "/board-of-trustees",
+          label: "Current Board of Trustees",
+        },
+        { id: 42, href: "/board-of-trustees#past", label: "Past Boards" },
+      ],
     },
     {
       id: 5,
@@ -97,12 +109,11 @@ export default function Header() {
       dropdownItems: [
         { id: 51, href: "/moments", label: "Moments" },
         { id: 52, href: "/memorabilia", label: "Memorabilia" },
-        { id: 53, href: "/events", label: "Events" }
-      ]
-    }
+        { id: 53, href: "/events", label: "Events" },
+      ],
+    },
   ];
 
-  const isLoggedIn: boolean = false;
   const activeLinkStyle = "text-mainYellow font-semibold";
 
   return (
@@ -116,17 +127,12 @@ export default function Header() {
     >
       <div className="w-full lg:w-[95%] mx-auto">
         <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4">
-          <Link href="/" className="flex items-center gap-2 w-1/4 md:w-1/6">
-            <Image
-              src={logo}
-              alt="FGCIK Logo"
-              className="w-auto h-12 object-contain"
-              priority
-            />
+          <Link href="/" className="flex items-center gap-2 w-[20%] md:w-[6%]">
+            <Image src={logo} alt="FGCIK Logo" priority />
           </Link>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="lg:hidden z-50 focus:outline-none"
             onClick={toggleMenu}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -148,11 +154,11 @@ export default function Header() {
                       <button
                         onClick={() => toggleDropdown(link.dropdownKey!)}
                         className={`flex items-center gap-1 transition-colors ${
-                          pathname.startsWith(`/${link.dropdownKey}`) 
-                            ? activeLinkStyle 
-                            : isScrolled 
-                              ? "text-white hover:text-gray-300" 
-                              : "text-black hover:text-darkBlue"
+                          pathname.startsWith(`/${link.dropdownKey}`)
+                            ? activeLinkStyle
+                            : isScrolled
+                            ? "text-white hover:text-gray-300"
+                            : "text-black hover:text-darkBlue"
                         }`}
                       >
                         {link.label}
@@ -162,7 +168,7 @@ export default function Header() {
                           <IoIosArrowDown className="h-4 w-4" />
                         )}
                       </button>
-                      
+
                       {dropdownsOpen[link.dropdownKey] && (
                         <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                           {link.dropdownItems?.map((item) => (
@@ -198,13 +204,44 @@ export default function Header() {
                 </div>
               ))}
             </div>
-            
-            <Link
-              href={isLoggedIn ? "#" : "/register"}
-              className="w-40 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
-            >
-              {isLoggedIn ? "Payment" : "Register"}
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link
+                href={
+                  status === "authenticated" ? "/payment" : "/auth/register"
+                }
+                className="w-40 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
+              >
+                {status === "authenticated" ? "Payment" : "Register"}
+              </Link>
+              {status === "authenticated" && (
+                <div className="relative">
+                  <CircleUser
+                    onClick={() => setOpenProfile(!openProfile)}
+                    className={`h-8 w-8 ${
+                      isScrolled ? "text-white" : "text-darkBlue"
+                    }  cursor-pointer`}
+                  />
+                  {openProfile && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <User className={`h-5 w-5 text-darkBlue`} />
+                        <p className="text-darkBlue font-medium">
+                          {user?.name}
+                        </p>
+                      </div>
+                      <hr />
+                      <div
+                        onClick={() => signOut()}
+                        className="flex items-center gap-2 mt-4 cursor-pointer"
+                      >
+                        <LogOut className="h-5 w-5 text-red-500 cursor-pointer" />
+                        <p className="text-red-500 font-medium">Logout</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </nav>
 
@@ -214,6 +251,12 @@ export default function Header() {
             isMenuOpen ? "translate-y-0" : "-translate-y-full"
           } lg:hidden z-40`}
         >
+          {status === "authenticated" && (
+            <div className="absolute top-8 left-4 flex items-center gap-2 mb-4">
+              <User className={`h-5 w-5 text-white`} />
+              <p className="text-white text-lg font-medium">{user?.name}</p>
+            </div>
+          )}
           <div className="flex flex-col gap-6 p-4 overflow-y-auto h-[90vh]">
             {navLinks.map((link) => (
               <div key={link.id} className="border-b border-gray-700 pb-4">
@@ -223,7 +266,13 @@ export default function Header() {
                       onClick={() => toggleDropdown(link.dropdownKey!)}
                       className="flex items-center justify-between w-full text-left py-2"
                     >
-                      <span className={`${pathname.startsWith(`/${link.dropdownKey}`) ? activeLinkStyle : "text-white"}`}>
+                      <span
+                        className={`${
+                          pathname.startsWith(`/${link.dropdownKey}`)
+                            ? activeLinkStyle
+                            : "text-white"
+                        }`}
+                      >
                         {link.label}
                       </span>
                       {dropdownsOpen[link.dropdownKey] ? (
@@ -232,7 +281,7 @@ export default function Header() {
                         <IoIosArrowDown className="h-5 w-5" />
                       )}
                     </button>
-                    
+
                     {dropdownsOpen[link.dropdownKey] && (
                       <div className="mt-2 pl-4 space-y-3">
                         {link.dropdownItems?.map((item) => (
@@ -267,14 +316,24 @@ export default function Header() {
                 )}
               </div>
             ))}
-            
+
             <Link
-              href="/register"
+              href={status === "authenticated" ? "/payment" : "/auth/register"}
               className="w-full bg-white text-darkBlue py-3 px-6 rounded-full text-center font-medium hover:bg-gray-100 mt-4"
               onClick={toggleMenu}
             >
-              Register
+              {status === "authenticated" ? "Payment" : "Register"}
             </Link>
+
+            {status === "authenticated" && (
+              <div
+                onClick={() => signOut()}
+                className="w-full bg-white flex items-center gap-2 cursor-pointer py-3 px-6 rounded-full justify-center"
+              >
+                <LogOut className="h-5 w-5 text-red-500 cursor-pointer" />
+                <p className="text-red-500 font-medium">Logout</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
