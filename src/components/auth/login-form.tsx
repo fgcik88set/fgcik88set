@@ -31,12 +31,14 @@ export function LoginForm() {
         redirect: false,
       })
 
+      console.log("SignIn Result:", result)
+
       if (result?.error) {
         setError("Invalid email or password")
       } else {
         // Get updated session
         await getSession()
-        router.push("/dashboard")
+        router.push("/")
         router.refresh()
       }
     } catch (error) {
@@ -50,7 +52,7 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/dashboard" })
+      await signIn("google", { callbackUrl: "/" })
     } catch (error) {
       setError("Google sign in failed")
       setIsLoading(false)
