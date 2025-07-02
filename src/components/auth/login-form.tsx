@@ -36,7 +36,7 @@ export function LoginForm() {
       } else {
         // Get updated session
         await getSession()
-        router.push("/dashboard")
+        router.push("/")
         router.refresh()
       }
     } catch (error) {
