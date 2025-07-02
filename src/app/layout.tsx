@@ -4,7 +4,11 @@ import "./globals.css";
 
 import HeaderWrapper from "@/components/header/HeaderWrapper";
 import FooterWrapper from "@/components/footer/FooterWrapper";
+
+import { Toaster } from "sonner";
+
 import { AuthProvider } from "@/providers/session-provider";
+
 
 
 const poppins = Poppins({
@@ -29,6 +33,7 @@ export default function RootLayout({
       <body className={`${poppins.className} antialiased`}>
         <AuthProvider>
           <HeaderWrapper />
+          <Toaster position="top-right" richColors />
           {children}
           <FooterWrapper />
         </AuthProvider>
