@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
+
 
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -24,7 +24,7 @@ const sslConfig = process.env.NODE_ENV === "production" ? { rejectUnauthorized: 
 
 // Create PostgreSQL pool
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_URL_NO_SSL,
   ssl: sslConfig,
 });
 

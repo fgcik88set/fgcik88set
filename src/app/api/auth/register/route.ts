@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV === "development") {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -17,11 +15,12 @@ import { Pool } from "pg"; // Use pg instead of @vercel/postgres
 //         rejectUnauthorized: false,
 //       };
 
-const sslConfig = process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
+const sslConfig =
+  process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
 
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_URL_NO_SSL,
   ssl: sslConfig,
 });
 

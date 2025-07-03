@@ -1,12 +1,10 @@
-if (process.env.NODE_ENV === "development") {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 // Create a connection pool (should be a singleton in your application)
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_URL_NO_SSL,
   ssl: process.env.NODE_ENV === "production" && {
     rejectUnauthorized: false,
     // ca: process.env.SUPABASE_CA_CERT,
@@ -44,7 +42,7 @@ export const createPayment = async (paymentData: {
         paymentData.user_email,
         paymentData.amount,
         paymentData.currency,
-        paymentData.status
+        paymentData.status,
       ]
     );
     return { data: result.rows[0], error: null };
@@ -79,7 +77,7 @@ export const updatePayment = async (
         updateData.transaction_id,
         updateData.status,
         updateData.gateway_response,
-        reference
+        reference,
       ]
     );
     return { data: result.rows[0] || null, error: null };
