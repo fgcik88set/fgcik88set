@@ -5,11 +5,10 @@ if (process.env.NODE_ENV === "development") {
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg"; // Use pg instead of @vercel/postgres
-import fs from "fs";
-import path from "path";
+
 
 const sslConfig = process.env.NODE_ENV === "production" && {
-  ca: fs.readFileSync(path.resolve("certs/supabase.crt")).toString(),
+  ca: process.env.SUPABASE_CA_CERT,
   rejectUnauthorized: true,
 };
 
