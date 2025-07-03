@@ -8,13 +8,22 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
 
+const sslConfig =
+  process.env.NODE_ENV === "production"
+    ? {
+        ca: process.env.SUPABASE_CA_CERT,
+        rejectUnauthorized: !!process.env.SUPABASE_CA_CERT, // Only verify if CA exists
+      }
+    : {
+        // Development: Skip verification for self-signed certs
+        rejectUnauthorized: false,
+      };
+
+
 // Create PostgreSQL pool
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
-  ssl: process.env.NODE_ENV === "production" && {
-    rejectUnauthorized: true,
-    ca: process.env.SUPABASE_CA_CERT,
-  },
+  ssl: sslConfig,
 });
 
 export const authOptions: NextAuthOptions = {

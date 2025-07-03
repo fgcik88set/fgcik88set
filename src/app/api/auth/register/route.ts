@@ -6,11 +6,16 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg"; // Use pg instead of @vercel/postgres
 
-
-const sslConfig = process.env.NODE_ENV === "production" && {
-  ca: process.env.SUPABASE_CA_CERT,
-  rejectUnauthorized: true,
-};
+const sslConfig =
+  process.env.NODE_ENV === "production"
+    ? {
+        ca: process.env.SUPABASE_CA_CERT,
+        rejectUnauthorized: !!process.env.SUPABASE_CA_CERT, // Only verify if CA exists
+      }
+    : {
+        // Development: Skip verification for self-signed certs
+        rejectUnauthorized: false,
+      };
 
 // Create a connection pool
 const pool = new Pool({
