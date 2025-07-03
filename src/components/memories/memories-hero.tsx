@@ -73,18 +73,18 @@ export default function MemoriesHero() {
           <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
               <Camera className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">500+</div>
-              <div className="text-white/80">Photos & Videos</div>
+              <p className="text-2xl font-bold mb-2">500+</p>
+              <p className="text-white/80">Photos & Videos</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
               <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">35</div>
-              <div className="text-white/80">Years of Memories</div>
+              <p className="text-2xl font-bold mb-2">35</p>
+              <p className="text-white/80">Years of Memories</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
               <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">20+</div>
-              <div className="text-white/80">Reunions & Events</div>
+              <p className="text-2xl font-bold mb-2">20+</p>
+              <p className="text-white/80">Reunions & Events</p>
             </div>
           </div>
         </div>

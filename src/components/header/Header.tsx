@@ -222,7 +222,7 @@ export default function Header() {
                     }  cursor-pointer`}
                   />
                   {openProfile && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4">
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4">
                       <div className="flex items-center gap-2 mb-4">
                         <User className={`h-5 w-5 text-darkBlue`} />
                         <p className="text-darkBlue font-medium">

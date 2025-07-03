@@ -6,9 +6,11 @@ import { footerSections } from "../constants/data";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import Image from "next/image";
 import logo from "../../../public/logo/FGCIK-Logo-Final.webp";
+import { useAuth } from "@/providers/session-provider";
 
 export default function Footer() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+   const { status } = useAuth();
 
   const toggleSection = (section: string) => {
     if (expandedSection === section) {
@@ -63,16 +65,18 @@ export default function Footer() {
                 Stay Connected
               </h3>
               <p className="text-white text-sm">
-                For Dues,Registration and welfare related activities{" "}
+                For Dues,Registration and welfare related activities payment{" "}
               </p>
             </div>
             <br />
             <div className="flex items-center lg:items-start">
               <Link
-                href="#"
+                href={
+                  status === "authenticated" ? "/payment" : "/auth/register"
+                }
                 className="w-full text-sm text-center bg-white text-darkBlue px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
               >
-                Make Payment
+                {status === "authenticated" ? "Make Payment" : "Register"}
               </Link>
             </div>
           </div>

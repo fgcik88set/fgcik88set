@@ -9,8 +9,6 @@ import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/providers/session-provider";
 
-
-
 const poppins = Poppins({
   subsets: ["latin"],
   display: "swap",
