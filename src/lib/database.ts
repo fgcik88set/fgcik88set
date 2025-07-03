@@ -8,8 +8,8 @@ import { Pool } from 'pg';
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
   ssl: process.env.NODE_ENV === "production" && {
-    rejectUnauthorized: true,
-    ca: process.env.SUPABASE_CA_CERT,
+    rejectUnauthorized: false,
+    // ca: process.env.SUPABASE_CA_CERT,
   },
 });
 
