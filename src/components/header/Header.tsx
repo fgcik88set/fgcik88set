@@ -211,7 +211,7 @@ export default function Header() {
                 }
                 className="w-40 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
               >
-                {status === "authenticated" ? "Payment" : "Register"}
+                Payment
               </Link>
               {status === "authenticated" && (
                 <div className="relative">
@@ -322,7 +322,7 @@ export default function Header() {
               className="w-full bg-white text-darkBlue py-3 px-6 rounded-full text-center font-medium hover:bg-gray-100 mt-4"
               onClick={toggleMenu}
             >
-              {status === "authenticated" ? "Payment" : "Register"}
+              Payment
             </Link>
 
             {status === "authenticated" && (

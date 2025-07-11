@@ -76,7 +76,7 @@ export default function Footer() {
                 }
                 className="w-full text-sm text-center bg-white text-darkBlue px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
               >
-                {status === "authenticated" ? "Make Payment" : "Register"}
+                Make Payment
               </Link>
             </div>
           </div>

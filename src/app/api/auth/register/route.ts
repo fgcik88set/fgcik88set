@@ -3,6 +3,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg"; // Use pg instead of @vercel/postgres
+import { sendWelcomeEmail } from "@/lib/email";
+import { toast } from "sonner";
 
 // const sslConfig =
 //   process.env.NODE_ENV === "production"
@@ -72,6 +74,19 @@ export async function POST(request: NextRequest) {
     );
 
     const user = result.rows[0];
+
+    // Send welcome email (don't wait for it to complete)
+    sendWelcomeEmail(email, name).catch((error) => {
+      if (!error) {
+        toast.success(`Welcome email sent successfully to ${email}`);
+        return;
+      } else {
+        toast.error("Failed to send welcome email:");
+        console.error(error);
+      }
+
+      // Don't fail the registration if email fails
+    });
 
     return NextResponse.json({
       message: "User created successfully",
