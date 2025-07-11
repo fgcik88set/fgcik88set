@@ -83,8 +83,8 @@ export default function Header() {
       label: "Executives",
       dropdownKey: "executives" as const,
       dropdownItems: [
-        { id: 31, href: "/executives", label: "Current Executives" },
-        { id: 32, href: "/executives#past", label: "Past Executives" },
+        { id: 31, href: "/executives/current", label: "Current Executives" },
+        { id: 32, href: "/executives/past", label: "Past Executives" },
       ],
     },
     {
@@ -95,10 +95,10 @@ export default function Header() {
       dropdownItems: [
         {
           id: 41,
-          href: "/board-of-trustees",
+          href: "/board-of-trustees/current",
           label: "Current Board of Trustees",
         },
-        { id: 42, href: "/board-of-trustees#past", label: "Past Boards" },
+        { id: 42, href: "/board-of-trustees/past", label: "Past Boards" },
       ],
     },
     {
@@ -126,7 +126,7 @@ export default function Header() {
       }`}
     >
       <div className="w-full lg:w-[95%] mx-auto">
-        <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4">
+        <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4 py-2">
           <Link href="/" className="flex items-center gap-2 w-[20%] md:w-[6%]">
             <Image src={logo} alt="FGCIK Logo" priority />
           </Link>
