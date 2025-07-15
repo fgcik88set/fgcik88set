@@ -22,7 +22,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-darkBlue text-white pb-6 pt-6">
-      <div className="w-full lg:w-[95%] mx-auto">
+      <div className="w-[95%] mx-auto ">
         {/* Top section with logo and newsletter */}
         <div className="flex flex-col lg:flex-row justify-between mb-10 gap-6">
           <div className="flex flex-col items-center lg:items-start gap-4">
@@ -60,17 +60,17 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="w-full flex-col justify-between lg:w-auto">
+          <div className="w-full flex-col justify-between items-center lg:w-auto">
             <div>
               <h3 className="text-xl font-semibold text-center lg:text-left">
                 Stay Connected
               </h3>
-              <p className="text-white text-sm">
+              <p className="text-white text-center lg:text-left">
                 For Dues,Registration and welfare related activities payment{" "}
               </p>
             </div>
             <br />
-            <div className="flex items-center lg:items-start">
+            <div className="flex items-center justify-center lg:justify-start lg:items-start">
               <Link
                 href={
                   status === "authenticated" ? "/payment" : "/auth/register"
@@ -82,7 +82,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <br className="md:hidden" />
+        
 
         {/* Main footer links - mobile accordion */}
         <div className="lg:hidden">
