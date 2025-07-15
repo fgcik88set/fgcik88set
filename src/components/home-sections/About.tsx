@@ -119,7 +119,7 @@ export default function AboutSection() {
               <BackgroundButton
                 text="Learn More"
                 link="/about"
-                btnWidth="w-full lg:w-1/2"
+                btnWidth="w-fit"
               />
             </div>
           </div>

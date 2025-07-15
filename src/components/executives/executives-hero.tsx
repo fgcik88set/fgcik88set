@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { Users, Award, Calendar } from "lucide-react";
+
 import { usePathname } from "next/navigation";
 
 export default function ExecutivesHero() {
@@ -34,7 +34,7 @@ export default function ExecutivesHero() {
   return (
     <div
       ref={heroRef}
-      className="relative w-full pb-20 pt-32 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
+      className="relative w-full pt-36 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -61,16 +61,16 @@ export default function ExecutivesHero() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4">
         <div className="text-center max-w-4xl mx-auto">
           <div className="animate-item">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <div className="sticky top-0 text-4xl md:text-6xl font-bold mb-4">
               Our{" "}
               <span className="text-mainYellow">
                 {isCurrentExcos ? "Current " : isPastExcos ? "Past " : ""}
                 Leadership
               </span>
-            </h1>
+            </div>
             <div className="w-32 h-1 bg-mainYellow mx-auto mb-8"></div>
             <p className="md:text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
             {isCurrentExcos && "Meet the dedicated individuals who are guiding our alumni association through the years. From our current leadership team to the visionaries who are laying our foundation, each executive is contributing to our collective success."}
@@ -79,24 +79,8 @@ export default function ExecutivesHero() {
             </p>
           </div>
 
-          {/* Stats cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">8</p>
-              <p className="text-white/80">Current Executives</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Award className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">45+</p>
-              <p className="text-white/80">Past Leaders</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Calendar className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">35</p>
-              <p className="text-white/80">Years of Leadership</p>
-            </div>
-          </div>
+          
+          
         </div>
       </div>
     </div>

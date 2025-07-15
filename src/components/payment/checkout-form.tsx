@@ -1,8 +1,8 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Loader2, CreditCard } from "lucide-react"
+import { useAuth } from "@/providers/session-provider"
 
 interface CheckoutFormProps {
   initialAmount?: number
@@ -19,11 +19,41 @@ declare global {
 
 const PRESET_AMOUNTS = [5000, 10000, 15000, 20000]
 
+const PAYMENT_TYPES = [
+  { id: "dues", label: "Dues and Registration", narration: "Dues and Registration Payment" },
+  { id: "welfare", label: "Welfare Payment", narration: "Welfare Payment" },
+  { id: "other", label: "Other Payments", narration: "" }
+]
+
 export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess, onError }: CheckoutFormProps) {
-  const [email, setEmail] = useState("")
-  const [amount, setAmount] = useState(initialAmount)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const { user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [amount, setAmount] = useState(initialAmount);
+  const [paymentType, setPaymentType] = useState("dues");
+  const [narration, setNarration] = useState("Dues and Registration Payment");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Auto-update name and email from session
+  React.useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
+
+  // Update narration when payment type changes
+  React.useEffect(() => {
+    const selectedType = PAYMENT_TYPES.find(type => type.id === paymentType);
+    if (selectedType) {
+      if (paymentType === "other") {
+        setNarration("");
+      } else {
+        setNarration(selectedType.narration);
+      }
+    }
+  }, [paymentType]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseFloat(e.target.value) || 0
@@ -45,6 +75,12 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
       return
     }
 
+    if (!narration.trim()) {
+      setError("Please provide a narration for your payment")
+      setLoading(false)
+      return
+    }
+
     try {
       // Initialize payment with backend
       const response = await fetch("/api/payments/initialize", {
@@ -53,9 +89,11 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          name,
           email,
           amount,
           currency,
+          narration,
         }),
       })
 
@@ -124,6 +162,32 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
       {/* Card Content */}
       <div className="p-6">
         <form onSubmit={handlePayment} className="space-y-6">
+          {/* Name Field */}
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm font-medium" style={{ color: "#121212" }}>
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              onFocus={(e) => {
+                e.target.style.borderColor = "#0c347d";
+                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </div>
+
+          {/* Email Field */}
           <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-medium" style={{ color: "#121212" }}>
               Email Address
@@ -146,6 +210,60 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
                 e.target.style.boxShadow = "none"
               }}
             />
+          </div>
+
+          {/* Payment Type Selection */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium" style={{ color: "#121212" }}>
+              Payment Type
+            </label>
+            <div className="space-y-2">
+              {PAYMENT_TYPES.map((type) => (
+                <label key={type.id} className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value={type.id}
+                    checked={paymentType === type.id}
+                    onChange={(e) => setPaymentType(e.target.value)}
+                    disabled={loading}
+                    className="w-4 h-4 text-mainYellow border-gray-300 focus:ring-mainYellow"
+                    style={{ accentColor: "#0c347d" }}
+                  />
+                  <span className="text-sm text-gray-700">{type.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Narration Field */}
+          <div className="space-y-2">
+            <label htmlFor="narration" className="block text-sm font-medium" style={{ color: "#121212" }}>
+              Narration
+            </label>
+            <input
+              id="narration"
+              type="text"
+              placeholder={paymentType === "other" ? "Please describe your payment purpose..." : "Payment narration"}
+              value={narration}
+              onChange={(e) => setNarration(e.target.value)}
+              required
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              onFocus={(e) => {
+                e.target.style.borderColor = "#0c347d"
+                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db"
+                e.target.style.boxShadow = "none"
+              }}
+            />
+            {paymentType !== "other" && (
+              <p className="text-xs text-gray-500">
+                You can edit this narration to add additional details if needed.
+              </p>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -231,18 +349,18 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
 
           <button
             type="submit"
-            disabled={loading || !email || amount <= 0}
+            disabled={loading || !email || amount <= 0 || !narration.trim()}
             className="w-full flex items-center justify-center px-4 py-3 text-white font-semibold rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
             style={{
-              backgroundColor: loading || !email || amount <= 0 ? "#9ca3af" : "#0c347d",
+              backgroundColor: loading || !email || amount <= 0 || !narration.trim() ? "#9ca3af" : "#0c347d",
             }}
             onMouseEnter={(e) => {
-              if (!loading && email && amount > 0) {
+              if (!loading && email && amount > 0 && narration.trim()) {
                 e.currentTarget.style.backgroundColor = "#0a2d6b"
               }
             }}
             onMouseLeave={(e) => {
-              if (!loading && email && amount > 0) {
+              if (!loading && email && amount > 0 && narration.trim()) {
                 e.currentTarget.style.backgroundColor = "#0c347d"
               }
             }}

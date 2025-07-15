@@ -80,7 +80,7 @@ export default function ExcosSection() {
             <BackgroundButton
               text="View All Executives"
               link="/executives"
-              btnWidth="w-full lg:w-1/4"
+              btnWidth="w-fit"
             />
           </div>
         </motion.div>

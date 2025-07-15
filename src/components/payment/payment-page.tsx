@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, GraduationCap, Heart, CreditCard } from "lucide-react";
+import { Users, GraduationCap, Heart, CreditCard, Info } from "lucide-react";
 
 export default function PaymentPageDisplay() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -86,13 +87,45 @@ export default function PaymentPageDisplay() {
                 community through convenient and secure online payments.
               </p>
 
-              <Link
-                href="payment/checkout"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg bg-mainYellow text-offBlack"
-              >
-                <CreditCard className="mr-2 h-5 w-5" />
-                Make Payment
-              </Link>
+              <div className="relative inline-block">
+                <Link
+                  href="payment/checkout"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg bg-mainYellow text-offBlack"
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                >
+                  <CreditCard className="mr-2 h-5 w-5" />
+                  Make Payment
+                </Link>
+                
+                {/* Tooltip */}
+                {showTooltip && (
+                  <div className="w-full absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 z-50">
+                    <div className="bg-white text-offBlack rounded-lg shadow-xl border border-gray-200 p-4 min-w-[280px]">
+                      <div className="flex items-center mb-3">
+                        <Info className="h-4 w-4 text-mainYellow mr-2" />
+                        <h4 className="font-semibold text-sm">Available Payment Types:</h4>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center">
+                          <div className="w-2 h-2 bg-mainYellow rounded-full mr-3"></div>
+                          <span>Dues and Registration</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-2 h-2 bg-mainYellow rounded-full mr-3"></div>
+                          <span>Welfare Payments</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-2 h-2 bg-mainYellow rounded-full mr-3"></div>
+                          <span>Other Payments</span>
+                        </div>
+                      </div>
+                      {/* Tooltip arrow */}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

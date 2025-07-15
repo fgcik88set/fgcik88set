@@ -46,11 +46,11 @@ export default function CurrentExecutives() {
         <div className="absolute bottom-40 left-10 w-24 h-24 border-[10px] border-amber-200/10 rounded-lg rotate-45"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-item">
           <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            Current Term 2023-2025
+            Current Term July,2023 - August,2025
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Current <span className="text-darkBlue">Executive Team</span>

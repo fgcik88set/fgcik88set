@@ -102,7 +102,7 @@ export default function MemorabiliaCard({ item }: MemorabiliaCardProps) {
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+          <div className="w-fit flex items-center gap-3 pt-4 border-t border-slate-100">
             <button
               disabled={!item.inStock}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors flex-grow ${

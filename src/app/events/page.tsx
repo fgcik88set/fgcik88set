@@ -1,5 +1,4 @@
 import EventsHero from "@/components/events/events-hero"
-import EventsNewsletter from "@/components/events/events-newsletter"
 import PastEvents from "@/components/events/past-events"
 import UpcomingEvents from "@/components/events/upcoming-events"
 
@@ -14,7 +13,7 @@ export default function EventsPage() {
       <EventsHero />
       <UpcomingEvents />
       <PastEvents />
-      <EventsNewsletter />
+      {/* <EventsNewsletter /> */}
     </main>
   )
 }

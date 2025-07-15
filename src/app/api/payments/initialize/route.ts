@@ -4,15 +4,19 @@ import { createPayment } from "@/lib/database"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, amount, currency = "NGN" } = await request.json()
+    const {name, email, amount, currency = "NGN", narration } = await request.json()
 
     // Validate input
-    if (!email || !amount) {
-      return NextResponse.json({ error: "Email and amount are required" }, { status: 400 })
+    if (!email || !amount || !narration) {
+      return NextResponse.json({ error: "Email, amount, and narration are required" }, { status: 400 })
     }
 
     if (amount <= 0) {
       return NextResponse.json({ error: "Amount must be greater than 0" }, { status: 400 })
+    }
+
+    if (!narration.trim()) {
+      return NextResponse.json({ error: "Narration is required" }, { status: 400 })
     }
 
     // Validate email format
@@ -33,6 +37,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         email,
+        name,
         amount: formattedAmount,
         currency,
         reference,
@@ -50,6 +55,8 @@ export async function POST(request: NextRequest) {
     const { data: paymentRecord, error: dbError } = await createPayment({
       reference,
       user_email: email,
+      name,
+      narration,
       amount,
       currency,
       status: "pending",

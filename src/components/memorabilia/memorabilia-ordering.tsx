@@ -43,7 +43,7 @@ export default function MemorabiliaOrdering() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl font-bold mb-4">How to Order</h2>
           <div className="w-24 h-1 bg-mainYellow mx-auto mb-6"></div>

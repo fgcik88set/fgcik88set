@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
       status: "success",
       data: {
         reference: transaction.reference,
+        narration: updatedPayment.narration,
         amount: transaction.amount,
         currency: transaction.currency,
         status: transaction.status,

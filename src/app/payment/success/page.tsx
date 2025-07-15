@@ -7,6 +7,7 @@ import Link from "next/link"
 
 type PaymentData = {
   reference: string
+  narration: string
   amount: number
   currency: string
   status: string
@@ -73,6 +74,10 @@ export default function PaymentSuccessPage() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Reference:</span>
                 <span className="text-sm font-mono">{paymentData.reference}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Narration:</span>
+                <span className="text-sm font-semibold">{paymentData.narration}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Amount:</span>

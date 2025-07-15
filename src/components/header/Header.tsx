@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import logo from "../../../public/logo/FGCIK-Logo-Final.webp";
+import logo from "../../../public/logo/FGCIK-Logo-Final.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -32,6 +32,32 @@ export default function Header() {
   const headerRef = useRef<HTMLDivElement>(null);
   const { user, status } = useAuth();
 
+
+  const getPageTitle = (path: string): string => {
+    switch (path) {
+      // case "/":
+      //   return "Welcome to FGC Ikot Ekpene Class of '88";
+      // case "/about":
+      //   return "About Our Alumni Association";
+      case "/executives/current":
+        return "Current Executives";
+      case "/executives/past":
+        return "Past Executives";
+      case "/board-of-trustees/current":
+        return "Current Board of Trustees";
+      case "/board-of-trustees/past":
+        return "Past Board of Trustees";
+      case "/moments":
+        return "Our Memorable Moments";
+      case "/memorabilia":
+        return "Alumni Memorabilia";
+      case "/events":
+        return "Upcoming Events";
+      default:
+        return "";
+    }
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     setDropdownsOpen({ executives: false, board: false, more: false });
@@ -48,7 +74,7 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 100);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -126,10 +152,19 @@ export default function Header() {
       }`}
     >
       <div className="w-full lg:w-[95%] mx-auto">
-        <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4 py-2">
-          <Link href="/" className="flex items-center gap-2 w-[20%] md:w-[6%]">
+        <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4 py-2 relative">
+          <Link href="/" className="flex items-center gap-2 w-[15%] md:w-[6%] bg-white rounded-full">
             <Image src={logo} alt="FGCIK Logo" priority />
           </Link>
+
+          {/* Centered Page Title - Only visible when scrolled */}
+          {isScrolled && getPageTitle(pathname) !== "" && (
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 -bottom-1/2 items-center justify-center z-10 bg-darkBlue px-6 py-2 shadow-lg">
+              <div className="text-xl md:text-xl font-semibold text-center transition-all duration-300 text-white">
+                {getPageTitle(pathname)}
+              </div>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button

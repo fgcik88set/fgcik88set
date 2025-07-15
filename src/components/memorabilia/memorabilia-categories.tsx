@@ -43,7 +43,7 @@ export default function MemorabiliaCategories() {
         <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-amber-100/20 blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Shop by <span className="text-blue-700">Category</span>

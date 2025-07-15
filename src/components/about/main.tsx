@@ -3,7 +3,6 @@
 import { useRef, useEffect } from "react"
 import Image from "next/image"
 import SectionHeaderText from "../typography/SectionHeaderText"
-import { BackgroundButton } from "../buttons/Buttons"
 import AboutMainImg from "../../../public/images/abtus.webp"
 
 
@@ -96,9 +95,7 @@ export default function AboutMain() {
               </div>
             </div>
 
-            <div className="mt-10 relative">
-              <BackgroundButton text="Join Our Community" link="#join-us" btnWidth="w-full sm:w-auto" />
-            </div>
+            
           </div>
         </div>
       </div>

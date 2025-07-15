@@ -16,6 +16,8 @@ export interface Payment {
   transaction_id?: string;
   reference: string;
   user_email: string;
+  name?: string;
+  narration?: string;
   amount: number;
   currency: string;
   status: string;
@@ -27,6 +29,8 @@ export interface Payment {
 export const createPayment = async (paymentData: {
   reference: string;
   user_email: string;
+  name: string;
+  narration: string;
   amount: number;
   currency: string;
   status: string;
@@ -34,12 +38,14 @@ export const createPayment = async (paymentData: {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `INSERT INTO payment (reference, user_email, amount, currency, status, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+      `INSERT INTO payment (reference, user_email, name, narration, amount, currency, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
        RETURNING *`,
       [
         paymentData.reference,
         paymentData.user_email,
+        paymentData.name,
+        paymentData.narration,
         paymentData.amount,
         paymentData.currency,
         paymentData.status,

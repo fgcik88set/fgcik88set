@@ -1,6 +1,7 @@
 import crypto from "crypto"
 
 export interface PaystackInitializeData {
+  name:string
   email: string
   amount: number
   reference?: string

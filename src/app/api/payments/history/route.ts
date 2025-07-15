@@ -25,6 +25,7 @@ export async function GET(_request: NextRequest) {
     const formattedPayments = payments.map((payment) => ({
       id: payment.id,
       reference: payment.reference,
+      narration: payment.narration,
       amount: payment.amount,
       currency: payment.currency,
       status: payment.status,

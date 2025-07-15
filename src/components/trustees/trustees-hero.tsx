@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { Users, Award, Calendar } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function TrusteesHero() {
@@ -34,7 +33,7 @@ export default function TrusteesHero() {
   return (
     <div
       ref={heroRef}
-      className="relative w-full pb-20 pt-32 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
+      className="relative w-full pt-36 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -81,24 +80,7 @@ export default function TrusteesHero() {
             </p>
           </div>
 
-          {/* Stats cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">8</p>
-              <p className="text-white/80">Current Trustees</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Award className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">25+</p>
-              <p className="text-white/80">Past Trustees</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Calendar className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">35</p>
-              <p className="text-white/80">Years of Governance</p>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>
