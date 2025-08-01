@@ -5,6 +5,7 @@ import { currentExecutives } from "../constants/executives-data";
 import ExecutiveCard from "./executive-card";
 import { useMobile } from "@/hooks/use-mobile";
 import ExecutiveCarousel from "./executive-carousel";
+// import { getCurrentExecutives } from "@/sanity/sanity-utils";
 
 export default function CurrentExecutives() {
   const sectionRef = useRef<HTMLElement>(null);
