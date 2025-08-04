@@ -6,33 +6,66 @@ import ExecutiveCarousel from "./executive-carousel"
 import FilterNavbar from "../shared/FilterNavbar"
 
 import { useMobile } from "../../hooks/use-mobile"
-import { pastExecutives } from "../constants/executives-data"
+import { getPastExecutives } from "@/sanity/sanity-utils"
+import { ExecutiveProps } from "../constants/executives-data"
 import { Search, Calendar, User } from "lucide-react"
+
+interface YearGroup {
+  id: string;
+  yearRange: string;
+  executives: ExecutiveProps[];
+}
 
 export default function PastExecutives() {
   const sectionRef = useRef<HTMLElement>(null)
   const isMobile = useMobile()
-  const [filteredExecutives, setFilteredExecutives] = useState(pastExecutives)
+  const [allExecutives, setAllExecutives] = useState<ExecutiveProps[]>([])
+  const [filteredExecutives, setFilteredExecutives] = useState<ExecutiveProps[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
 
-  // Get unique terms and positions for filters
-  const terms = [...new Set(pastExecutives.map((exec) => exec.term))].sort((a, b) => {
-    // Sort terms in descending order (newest first)
+  // Fetch data from Sanity
+  useEffect(() => {
+    const fetchPastExecutives = async () => {
+      try {
+        const data = await getPastExecutives();
+        // Flatten the executives array from each year range
+        const flattenedExecutives = data.flatMap((yearGroup: YearGroup) => 
+          yearGroup.executives.map((exec: ExecutiveProps) => ({
+            ...exec,
+            id: `${yearGroup.id}-${exec.id}` // Create unique ID
+          }))
+        );
+        setAllExecutives(flattenedExecutives);
+        setFilteredExecutives(flattenedExecutives);
+      } catch (error) {
+        console.error("Error fetching past executives:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPastExecutives();
+  }, []);
+
+  // Get unique year ranges and positions for filters
+  const yearRanges = [...new Set(allExecutives.map((exec) => exec.term))].sort((a, b) => {
+    // Sort year ranges in descending order (newest first)
     const aStart = Number.parseInt(a.split("-")[0])
     const bStart = Number.parseInt(b.split("-")[0])
     return bStart - aStart
-  }).map(term => ({ value: term, label: term }))
+  }).map(yearRange => ({ value: yearRange, label: yearRange }))
   
-  const positions = [...new Set(pastExecutives.map((exec) => exec.position))].sort().map(position => ({ value: position, label: position }))
+  const positions = [...new Set(allExecutives.map((exec) => exec.position))].sort().map(position => ({ value: position, label: position }))
 
   // Filter configuration
   const filterConfigs = [
     {
       type: 'select' as const,
-      label: 'Filter by Term',
+      label: 'Filter by Year Range',
       icon: Calendar,
-      options: terms,
-      placeholder: 'All Terms'
+      options: yearRanges,
+      placeholder: 'All Year Ranges'
     },
     {
       type: 'select' as const,
@@ -44,7 +77,7 @@ export default function PastExecutives() {
   ];
 
   const [filters, setFilters] = useState<Record<string, string | boolean>>({
-    filterbyterm: "",
+    filterbyyearrange: "2021-2023",
     filterbyposition: ""
   });
 
@@ -70,26 +103,26 @@ export default function PastExecutives() {
 
   // Filter executives based on search and filters
   useEffect(() => {
-    let filtered = pastExecutives
+    let filtered = allExecutives
 
     if (searchTerm) {
       filtered = filtered.filter(
-        (exec) =>
+        (exec: ExecutiveProps) =>
           exec.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           exec.position.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
-    if (filters.filterbyterm) {
-      filtered = filtered.filter((exec) => exec.term === filters.filterbyterm)
+    if (filters.filterbyyearrange) {
+      filtered = filtered.filter((exec: ExecutiveProps) => exec.term === filters.filterbyyearrange)
     }
 
     if (filters.filterbyposition) {
-      filtered = filtered.filter((exec) => exec.position === filters.filterbyposition)
+      filtered = filtered.filter((exec: ExecutiveProps) => exec.position === filters.filterbyposition)
     }
 
     setFilteredExecutives(filtered)
-  }, [searchTerm, filters])
+  }, [searchTerm, filters, allExecutives])
 
 
 
@@ -122,51 +155,62 @@ export default function PastExecutives() {
           </p>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          </div>
+        )}
+
         {/* Search and Filter Section */}
-        <FilterNavbar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filters={filters}
-          setFilters={setFilters}
-          filterConfigs={filterConfigs}
-          searchPlaceholder="Search by name or position..."
-        />
+        {!loading && (
+          <FilterNavbar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            filterConfigs={filterConfigs}
+            searchPlaceholder="Search by name or position..."
+          />
+        )}
 
         {/* Results Summary */}
-        <div className="mb-8 animate-item">
-          <div className="flex items-center justify-between">
-            <p className="text-slate-600">
-              Showing <span className="font-semibold text-blue-700">{filteredExecutives.length}</span> of{" "}
-              <span className="font-semibold">{pastExecutives.length}</span> past executives
-            </p>
+        {!loading && (
+          <div className="mb-8 animate-item">
+            <div className="flex items-center justify-between">
+              <p className="text-slate-600">
+                Showing <span className="font-semibold text-blue-700">{filteredExecutives.length}</span> of{" "}
+                <span className="font-semibold">{allExecutives.length}</span> past executives
+              </p>
 
-            {(searchTerm || filters.filterbyterm || filters.filterbyposition) && (
-              <div className="flex flex-wrap gap-2">
-                {searchTerm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Search: &quot;{searchTerm}&quot;
-                  </span>
-                )}
-                {filters.filterbyterm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Term: {filters.filterbyterm}</span>
-                )}
-                {filters.filterbyposition && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Position: {filters.filterbyposition}
-                  </span>
-                )}
-              </div>
-            )}
+              {(searchTerm || filters.filterbyyearrange || filters.filterbyposition) && (
+                <div className="flex flex-wrap gap-2">
+                  {searchTerm && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Search: &quot;{searchTerm}&quot;
+                    </span>
+                  )}
+                  {filters.filterbyyearrange && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Year Range: {filters.filterbyyearrange}</span>
+                  )}
+                  {filters.filterbyposition && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Position: {filters.filterbyposition}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Executives Display */}
-        {filteredExecutives.length > 0 ? (
+        {!loading && filteredExecutives.length > 0 ? (
           <>
             {/* Desktop Grid View */}
             {!isMobile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredExecutives.map((executive, index) => (
+                {filteredExecutives.map((executive: ExecutiveProps, index: number) => (
                   <div key={executive.id} className="animate-item" style={{ animationDelay: `${index * 0.05}s` }}>
                     <ExecutiveCard executive={executive} isCurrent={false} />
                   </div>
@@ -181,7 +225,7 @@ export default function PastExecutives() {
               </div>
             )}
           </>
-        ) : (
+        ) : !loading && (
           <div className="text-center py-16 animate-item">
             <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-slate-400" />
@@ -193,7 +237,7 @@ export default function PastExecutives() {
             <button 
               onClick={() => {
                 setSearchTerm("");
-                setFilters({ filterbyterm: "", filterbyposition: "" });
+                setFilters({ filterbyyearrange: "", filterbyposition: "" });
               }} 
               className="text-blue-700 hover:text-blue-800 font-medium"
             >
