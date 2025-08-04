@@ -30,7 +30,7 @@ export default function ExecutiveCard({
               src={executive.image || "/placeholder.svg?height=400&width=300"}
               alt={executive.name}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
               onError={() => setImageError(true)}
             />
           ) : (
@@ -51,6 +51,7 @@ export default function ExecutiveCard({
               {executive.name}
             </h3>
             <p className="text-blue-200 text-sm">{executive.position}</p>
+            <p className="text-blue-200 text-sm">{executive.term}</p>
           </div>
         </div>
 
