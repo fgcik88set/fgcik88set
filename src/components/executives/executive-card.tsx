@@ -11,26 +11,21 @@ interface ExecutiveCardProps {
   isCurrent: boolean;
 }
 
-export default function ExecutiveCard({
-  executive,
+export default function ExecutiveCard({ executive }: ExecutiveCardProps) {
   
-}: ExecutiveCardProps) {
   const [imageError, setImageError] = useState(false);
-  
 
   return (
     <>
-      <div className="group relative bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
+      <div className="relative bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
         {/* Image Section */}
         <div className="relative h-64 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/20 to-transparent z-10"></div>
-
           {!imageError ? (
             <Image
               src={executive.image || "/placeholder.svg?height=400&width=300"}
               alt={executive.name}
               fill
-              className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
+              className="object-contain object-center transition-transform duration-700 group-hover:scale-110"
               onError={() => setImageError(true)}
             />
           ) : (
@@ -44,6 +39,9 @@ export default function ExecutiveCard({
               </div>
             </div>
           )}
+
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 via-blue-900/20 to-transparent z-10"></div>
 
           {/* Overlay Content */}
           <div className="absolute bottom-4 left-4 right-4 z-20">
@@ -90,8 +88,6 @@ export default function ExecutiveCard({
         <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-blue-500/20 to-transparent rounded-tr-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
-
-     
     </>
   );
 }

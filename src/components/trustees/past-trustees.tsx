@@ -6,33 +6,66 @@ import TrusteeCarousel from "./trustee-carousel"
 import FilterNavbar from "../shared/FilterNavbar"
 
 import { useMobile } from "../../hooks/use-mobile"
-import { pastTrustees } from "../constants/trustees-data"
+import { getPastBOT } from "@/sanity/sanity-utils"
+import { TrusteeProps } from "../constants/trustees-data"
 import { Search, Calendar, User } from "lucide-react"
+
+interface YearGroup {
+  id: string;
+  yearRange: string;
+  BOT: TrusteeProps[];
+}
 
 export default function PastTrustees() {
   const sectionRef = useRef<HTMLElement>(null)
   const isMobile = useMobile()
-  const [filteredTrustees, setFilteredTrustees] = useState(pastTrustees)
+  const [allTrustees, setAllTrustees] = useState<TrusteeProps[]>([])
+  const [filteredTrustees, setFilteredTrustees] = useState<TrusteeProps[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
 
-  // Get unique terms and positions for filters (5-year intervals)
-  const terms = [...new Set(pastTrustees.map((trustee) => trustee.term))].sort((a, b) => {
-    // Sort terms in descending order (newest first)
+  // Fetch data from Sanity
+  useEffect(() => {
+    const fetchPastTrustees = async () => {
+      try {
+        const data = await getPastBOT();
+        // Flatten the trustees array from each year range
+        const flattenedTrustees = data.flatMap((yearGroup: YearGroup) => 
+          yearGroup.BOT.map((trustee: TrusteeProps) => ({
+            ...trustee,
+            id: `${yearGroup.id}-${trustee.id}` // Create unique ID
+          }))
+        );
+        setAllTrustees(flattenedTrustees);
+        setFilteredTrustees(flattenedTrustees);
+      } catch (error) {
+        console.error("Error fetching past trustees:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPastTrustees();
+  }, []);
+
+  // Get unique year ranges and positions for filters
+  const yearRanges = [...new Set(allTrustees.map((trustee) => trustee.term))].sort((a, b) => {
+    // Sort year ranges in descending order (newest first)
     const aStart = Number.parseInt(a.split("-")[0])
     const bStart = Number.parseInt(b.split("-")[0])
     return bStart - aStart
-  }).map(term => ({ value: term, label: term }))
+  }).map(yearRange => ({ value: yearRange, label: yearRange }))
   
-  const positions = [...new Set(pastTrustees.map((trustee) => trustee.position))].sort().map(position => ({ value: position, label: position }))
+  const positions = [...new Set(allTrustees.map((trustee) => trustee.position))].sort().map(position => ({ value: position, label: position }))
 
   // Filter configuration
   const filterConfigs = [
     {
       type: 'select' as const,
-      label: 'Filter by Term',
+      label: 'Filter by Year Range',
       icon: Calendar,
-      options: terms,
-      placeholder: 'All Terms'
+      options: yearRanges,
+      placeholder: 'All Year Ranges'
     },
     {
       type: 'select' as const,
@@ -44,7 +77,7 @@ export default function PastTrustees() {
   ];
 
   const [filters, setFilters] = useState<Record<string, string | boolean>>({
-    filterbyterm: "",
+    filterbyyearrange: "2018-2022",
     filterbyposition: ""
   });
 
@@ -70,26 +103,26 @@ export default function PastTrustees() {
 
   // Filter trustees based on search and filters
   useEffect(() => {
-    let filtered = pastTrustees
+    let filtered = allTrustees
 
     if (searchTerm) {
       filtered = filtered.filter(
-        (trustee) =>
+        (trustee: TrusteeProps) =>
           trustee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           trustee.position.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
-    if (filters.filterbyterm) {
-      filtered = filtered.filter((trustee) => trustee.term === filters.filterbyterm)
+    if (filters.filterbyyearrange) {
+      filtered = filtered.filter((trustee: TrusteeProps) => trustee.term === filters.filterbyyearrange)
     }
 
     if (filters.filterbyposition) {
-      filtered = filtered.filter((trustee) => trustee.position === filters.filterbyposition)
+      filtered = filtered.filter((trustee: TrusteeProps) => trustee.position === filters.filterbyposition)
     }
 
     setFilteredTrustees(filtered)
-  }, [searchTerm, filters])
+  }, [searchTerm, filters, allTrustees])
 
 
 
@@ -122,51 +155,55 @@ export default function PastTrustees() {
           </p>
         </div>
 
-                {/* Search and Filter Section */}
-        <FilterNavbar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filters={filters}
-          setFilters={setFilters}
-          filterConfigs={filterConfigs}
-          searchPlaceholder="Search by name or position..."
-        />
+        {/* Search and Filter Section */}
+        {!loading && (
+          <FilterNavbar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            filterConfigs={filterConfigs}
+            searchPlaceholder="Search by name or position..."
+          />
+        )}
 
         {/* Results Summary */}
-        <div className="mb-8 animate-item">
-          <div className="flex items-center justify-between">
-            <p className="text-slate-600">
-              Showing <span className="font-semibold text-blue-700">{filteredTrustees.length}</span> of{" "}
-              <span className="font-semibold">{pastTrustees.length}</span> past trustees
-            </p>
+        {!loading && (
+          <div className="mb-8 animate-item">
+            <div className="flex items-center justify-between">
+              <p className="text-slate-600">
+                Showing <span className="font-semibold text-blue-700">{filteredTrustees.length}</span> of{" "}
+                <span className="font-semibold">{allTrustees.length}</span> past trustees
+              </p>
 
-            {(searchTerm || filters.filterbyterm || filters.filterbyposition) && (
-              <div className="flex flex-wrap gap-2">
-                {searchTerm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Search: &quot;{searchTerm}&quot;
-                  </span>
-                )}
-                {filters.filterbyterm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Term: {filters.filterbyterm}</span>
-                )}
-                {filters.filterbyposition && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Position: {filters.filterbyposition}
-                  </span>
-                )}
-              </div>
-            )}
+              {(searchTerm || filters.filterbyyearrange || filters.filterbyposition) && (
+                <div className="flex flex-wrap gap-2">
+                  {searchTerm && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Search: &quot;{searchTerm}&quot;
+                    </span>
+                  )}
+                  {filters.filterbyyearrange && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Year Range: {filters.filterbyyearrange}</span>
+                  )}
+                  {filters.filterbyposition && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Position: {filters.filterbyposition}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Trustees Display */}
-        {filteredTrustees.length > 0 ? (
+        {!loading && filteredTrustees.length > 0 ? (
           <>
             {/* Desktop Grid View */}
             {!isMobile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredTrustees.map((trustee, index) => (
+                {filteredTrustees.map((trustee: TrusteeProps, index: number) => (
                   <div key={trustee.id} className="animate-item" style={{ animationDelay: `${index * 0.05}s` }}>
                     <TrusteeCard trustee={trustee} isCurrent={false} />
                   </div>
@@ -181,7 +218,7 @@ export default function PastTrustees() {
               </div>
             )}
           </>
-        ) : (
+        ) : !loading && (
           <div className="text-center py-16 animate-item">
             <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-slate-400" />
@@ -193,7 +230,7 @@ export default function PastTrustees() {
             <button 
               onClick={() => {
                 setSearchTerm("");
-                setFilters({ filterbyterm: "", filterbyposition: "" });
+                setFilters({ filterbyyearrange: "", filterbyposition: "" });
               }} 
               className="text-blue-700 hover:text-blue-800 font-medium"
             >

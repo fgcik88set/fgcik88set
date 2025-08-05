@@ -1,12 +1,10 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence, PanInfo } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import TrusteeCard from "./trustee-card"
 import { TrusteeProps } from "../constants/trustees-data"
-
 
 interface TrusteeCarouselProps {
   trustees: TrusteeProps[]
@@ -15,49 +13,47 @@ interface TrusteeCarouselProps {
 
 export default function TrusteeCarousel({ trustees, isCurrent }: TrusteeCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  const [touchEnd, setTouchEnd] = useState<number | null>(null)
-  const carouselRef = useRef<HTMLDivElement>(null)
+  const [direction, setDirection] = useState(0)
 
-  // Reset index when trustees change (e.g., after filtering)
+  // Reset index when trustees change
   useEffect(() => {
     setCurrentIndex(0)
   }, [trustees])
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0))
+    setDirection(-1)
+    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : trustees.length - 1))
   }
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex < trustees.length - 1 ? prevIndex + 1 : prevIndex))
+    setDirection(1)
+    setCurrentIndex((prevIndex) => (prevIndex < trustees.length - 1 ? prevIndex + 1 : 0))
   }
 
-  // Touch handlers for swipe functionality
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
-
-    if (isLeftSwipe) {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50
+    if (info.offset.x > swipeThreshold) {
+      handlePrevious()
+    } else if (info.offset.x < -swipeThreshold) {
       handleNext()
     }
+  }
 
-    if (isRightSwipe) {
-      handlePrevious()
-    }
-
-    setTouchStart(null)
-    setTouchEnd(null)
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
   }
 
   if (trustees.length === 0) {
@@ -67,60 +63,73 @@ export default function TrusteeCarousel({ trustees, isCurrent }: TrusteeCarousel
   return (
     <div className="relative w-full">
       {/* Carousel container */}
-      <div
-        ref={carouselRef}
-        className="relative overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(-${currentIndex * 100}%)`,
-            width: `${trustees.length * 100}%`,
-          }}
-        >
-          {trustees.map((trustee) => (
-            <div key={trustee.id} className="w-full flex-shrink-0 px-2">
-              <TrusteeCard trustee={trustee} isCurrent={isCurrent} />
+      <div className="relative w-full h-96 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 to-white ">
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 }
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={1}
+            onDragEnd={handleDragEnd}
+            className="absolute w-full h-full flex items-center justify-center"
+          >
+            <div className="w-full h-full">
+              <TrusteeCard trustee={trustees[currentIndex]} isCurrent={isCurrent} />
             </div>
-          ))}
-        </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation buttons */}
+        {trustees.length > 1 && (
+          <>
+            <motion.button
+              onClick={handlePrevious}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="absolute left-4 top-[30%] -translate-y-1/2 z-20 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200"
+              aria-label="Previous trustee"
+            >
+              <ChevronLeft className="h-6 w-6 text-slate-700" />
+            </motion.button>
+
+            <motion.button
+              onClick={handleNext}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="absolute right-4 top-[30%] -translate-y-1/2 z-20 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-200"
+              aria-label="Next trustee"
+            >
+              <ChevronRight className="h-6 w-6 text-slate-700" />
+            </motion.button>
+          </>
+        )}
       </div>
-
-      {/* Navigation buttons */}
-      {trustees.length > 1 && (
-        <>
-          <button
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            className="absolute left-2 top-[42%] -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white transition-all duration-200"
-            aria-label="Previous trustee"
-          >
-            <ChevronLeft className="h-6 w-6 text-slate-700" />
-          </button>
-
-          <button
-            onClick={handleNext}
-            disabled={currentIndex === trustees.length - 1}
-            className="absolute right-2 top-[42%] -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white transition-all duration-200"
-            aria-label="Next trustee"
-          >
-            <ChevronRight className="h-6 w-6 text-slate-700" />
-          </button>
-        </>
-      )}
 
       {/* Pagination indicators */}
       {trustees.length > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
+        <div className="flex justify-center gap-3 mt-2">
           {trustees.map((_, index) => (
-            <button
+            <motion.button
               key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all duration-200 ${
-                currentIndex === index ? "w-8 bg-blue-600" : "w-2 bg-slate-300 hover:bg-slate-400"
+              onClick={() => {
+                setDirection(index > currentIndex ? 1 : -1)
+                setCurrentIndex(index)
+              }}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.8 }}
+              className={`h-3 rounded-full transition-all duration-300 ${
+                currentIndex === index 
+                  ? "w-8 bg-blue-600 shadow-lg" 
+                  : "w-3 bg-slate-300 hover:bg-slate-400"
               }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={currentIndex === index ? "true" : "false"}
@@ -130,11 +139,16 @@ export default function TrusteeCarousel({ trustees, isCurrent }: TrusteeCarousel
       )}
 
       {/* Trustee counter */}
-      <div className="text-center mt-4">
-        <span className="text-sm text-slate-500">
+      <motion.div 
+        className="text-center mt-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <span className="text-sm font-medium text-slate-600 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
           {currentIndex + 1} of {trustees.length}
         </span>
-      </div>
+      </motion.div>
     </div>
   )
 }

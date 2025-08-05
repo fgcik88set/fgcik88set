@@ -141,7 +141,7 @@ export default function CurrentExecutives() {
               </div>
             ))}
           </div>
-        )}
+        )}        
 
         {/* Mobile view */}
         {isMobile && (
