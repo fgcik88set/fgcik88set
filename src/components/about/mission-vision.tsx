@@ -1,8 +1,9 @@
 "use client"
 
 import { useRef, useEffect } from "react"
-import { BsArrowRight, BsEye } from "react-icons/bs"
-import { FiTarget } from "react-icons/fi"
+import { BsArrowRight } from "react-icons/bs"
+import SectionHeaderText from "../typography/SectionHeaderText"
+
 // import { Target, Eye, ArrowRight } from "lucide-react"
 
 export default function MissionVision() {
@@ -47,12 +48,12 @@ export default function MissionVision() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-item">
-          <h2 className="font-chewy text-4xl font-bold mb-4">Our Mission & Vision</h2>
+          <SectionHeaderText text="Our Vision" />
           <div className="w-24 h-1 bg-mainYellow mx-auto"></div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 animate-item">
+        <div className="grid md:grid-cols-1 gap-12">
+          {/* <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 animate-item">
             <div className="bg-mainYellow w-16 h-16 rounded-full flex items-center justify-center mb-6">
               <FiTarget className="w-8 h-8 text-darkBlue" />
             </div>
@@ -76,25 +77,26 @@ export default function MissionVision() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 animate-item">
-            <div className="bg-mainYellow w-16 h-16 rounded-full flex items-center justify-center mb-6">
+            {/* <div className="bg-mainYellow w-16 h-16 rounded-full flex items-center justify-center mb-6">
               <BsEye className="w-8 h-8 text-darkBlue" />
-            </div>
-            <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
+            </div> */}
+            {/* <h3 className="text-2xl font-bold mb-4">Our Vision</h3> */}
             <p className="text-white/80 mb-6 leading-relaxed">
-              To be recognized as a model alumni association that exemplifies excellence, unity, and impactful
-              leadership, inspiring future generations to uphold the values and traditions of FGC Ikot Ekpene while
-              adapting to the changing global landscape.
+            To be a beacon of excellence and unity — a model alumni association that champions impactful leadership, fosters lifelong connections, and inspires future generations to honor the legacy of FGC Ikot Ekpene while embracing the opportunities of a dynamic global future.
+
             </p>
+            <p className="text-white/80 mb-2 font-semibold leading-relaxed">We strive to:</p>
             <ul className="space-y-3">
               {[
-                "Become a leading example of alumni engagement and impact",
+                "Lead by Example: Set the standard for alumni engagement, collaboration, and community impact",
                 "Create sustainable scholarship programs for deserving students",
-                "Establish an endowment fund for long-term educational support",
-                "Develop innovative solutions to community challenges",
-                "Build a global network of successful professionals from our class",
+                " ⁠Empower Through Education: Launch enduring scholarship programs that support and uplift deserving students",
+                "⁠Secure the Future: Establish a robust endowment fund to ensure long-term educational investment.",
+                "⁠Innovate for Change: Develop creative, sustainable solutions to address pressing community challenges",
+                " ⁠Connect Globally: Build a thriving international network of accomplished professionals united by shared roots and purpose"
               ].map((item, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm">
                   <BsArrowRight className="w-4 h-4 text-mainYellow flex-shrink-0" />

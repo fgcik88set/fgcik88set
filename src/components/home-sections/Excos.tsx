@@ -1,13 +1,56 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { BackgroundButton } from "../buttons/Buttons";
 import ExcosHomepageSection from "../cards/Excos";
-import { ExcosHomeSection } from "../constants/data";
 import SectionHeaderText from "../typography/SectionHeaderText";
 import MobileCarouselWrapper from "../mobile-carousel-wrapper";
+import { getCurrentExecutives, getCurrentBOT } from "@/sanity/sanity-utils";
+import { ExecutiveProps } from "../constants/executives-data";
+import { TrusteeProps } from "../constants/trustees-data";
 
 export default function ExcosSection() {
+  const [currentExecutives, setCurrentExecutives] = useState<ExecutiveProps[]>([]);
+  const [currentBOT, setCurrentBOT] = useState<TrusteeProps[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [executivesData, botData] = await Promise.all([
+          getCurrentExecutives(),
+          getCurrentBOT()
+        ]);
+
+        // Filter executives to show only President, Vice President, Secretary, and Financial Secretary
+        const filteredExecutives = executivesData.filter((exec: ExecutiveProps) => 
+          ['President', 'Vice President', 'Secretary', 'Financial Secretary'].includes(exec.position)
+        ).sort((a: ExecutiveProps, b: ExecutiveProps) => {
+          const order = ['President', 'Vice President', 'Secretary', 'Financial Secretary'];
+          return order.indexOf(a.position) - order.indexOf(b.position);
+        }).slice(0, 4); // Ensure only 4 cards
+
+        // Filter BOT to show Chairman, Secretary, and 2 members
+        const filteredBOT = botData.filter((bot: TrusteeProps) => 
+          ['Chairman', 'Secretary', 'Member',"Member"].includes(bot.position)
+        ).sort((a: TrusteeProps, b: TrusteeProps) => {
+          const order = ['Chairman', 'Secretary', 'Member',"Member"];
+          return order.indexOf(a.position) - order.indexOf(b.position);
+        }).slice(0, 4); // Ensure only 4 cards 
+
+        setCurrentExecutives(filteredExecutives);
+        setCurrentBOT(filteredBOT);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -52,28 +95,34 @@ export default function ExcosSection() {
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
-          <div className="relative mb-8 flex items-center">
-            <div className="h-px flex-grow bg-mainYellow"></div>
-            <h2 className="font-chewy text-2xl md:text-3xl font-medium text-darkBlue">
-              Our Current Executives
+          <div className="relative mb-8">
+            {/* <div className="h-px flex-grow bg-darkBlue"></div> */}
+            <h2 className="text-center text-2xl md:text-3xl font-medium text-darkBlue">
+              The Current Executives
             </h2>
-            <div className="h-px flex-grow bg-mainYellow"></div>
+            {/* <div className="h-px flex-grow bg-darkBlue"></div> */}
           </div>
 
           <motion.div variants={itemVariants}>
-            <MobileCarouselWrapper>
-              {ExcosHomeSection.map((executive) => (
-                <ExcosHomepageSection
-                  key={executive.id}
-                  id={executive.id}
-                  image={executive.image}
-                  name={executive.name}
-                  position={executive.position}
-                  email={executive.email}
-                  linkedIn={executive.linkedIn}
-                />
-              ))}
-            </MobileCarouselWrapper>
+            {loading ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+              </div>
+            ) : (
+              <MobileCarouselWrapper>
+                {currentExecutives.map((executive: ExecutiveProps) => (
+                  <ExcosHomepageSection
+                    key={executive.id}
+                    id={Number(executive.id)}
+                    image={executive.image || ""}
+                    name={executive.name}
+                    position={executive.position}
+                    email={executive.email || ""}
+                    linkedIn={executive.linkedIn || ""}
+                  />
+                ))}
+              </MobileCarouselWrapper>
+            )}
           </motion.div>
 
           <div className="mt-10 flex justify-center">
@@ -91,28 +140,34 @@ export default function ExcosSection() {
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
-          <div className="relative mb-8 flex items-center">
-            <div className="h-px flex-grow bg-mainYellow"></div>
-            <p className="font-chewy text-2xl md:text-3xl font-medium text-darkBlue">
-              Board of Trustees
+          <div className="relative mb-8">
+            {/* <div className="h-px flex-grow bg-darkBlue"></div> */}
+            <p className="text-center text-2xl md:text-3xl font-medium text-darkBlue">
+              The Current Board of Trustees
             </p>
-            <div className="h-px flex-grow bg-mainYellow"></div>
+            {/* <div className="h-px flex-grow bg-darkBlue"></div> */}
           </div>
 
           <motion.div variants={containerVariants}>
-            <MobileCarouselWrapper>
-              {ExcosHomeSection.map((executive) => (
-                <ExcosHomepageSection
-                  key={executive.id}
-                  id={executive.id}
-                  image={executive.image}
-                  name={executive.name}
-                  position={executive.position}
-                  email={executive.email}
-                  linkedIn={executive.linkedIn}
-                />
-              ))}
-            </MobileCarouselWrapper>
+            {loading ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+              </div>
+            ) : (
+              <MobileCarouselWrapper>
+                {currentBOT.map((bot: TrusteeProps) => (
+                  <ExcosHomepageSection
+                    key={bot.id}
+                    id={Number(bot.id)}
+                    image={bot.image || ""}
+                    name={bot.name}
+                    position={bot.position}
+                    email={bot.email || ""}
+                    linkedIn={bot.linkedIn || ""}
+                  />
+                ))}
+              </MobileCarouselWrapper>
+            )}
           </motion.div>
 
           <div className="mt-10 flex justify-center">
