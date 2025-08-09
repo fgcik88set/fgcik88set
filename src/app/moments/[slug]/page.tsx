@@ -4,6 +4,19 @@ import MomentsCarousel from "@/components/memories/moments-carousel";
 import { Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+interface Moment {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+  images: Array<{
+    url: string;
+    alt: string;
+    caption?: string;
+  }>;
+}
+
 interface MomentPageProps {
   params: {
     slug: string;
@@ -13,7 +26,7 @@ interface MomentPageProps {
 export async function generateStaticParams() {
   const moments = await getMoments();
   
-  return moments.map((moment) => ({
+  return moments.map((moment: Moment) => ({
     slug: moment.slug,
   }));
 }
