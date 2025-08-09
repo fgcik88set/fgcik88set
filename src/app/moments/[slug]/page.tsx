@@ -18,9 +18,9 @@ interface Moment {
 }
 
 interface MomentPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -32,7 +32,8 @@ export async function generateStaticParams() {
 }
 
 export default async function MomentPage({ params }: MomentPageProps) {
-  const moment = await getMomentBySlug(params.slug);
+  const { slug } = await params;
+  const moment = await getMomentBySlug(slug);
 
   if (!moment) {
     notFound();
