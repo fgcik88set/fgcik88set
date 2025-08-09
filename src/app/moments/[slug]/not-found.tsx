@@ -28,7 +28,7 @@ export default function NotFound() {
             Moment Not Found
           </h1>
           <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            The moment you're looking for doesn't exist or may have been moved.
+            The moment you&apos;re looking for doesn&apos;t exist or may have been moved.
           </p>
           <Link
             href="/moments"

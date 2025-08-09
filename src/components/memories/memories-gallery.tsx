@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Calendar, Tag } from "lucide-react";
+import { Calendar } from "lucide-react";
 import SectionHeaderText from "../typography/SectionHeaderText";
 import FilterNavbar from "../shared/FilterNavbar";
 import MomentsCard from "./moments-card";
