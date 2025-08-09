@@ -116,3 +116,50 @@ export async function getPastTrustees() {
     }`
   );
 }
+
+export async function getMoments() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments"] | order(date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`
+  );
+}
+
+export async function getMomentBySlug(slug: string) {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && slug.current == $slug][0] {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`,
+    { slug }
+  );
+}

@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import Image from "next/image";
 import SectionHeaderText from "../typography/SectionHeaderText";
 import { BackgroundButton } from "../buttons/Buttons";
-import AboutHeroImg from "../../../public/images/abt_Us.webp"
+import AboutHeroImg from "../../../public/images/team2geda.webp"
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -82,8 +82,7 @@ export default function AboutSection() {
                 <Image
                   src={AboutHeroImg}
                   alt="About us"
-                  layout="intrinsic"
-                  className="rounded-xl"
+                  className="rounded-xl "
                 />
 
                 {/* Subtle overlay for depth */}

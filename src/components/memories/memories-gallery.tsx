@@ -2,21 +2,57 @@
 
 import { useRef, useEffect, useState } from "react";
 import { Calendar, Tag } from "lucide-react";
-import { expandedMemoriesData } from "../constants/memories-data";
 import SectionHeaderText from "../typography/SectionHeaderText";
-import MemoriesSection from "./Memories";
 import FilterNavbar from "../shared/FilterNavbar";
+import MomentsCard from "./moments-card";
+import { getMoments } from "@/sanity/sanity-utils";
+
+interface Moment {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+  images: Array<{
+    url: string;
+    alt: string;
+    caption?: string;
+  }>;
+}
 
 export default function MemoriesGallery() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [filteredMemories, setFilteredMemories] =
-    useState(expandedMemoriesData);
+  const [moments, setMoments] = useState<Moment[]>([]);
+  const [filteredMoments, setFilteredMoments] = useState<Moment[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get unique years and types for filters
+  // Fetch moments from Sanity
+  useEffect(() => {
+    const fetchMoments = async () => {
+      try {
+        setLoading(true);
+        const data = await getMoments();
+        setMoments(data);
+        setFilteredMoments(data);
+      } catch (err) {
+        setError("Failed to load moments");
+        console.error("Error fetching moments:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoments();
+  }, []);
+
+  // Get unique years for filters
   const years = [
-    ...new Set(expandedMemoriesData.map((memory) => memory.year)),
-  ].sort((a, b) => (b ?? "").localeCompare(a ?? ""));
+    ...new Set(
+      moments.map((moment) => new Date(moment.date).getFullYear().toString())
+    ),
+  ].sort((a, b) => parseInt(b) - parseInt(a));
 
   // Filter configuration
   const filterConfigs = [
@@ -24,24 +60,13 @@ export default function MemoriesGallery() {
       type: 'select' as const,
       label: 'Filter by Year',
       icon: Calendar,
-      options: years.map(year => ({ value: year || "", label: year || "" })),
+      options: years.map(year => ({ value: year, label: year })),
       placeholder: 'All Years'
-    },
-    {
-      type: 'select' as const,
-      label: 'Filter by Type',
-      icon: Tag,
-      options: [
-        { value: 'image', label: 'Photos' },
-        { value: 'video', label: 'Videos' }
-      ],
-      placeholder: 'All Types'
     }
   ];
 
   const [filters, setFilters] = useState<Record<string, string | boolean>>({
-    filterbyyear: "",
-    filterbytype: ""
+    filterbyyear: ""
   });
 
   useEffect(() => {
@@ -65,31 +90,73 @@ export default function MemoriesGallery() {
     };
   }, []);
 
-  // Filter memories based on search and filters
+  // Filter moments based on search and filters
   useEffect(() => {
-    let filtered = expandedMemoriesData;
+    let filtered = moments;
 
     if (searchTerm) {
       filtered = filtered.filter(
-        (memory) =>
-          (memory.description
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ??
-            false) ||
-          memory.alt.toLowerCase().includes(searchTerm.toLowerCase())
+        (moment) =>
+          moment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          moment.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (filters.filterbyyear) {
-      filtered = filtered.filter((memory) => memory.year === filters.filterbyyear);
+      filtered = filtered.filter((moment) => 
+        new Date(moment.date).getFullYear().toString() === filters.filterbyyear
+      );
     }
 
-    if (filters.filterbytype) {
-      filtered = filtered.filter((memory) => memory.type === filters.filterbytype);
-    }
+    setFilteredMoments(filtered);
+  }, [searchTerm, filters, moments]);
 
-    setFilteredMemories(filtered);
-  }, [searchTerm, filters]);
+  if (loading) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <SectionHeaderText text="Reliving The Moments" />
+            <p className="text-slate-600 max-w-3xl mx-auto italic">
+              A collection of treasured memories that remind us of our shared
+              journey, friendships, and the legacy we continue to build together.
+            </p>
+          </div>
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto relative z-10">
+          <div className="text-center py-16">
+            <div className="bg-red-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Error loading moments
+            </h3>
+            <p className="text-slate-600 mb-4">
+              {error}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-blue-700 hover:text-blue-800 font-medium"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -122,7 +189,7 @@ export default function MemoriesGallery() {
           filters={filters}
           setFilters={setFilters}
           filterConfigs={filterConfigs}
-          searchPlaceholder="Search memories..."
+          searchPlaceholder="Search moments..."
         />
 
         {/* Results Summary */}
@@ -131,16 +198,16 @@ export default function MemoriesGallery() {
             <p className="text-slate-600">
               Showing{" "}
               <span className="font-semibold text-blue-700">
-                {filteredMemories.length}
+                {filteredMoments.length}
               </span>{" "}
               of{" "}
               <span className="font-semibold">
-                {expandedMemoriesData.length}
+                {moments.length}
               </span>{" "}
-              memories
+              moments
             </p>
 
-            {(searchTerm || filters.filterbyyear || filters.filterbytype) && (
+            {(searchTerm || filters.filterbyyear) && (
               <div className="flex flex-wrap gap-2">
                 {searchTerm && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
@@ -152,20 +219,19 @@ export default function MemoriesGallery() {
                     Year: {filters.filterbyyear}
                   </span>
                 )}
-                {filters.filterbytype && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Type: {filters.filterbytype === "image" ? "Photos" : "Videos"}
-                  </span>
-                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Memories Display */}
-        {filteredMemories.length > 0 ? (
+        {/* Moments Display */}
+        {filteredMoments.length > 0 ? (
           <div className="animate-item">
-            <MemoriesSection items={filteredMemories} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredMoments.map((moment) => (
+                <MomentsCard key={moment.id} moment={moment} />
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-center py-16 animate-item">
@@ -175,7 +241,7 @@ export default function MemoriesGallery() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              No memories found
+              No moments found
             </h3>
             <p className="text-slate-600 mb-4">
               Try adjusting your search terms or filters to find what you&#39;re
@@ -184,7 +250,7 @@ export default function MemoriesGallery() {
             <button
               onClick={() => {
                 setSearchTerm("");
-                setFilters({ filterbyyear: "", filterbytype: "" });
+                setFilters({ filterbyyear: "" });
               }}
               className="text-blue-700 hover:text-blue-800 font-medium"
             >
