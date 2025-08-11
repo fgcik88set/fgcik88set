@@ -7,6 +7,7 @@ import { useMobile } from "../../hooks/use-mobile"
 import TrusteeCarousel from "./trustee-carousel"
 import { getCurrentBOT } from "@/sanity/sanity-utils"
 import { TrusteeProps} from "../constants/trustees-data"
+import { BackgroundButton } from "../buttons/Buttons"
 
 export default function CurrentTrustees() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -138,6 +139,14 @@ export default function CurrentTrustees() {
           </div>
         )}
       </div>
+
+      {!loading && <div className="mt-10 flex justify-center">
+        <BackgroundButton
+          text="View Past Trustees"
+          link="/board-of-trustees/past"
+          btnWidth="w-full lg:w-1/4"
+        />
+      </div>}
     </section>
   )
 }

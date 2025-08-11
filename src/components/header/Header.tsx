@@ -103,41 +103,35 @@ export default function Header() {
   const navLinks = [
     { id: 1, href: "/", label: "Home" },
     { id: 2, href: "/about", label: "About" },
+    
     {
       id: 3,
       href: "#",
-      label: "Executives",
-      dropdownKey: "executives" as const,
+      label: "BOT",
+      dropdownKey: "board" as const,
       dropdownItems: [
-        { id: 31, href: "/executives/current", label: "Current Executives" },
-        { id: 32, href: "/executives/past", label: "Past Executives" },
+        {
+          id: 31,
+          href: "/board-of-trustees/current",
+          label: "Current Board of Trustees",
+        },
+        { id: 32, href: "/board-of-trustees/past", label: "Past Boards" },
       ],
     },
     {
       id: 4,
       href: "#",
-      label: "Board of Trustees",
-      dropdownKey: "board" as const,
+      label: "Excos",
+      dropdownKey: "executives" as const,
       dropdownItems: [
-        {
-          id: 41,
-          href: "/board-of-trustees/current",
-          label: "Current Board of Trustees",
-        },
-        { id: 42, href: "/board-of-trustees/past", label: "Past Boards" },
+        { id: 41, href: "/executives/current", label: "Current Executives" },
+        { id: 42, href: "/executives/past", label: "Past Executives" },
       ],
     },
-    {
-      id: 5,
-      href: "#",
-      label: "More",
-      dropdownKey: "more" as const,
-      dropdownItems: [
-        { id: 51, href: "/moments", label: "Moments" },
-        { id: 52, href: "/memorabilia", label: "Memorabilia" },
-        { id: 53, href: "/events", label: "Events" },
-      ],
-    },
+    { id: 5, href: "/moments", label: "Moments" },
+    { id: 6, href: "/memorabilia", label: "Memorabilia" },
+    { id: 7, href: "/events", label: "Events" },
+    
   ];
 
   const activeLinkStyle = "text-mainYellow font-semibold";
@@ -151,7 +145,7 @@ export default function Header() {
           : "bg-white text-black"
       }`}
     >
-      <div className="w-full lg:w-[95%] mx-auto">
+      <div className="w-full">
         <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4 py-2 relative">
           <Link href="/" className="flex items-center gap-2 w-[15%] md:w-[6%] bg-white rounded-full">
             <Image src={logo} alt="FGCIK Logo" priority />
@@ -181,7 +175,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center justify-between w-full lg:w-[70%]">
-            <div className="flex w-[70%] justify-between items-center font-medium">
+            <div className="flex w-[80%] justify-between items-center font-medium">
               {navLinks.map((link) => (
                 <div key={link.id} className="relative">
                   {link.dropdownKey ? (
@@ -244,7 +238,7 @@ export default function Header() {
                 href={
                   status === "authenticated" ? "/payment" : "/auth/register"
                 }
-                className="w-40 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
+                className="w-30 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
               >
                 Payment
               </Link>

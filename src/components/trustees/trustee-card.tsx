@@ -48,8 +48,8 @@ export default function TrusteeCard({ trustee }: TrusteeCardProps) {
             <h3 className="text-xl font-bold text-white mb-1 group-hover:text-white transition-colors">
               {trustee.name}
             </h3>
-            <p>{trustee.term}</p>
-            <p className="text-blue-200 text-sm">{trustee.position}</p>
+            <p className="text-white text-sm">{trustee.term}</p>
+            <p className="text-blue-50 text-sm">{trustee.position}</p>
           </div>
         </div>
 

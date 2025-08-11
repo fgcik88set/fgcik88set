@@ -121,8 +121,14 @@ export default function Footer() {
         {/* Social links and copyright */}
         <div className="py-4 flex flex-col md:flex-row justify-center items-center gap-6 border-t border-white">
           <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-sm text-white">
-            <p>© {currentYear} FGCIK. All rights reserved.</p>
+            <p>© {currentYear} FGC IK set 1988. All rights reserved.</p>
             <div className="flex gap-4">
+              {status === "authenticated" && <Link
+                href="https://drive.google.com/file/d/1LjZ80oAYSu6WYIgF-lQDsa4_M0QoNvbn/view?usp=drive_link"
+                className="hover:text-mainYellow transition-colors"
+              >
+                Download Constitution
+              </Link>}
               <Link
                 href="/privacy-policy"
                 className="hover:text-mainYellow transition-colors"

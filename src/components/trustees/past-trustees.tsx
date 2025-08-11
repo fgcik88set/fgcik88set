@@ -9,6 +9,7 @@ import { useMobile } from "../../hooks/use-mobile"
 import { getPastBOT } from "@/sanity/sanity-utils"
 import { TrusteeProps } from "../constants/trustees-data"
 import { Search, Calendar, User } from "lucide-react"
+import { BackgroundButton } from "../buttons/Buttons"
 
 interface YearGroup {
   id: string;
@@ -183,9 +184,7 @@ export default function PastTrustees() {
                       Search: &quot;{searchTerm}&quot;
                     </span>
                   )}
-                  {filters.filterbyyearrange && (
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Year Range: {filters.filterbyyearrange}</span>
-                  )}
+                  
                   {filters.filterbyposition && (
                     <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                       Position: {filters.filterbyposition}
@@ -194,6 +193,7 @@ export default function PastTrustees() {
                 </div>
               )}
             </div>
+            <p className="text-darkBlue underline text-center cursor-pointer">View Achievements</p>
           </div>
         )}
 
@@ -239,6 +239,14 @@ export default function PastTrustees() {
           </div>
         )}
       </div>
+
+      {!loading && <div className="mt-10 flex justify-center">
+        <BackgroundButton
+          text="View Current Trustees"
+          link="/board-of-trustees/current"
+          btnWidth="w-full lg:w-1/4"
+        />
+      </div>}
     </section>
   )
 }

@@ -90,7 +90,7 @@ export const footerSections = [
       id: "3",
       title: "Resources",
       links: [
-        { href: "/memories", label: "Memories" },
+        { href: "/moments", label: "Memories" },
         { href: "/memorabilia", label: "Memorabilia" },
         
       ]

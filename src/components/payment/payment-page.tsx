@@ -61,6 +61,7 @@ export default function PaymentPageDisplay() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
+          <Link href="/" className="md:hidden text-center text-sm text-mainYellow absolute -top-10 left-2 border-2 border-mainYellow px-4 py-2 rounded-full">Go Home</Link>
           <div className="text-center max-w-4xl mx-auto">
             <div className="animate-item">
               <GraduationCap

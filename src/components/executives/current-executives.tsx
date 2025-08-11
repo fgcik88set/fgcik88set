@@ -6,6 +6,7 @@ import { useMobile } from "@/hooks/use-mobile";
 import ExecutiveCarousel from "./executive-carousel";
 import { getCurrentExecutives } from "@/sanity/sanity-utils";
 import { ExecutiveProps } from "../constants/executives-data";
+import { BackgroundButton } from "../buttons/Buttons";
 
 export default function CurrentExecutives() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -17,26 +18,30 @@ export default function CurrentExecutives() {
     const fetchExecutives = async () => {
       try {
         const data = await getCurrentExecutives();
-        
+
         // Sort executives to show President and Vice President first
-        const sortedExecutives = data.sort((a: ExecutiveProps, b: ExecutiveProps) => {
-          const positionOrder = {
-            'President': 1,
-            'Vice President': 2,
-            'Secretary': 3,
-            'Treasurer': 4,
-            'Public Relations Officer': 5,
-            'Welfare Officer': 6,
-            'Projects Coordinator': 7,
-            'Social Secretary': 8
-          };
-          
-          const aOrder = positionOrder[a.position as keyof typeof positionOrder] || 999;
-          const bOrder = positionOrder[b.position as keyof typeof positionOrder] || 999;
-          
-          return aOrder - bOrder;
-        });
-        
+        const sortedExecutives = data.sort(
+          (a: ExecutiveProps, b: ExecutiveProps) => {
+            const positionOrder = {
+              President: 1,
+              "Vice President": 2,
+              Secretary: 3,
+              Treasurer: 4,
+              "Public Relations Officer": 5,
+              "Welfare Officer": 6,
+              "Projects Coordinator": 7,
+              "Social Secretary": 8,
+            };
+
+            const aOrder =
+              positionOrder[a.position as keyof typeof positionOrder] || 999;
+            const bOrder =
+              positionOrder[b.position as keyof typeof positionOrder] || 999;
+
+            return aOrder - bOrder;
+          }
+        );
+
         setExecutives(sortedExecutives);
       } catch (error) {
         console.error("Error fetching executives:", error);
@@ -84,8 +89,8 @@ export default function CurrentExecutives() {
             <div className="w-24 h-1 bg-darkBlue mx-auto mb-6"></div>
             <p className="md:text-lg text-slate-600 max-w-3xl mx-auto">
               Our current leadership team brings together diverse expertise and
-              unwavering commitment to advance our alumni community&#39;s mission
-              and vision.
+              unwavering commitment to advance our alumni community&#39;s
+              mission and vision.
             </p>
           </div>
           <div className="flex justify-center items-center h-64">
@@ -141,18 +146,23 @@ export default function CurrentExecutives() {
               </div>
             ))}
           </div>
-        )}        
+        )}
 
         {/* Mobile view */}
         {isMobile && (
           <div className="animate-item">
-            <ExecutiveCarousel
-              executives={executives}
-              isCurrent={true}
-            />
+            <ExecutiveCarousel executives={executives} isCurrent={true} />
           </div>
         )}
       </div>
+
+      {!loading && <div className="mt-10 flex justify-center">
+        <BackgroundButton
+          text="View Past Excecutives"
+          link="/executives/past"
+          btnWidth="w-full lg:w-1/4"
+        />
+      </div>}
     </section>
   );
 }

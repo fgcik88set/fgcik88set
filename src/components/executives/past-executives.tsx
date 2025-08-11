@@ -9,6 +9,7 @@ import { useMobile } from "../../hooks/use-mobile"
 import { getPastExecutives } from "@/sanity/sanity-utils"
 import { ExecutiveProps } from "../constants/executives-data"
 import { Search, Calendar, User } from "lucide-react"
+import { BackgroundButton } from "../buttons/Buttons"
 
 interface YearGroup {
   id: string;
@@ -177,7 +178,7 @@ export default function PastExecutives() {
         {/* Results Summary */}
         {!loading && (
           <div className="mb-8 animate-item">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center ">
               <p className="text-slate-600">
                 Showing <span className="font-semibold text-blue-700">{filteredExecutives.length}</span> of{" "}
                 <span className="font-semibold">{allExecutives.length}</span> past executives
@@ -190,9 +191,7 @@ export default function PastExecutives() {
                       Search: &quot;{searchTerm}&quot;
                     </span>
                   )}
-                  {filters.filterbyyearrange && (
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Year Range: {filters.filterbyyearrange}</span>
-                  )}
+                  
                   {filters.filterbyposition && (
                     <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                       Position: {filters.filterbyposition}
@@ -200,7 +199,9 @@ export default function PastExecutives() {
                   )}
                 </div>
               )}
+              
             </div>
+            <p className="text-darkBlue underline text-center cursor-pointer">View Achievements</p>
           </div>
         )}
 
@@ -246,6 +247,14 @@ export default function PastExecutives() {
           </div>
         )}
       </div>
+
+      {!loading && <div className="mt-10 flex justify-center">
+        <BackgroundButton
+          text="View Current Excecutives"
+          link="/executives/current"
+          btnWidth="w-full lg:w-1/4"
+        />
+      </div>}
     </section>
   )
 }
