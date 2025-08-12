@@ -1,19 +1,22 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Tag, Package } from "lucide-react";
+import { Tag, Package, Search } from "lucide-react";
 import FilterNavbar from "../shared/FilterNavbar";
 
 import { useMobile } from "../../hooks/use-mobile";
-import { categories, memorabiliaItems } from "../constants/memorabilia-data";
+import { categories, MemorabiliaItem } from "../constants/memorabilia-data";
 import MemorabiliaCard from "./memorabilia-card";
 import MemorabiliaCarousel from "./memorabilia-carousel";
+import { getMemorabilia } from "../../sanity/sanity-utils";
 
 export default function MemorabiliaGallery() {
   const sectionRef = useRef<HTMLElement>(null);
   const isMobile = useMobile();
-  const [filteredItems, setFilteredItems] = useState(memorabiliaItems);
+  const [memorabiliaItems, setMemorabiliaItems] = useState<MemorabiliaItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<MemorabiliaItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Get unique categories for filters
   const categoryOptions = categories.filter((cat) => cat.id !== "all");
@@ -39,6 +42,23 @@ export default function MemorabiliaGallery() {
     filterbycategory: "",
     availability: false
   });
+
+  // Fetch memorabilia from Sanity
+  useEffect(() => {
+    const fetchMemorabilia = async () => {
+      try {
+        const data = await getMemorabilia();
+        setMemorabiliaItems(data);
+        setFilteredItems(data);
+      } catch (error) {
+        console.error("Error fetching memorabilia:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemorabilia();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -68,7 +88,7 @@ export default function MemorabiliaGallery() {
     if (searchTerm) {
       filtered = filtered.filter(
         (item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -78,13 +98,32 @@ export default function MemorabiliaGallery() {
     }
 
     if (filters.availability) {
-      filtered = filtered.filter((item) => item.inStock);
+      filtered = filtered.filter((item) => item.isAvailable);
     }
 
     setFilteredItems(filtered);
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, memorabiliaItems]);
 
-
+  if (loading) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              Our <span className="text-blue-700">Memorabilia</span> Collection
+            </h2>
+            <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto">
+              Browse our exclusive collection of Class of &apos;88 memorabilia and own a piece of history.
+            </p>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -104,13 +143,11 @@ export default function MemorabiliaGallery() {
       <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Our <span className="text-blue-700">Collection</span>
+            Our <span className="text-blue-700">Memorabilia</span> Collection
           </h2>
           <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            Discover our carefully curated collection of memorabilia that
-            celebrates our shared heritage and keeps our memories alive for
-            generations to come.
+            Browse our exclusive collection of Class of &apos;88 memorabilia and own a piece of history.
           </p>
         </div>
 
@@ -121,7 +158,7 @@ export default function MemorabiliaGallery() {
           filters={filters}
           setFilters={setFilters}
           filterConfigs={filterConfigs}
-          searchPlaceholder="Search memorabilia..."
+          searchPlaceholder="Search memorabilia items..."
         />
 
         {/* Results Summary */}
@@ -134,7 +171,7 @@ export default function MemorabiliaGallery() {
               </span>{" "}
               of{" "}
               <span className="font-semibold">{memorabiliaItems.length}</span>{" "}
-              items
+              memorabilia items
             </p>
 
             {(searchTerm || filters.filterbycategory || filters.availability) && (
@@ -148,13 +185,14 @@ export default function MemorabiliaGallery() {
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     Category:{" "}
                     {
-                      categoryOptions.find((cat) => cat.id === filters.filterbycategory)
-                        ?.name
+                      categoryOptions.find(
+                        (cat) => cat.id === filters.filterbycategory
+                      )?.name
                     }
                   </span>
                 )}
                 {filters.availability && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                     In Stock Only
                   </span>
                 )}
@@ -163,21 +201,36 @@ export default function MemorabiliaGallery() {
           </div>
         </div>
 
-        {/* Items Display */}
+        {/* Memorabilia Display */}
         {filteredItems.length > 0 ? (
           <>
             {/* Desktop Grid View */}
             {!isMobile && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredItems.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className="animate-item"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <MemorabiliaCard item={item} />
-                  </div>
-                ))}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                {filteredItems.map((item, index) => {
+                  // Check if this is the last item and if it's not in a complete row
+                  const isLastItem = index === filteredItems.length - 1;
+                  const itemsInLastRow = filteredItems.length % 4;
+                  let colSpanClass = '';
+                  
+                  if (isLastItem && itemsInLastRow > 0 && itemsInLastRow < 4) {
+                    // Calculate how many columns the last card should span
+                    const remainingCols = 4 - itemsInLastRow;
+                    if (remainingCols === 1) colSpanClass = 'xl:col-span-1';
+                    else if (remainingCols === 2) colSpanClass = 'xl:col-span-2';
+                    else if (remainingCols === 3) colSpanClass = 'xl:col-span-3';
+                  }
+                  
+                  return (
+                    <div
+                      key={item.id}
+                      className={`animate-item ${colSpanClass}`}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <MemorabiliaCard item={item} />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -191,16 +244,14 @@ export default function MemorabiliaGallery() {
         ) : (
           <div className="text-center py-16 animate-item">
             <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="w-12 h-12 text-slate-400" />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              No items found
+              No memorabilia found
             </h3>
             <p className="text-slate-600 mb-4">
-              Try adjusting your search terms or filters to find what you&#39;re
-              looking for.
+              Try adjusting your search terms or filters to find what
+              you&apos;re looking for.
             </p>
             <button
               onClick={() => {

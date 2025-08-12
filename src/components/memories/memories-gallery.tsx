@@ -227,7 +227,7 @@ export default function MemoriesGallery() {
         {/* Moments Display */}
         {filteredMoments.length > 0 ? (
           <div className="animate-item">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-6">
               {filteredMoments.map((moment) => (
                 <MomentsCard key={moment.id} moment={moment} />
               ))}

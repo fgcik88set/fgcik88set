@@ -52,7 +52,7 @@ export default function Header() {
       case "/memorabilia":
         return "Alumni Memorabilia";
       case "/events":
-        return "Upcoming Events";
+        return "Events";
       default:
         return "";
     }
@@ -121,7 +121,7 @@ export default function Header() {
     {
       id: 4,
       href: "#",
-      label: "Excos",
+      label: "EXCO",
       dropdownKey: "executives" as const,
       dropdownItems: [
         { id: 41, href: "/executives/current", label: "Current Executives" },

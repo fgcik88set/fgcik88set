@@ -211,11 +211,30 @@ export default function PastExecutives() {
             {/* Desktop Grid View */}
             {!isMobile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredExecutives.map((executive: ExecutiveProps, index: number) => (
-                  <div key={executive.id} className="animate-item" style={{ animationDelay: `${index * 0.05}s` }}>
-                    <ExecutiveCard executive={executive} isCurrent={false} />
-                  </div>
-                ))}
+                {filteredExecutives.map((executive: ExecutiveProps, index: number) => {
+                  // Check if this is the last item and if it's not in a complete row
+                  const isLastItem = index === filteredExecutives.length - 1;
+                  const itemsInLastRow = filteredExecutives.length % 4;
+                  let colSpanClass = '';
+                  
+                  if (isLastItem && itemsInLastRow > 0 && itemsInLastRow < 4) {
+                    // Calculate how many columns the last card should span
+                    const remainingCols = 4 - itemsInLastRow;
+                    if (remainingCols === 1) colSpanClass = 'xl:col-span-2';
+                    else if (remainingCols === 2) colSpanClass = 'xl:col-span-3';
+                    else if (remainingCols === 3) colSpanClass = 'xl:col-span-4';
+                  }
+                  
+                  return (
+                    <div 
+                      key={executive.id} 
+                      className={`animate-item ${colSpanClass}`} 
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <ExecutiveCard executive={executive} isCurrent={false} />
+                    </div>
+                  );
+                })}
               </div>
             )}
 

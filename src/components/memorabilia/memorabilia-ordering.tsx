@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect } from "react"
-import { Phone, Mail, MapPin, Clock } from "lucide-react"
+import { Phone, Mail} from "lucide-react"
 
 export default function MemorabiliaOrdering() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -27,7 +27,7 @@ export default function MemorabiliaOrdering() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative py-20 bg-blue-900 text-white overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 bg-gradient-to-b from-slate-50 to-slate-100 overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-800/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -46,8 +46,8 @@ export default function MemorabiliaOrdering() {
       <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl font-bold mb-4">How to Order</h2>
-          <div className="w-24 h-1 bg-mainYellow mx-auto mb-6"></div>
-          <p className="text-white/80 max-w-2xl mx-auto">
+          <div className="w-24 h-1 bg-darkBlue mx-auto mb-6"></div>
+          <p className="max-w-2xl mx-auto">
             Ready to own a piece of our history? Here&#39;s how you can place your order and get your memorabilia delivered
             to you.
           </p>
@@ -59,12 +59,12 @@ export default function MemorabiliaOrdering() {
             <h3 className="text-2xl font-bold mb-8">Ordering Process</h3>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-mainYellow text-blue-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="bg-darkBlue text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                   1
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Browse & Select</h4>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-sm">
                     Browse our collection and select the items you&#39;d like to purchase. Note down the item names and
                     quantities.
                   </p>
@@ -72,12 +72,12 @@ export default function MemorabiliaOrdering() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-mainYellow text-blue-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="bg-darkBlue text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                   2
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Contact Us</h4>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-sm">
                     Contact our memorabilia team using any of the methods below with your order details and delivery
                     information.
                   </p>
@@ -85,12 +85,12 @@ export default function MemorabiliaOrdering() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-mainYellow text-blue-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="bg-darkBlue text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                   3
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Payment & Confirmation</h4>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-sm">
                     We&#39;ll confirm your order details and provide payment instructions. Payment can be made via bank
                     transfer or mobile money.
                   </p>
@@ -98,12 +98,12 @@ export default function MemorabiliaOrdering() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="bg-mainYellow text-blue-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                <div className="bg-darkBlue text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                   4
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Delivery</h4>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-sm">
                     Your items will be carefully packaged and delivered to your specified address within 7-14 business
                     days.
                   </p>
@@ -116,27 +116,27 @@ export default function MemorabiliaOrdering() {
           <div className="animate-item">
             <h3 className="text-2xl font-bold mb-8">Contact Information</h3>
             <div className="space-y-6">
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+              <div className="bg-darkBlue/95 text-white backdrop-blur-sm p-6 rounded-xl border border-darkBlue/10">
                 <div className="flex items-center gap-4 mb-4">
                   <Phone className="w-6 h-6 text-mainYellow" />
                   <h4 className="font-semibold">Phone Orders</h4>
                 </div>
-                <p className="text-white/80 mb-2">Call us directly to place your order</p>
+                <p className="mb-2">Call us directly to place your order</p>
                 <p className="font-medium">+234 803 123 4567</p>
                 <p className="font-medium">+234 806 987 6543</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+              <div className="bg-darkBlue/95 text-white backdrop-blur-sm p-6 rounded-xl border border-darkBlue/10">
                 <div className="flex items-center gap-4 mb-4">
                   <Mail className="w-6 h-6 text-mainYellow" />
                   <h4 className="font-semibold">Email Orders</h4>
                 </div>
-                <p className="text-white/80 mb-2">Send us your order details via email</p>
+                <p className="mb-2">Send us your order details via email</p>
                 <p className="font-medium">memorabilia@fgcikotekpene88.com</p>
                 <p className="font-medium">orders@class88alumni.org</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+              {/* <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
                 <div className="flex items-center gap-4 mb-4">
                   <MapPin className="w-6 h-6 text-mainYellow" />
                   <h4 className="font-semibold">Pickup Location</h4>
@@ -154,13 +154,13 @@ export default function MemorabiliaOrdering() {
                 <p className="text-white/80 mb-2">We&#39;re available to assist you</p>
                 <p className="font-medium">Monday - Friday: 9:00 AM - 5:00 PM</p>
                 <p className="font-medium">Saturday: 10:00 AM - 2:00 PM</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
 
         {/* Order Form CTA */}
-        <div className="mt-16 bg-white/10 backdrop-blur-sm p-8 rounded-xl border border-white/10 max-w-3xl mx-auto animate-item">
+        {/* <div className="mt-16 bg-white/10 backdrop-blur-sm p-8 rounded-xl border border-white/10 max-w-3xl mx-auto animate-item">
           <h3 className="text-2xl font-bold mb-4 text-center">Quick Order Form</h3>
           <p className="text-white/80 text-center mb-6">
             Fill out this form with your order details and we&#39;ll get back to you within 24 hours.
@@ -197,7 +197,7 @@ export default function MemorabiliaOrdering() {
               Submit Order Request
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   )

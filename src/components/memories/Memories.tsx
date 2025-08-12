@@ -30,7 +30,7 @@ export default function MemoriesSection() {
         setLoading(true);
         const data = await getMoments();
         // Only take the first 8 moments for homepage display
-        setMoments(data.slice(0, 8));
+        setMoments(data.slice(0, 3));
       } catch (err) {
         console.error("Error fetching moments:", err);
         setMoments([]);
@@ -174,7 +174,7 @@ export default function MemoriesSection() {
 
       {/* Desktop Grid View */}
       <div className={`${isMobile ? "hidden" : "block"}`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
           {moments.map((moment) => (
             <div
               key={moment.id}

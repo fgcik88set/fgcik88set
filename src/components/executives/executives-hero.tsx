@@ -73,14 +73,12 @@ export default function ExecutivesHero() {
             </div>
             <div className="w-32 h-1 bg-mainYellow mx-auto mb-8"></div>
             <p className="md:text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            {isCurrentExcos && "Meet the dedicated individuals who are guiding our alumni association through the years. From our current leadership team to the visionaries who are laying our foundation, each executive is contributing to our collective success."}
-            {isPastExcos && "Reflecting on the dedicated individuals who have guided our alumni association through the years. From our past leadership teams to the visionaries who laid our foundation, each executive has contributed to our collective success."}
-              
+              {isCurrentExcos &&
+                "Meet the dedicated individuals who are guiding our alumni association through the years. From our current leadership team to the visionaries who are laying our foundation, each executive is contributing to our collective success."}
+              {isPastExcos &&
+                "Reflecting on the dedicated individuals who have guided our alumni association through the years. From our past leadership teams to the visionaries who laid our foundation, each executive has contributed to our collective success."}
             </p>
           </div>
-
-          
-          
         </div>
       </div>
     </div>
