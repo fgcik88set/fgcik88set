@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { X, Calendar, MapPin, Clock, Users, Star, Mail, Share2, Download, Globe, Video } from "lucide-react"
+import { X, Calendar, MapPin, Clock, Users, Star,Share2,  } from "lucide-react"
 import { eventCategories, EventProps } from "../constants/events-data"
 
 
