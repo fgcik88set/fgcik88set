@@ -1,10 +1,45 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Calendar, Clock, MapPin, Users } from "lucide-react"
+import { getEventsStats } from "@/sanity/sanity-utils"
+import StatsSkeleton from "@/components/shared/StatsSkeleton"
+
+interface EventsStats {
+  totalEvents: number
+  annualEvents: number
+  totalParticipants: number
+  cities: string[]
+  yearsActive: number
+}
 
 export default function EventsHero() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const [stats, setStats] = useState<EventsStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const eventsStats = await getEventsStats()
+        setStats(eventsStats)
+      } catch (error) {
+        console.error("Error fetching events stats:", error)
+        // Fallback to default stats
+        setStats({
+          totalEvents: 5,
+          annualEvents: 5,
+          totalParticipants: 50,
+          cities: ["Ikot Ekpene", "Uyo", "Calabar", "Port Harcourt", "Lagos"],
+          yearsActive: 35
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -71,28 +106,40 @@ export default function EventsHero() {
           </div>
 
           {/* Stats cards */}
-          <div className="grid md:grid-cols-4 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Calendar className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">5+</div>
-              <div className="text-white/80">Annual Events</div>
+          {loading ? (
+            <StatsSkeleton count={4} />
+          ) : (
+            <div className="grid md:grid-cols-4 gap-6 mt-16 animate-item">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Calendar className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {`${stats?.annualEvents || 0}+`}
+                </div>
+                <div className="text-white/80">Annual Events</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {`${stats?.totalParticipants || 0}+`}
+                </div>
+                <div className="text-white/80">Participants</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <MapPin className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {`${stats?.cities?.length || 0}+`}
+                </div>
+                <div className="text-white/80">Cities</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {stats?.yearsActive || 35}
+                </div>
+                <div className="text-white/80">Years Strong</div>
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">50+</div>
-              <div className="text-white/80">Participants</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <MapPin className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">10+</div>
-              <div className="text-white/80">Cities</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">35</div>
-              <div className="text-white/80">Years Strong</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

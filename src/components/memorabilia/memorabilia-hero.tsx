@@ -1,10 +1,43 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Clock, Package, ShoppingBag, Star } from "lucide-react"
+import { getMemorabiliaStats } from "@/sanity/sanity-utils"
+import StatsSkeleton from "@/components/shared/StatsSkeleton"
+
+interface MemorabiliaStats {
+  totalItems: number
+  categories: string[]
+  featuredItems: number
+  availableItems: number
+}
 
 export default function MemorabiliaHero() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const [stats, setStats] = useState<MemorabiliaStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const memorabiliaStats = await getMemorabiliaStats()
+        setStats(memorabiliaStats)
+      } catch (error) {
+        console.error("Error fetching memorabilia stats:", error)
+        // Fallback to default stats
+        setStats({
+          totalItems: 50,
+          categories: ["Clothing & Apparel", "Books & Publications", "Accessories", "Collectibles"],
+          featuredItems: 10,
+          availableItems: 45
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,28 +103,40 @@ export default function MemorabiliaHero() {
           </div>
 
           {/* Stats cards */}
-          <div className="grid md:grid-cols-4 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <ShoppingBag className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">50+</div>
-              <div className="text-white/80">Unique Items</div>
+          {loading ? (
+            <StatsSkeleton count={4} />
+          ) : (
+            <div className="grid md:grid-cols-4 gap-6 mt-16 animate-item">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <ShoppingBag className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {`${stats?.totalItems || 0}+`}
+                </div>
+                <div className="text-white/80">Unique Items</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Package className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {stats?.categories?.length || 0}
+                </div>
+                <div className="text-white/80">Categories</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Star className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {stats?.featuredItems || 0}
+                </div>
+                <div className="text-white/80">Featured Items</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <div className="text-2xl font-bold mb-2">
+                  {stats?.availableItems || 0}
+                </div>
+                <div className="text-white/80">Available Now</div>
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Package className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">4</div>
-              <div className="text-white/80">Categories</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Star className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">Premium</div>
-              <div className="text-white/80">Quality</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">Fast</div>
-              <div className="text-white/80">Delivery</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

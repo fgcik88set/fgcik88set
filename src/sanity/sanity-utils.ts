@@ -402,3 +402,60 @@ export async function getMemorabiliaBySlug(slug: string) {
     { slug }
   );
 }
+
+// New functions for statistics
+export async function getEventsStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalEvents": count(*[_type == "events"]),
+      "annualEvents": count(*[_type == "events" && date >= $currentYearStart && date <= $currentYearEnd]),
+      "totalParticipants": sum(*[_type == "events"].maxAttendees),
+      "cities": array::distinct(*[_type == "events"].location),
+      "yearsActive": 35
+    }`,
+    { 
+      currentYearStart: new Date(new Date().getFullYear(), 0, 1).toISOString(),
+      currentYearEnd: new Date(new Date().getFullYear(), 11, 31).toISOString()
+    }
+  );
+}
+
+export async function getMomentsStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalMoments": count(*[_type == "moments"]),
+      "totalImages": sum(*[_type == "moments"]{ "count": count(images) }.count),
+      "yearsActive": 35,
+      "totalReunions": count(*[_type == "events" && eventType == "alumni-reunion"])
+    }`
+  );
+}
+
+export async function getMemorabiliaStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalItems": count(*[_type == "memorabilia"]),
+      "categories": array::distinct(*[_type == "memorabilia"].category),
+      "featuredItems": count(*[_type == "memorabilia" && isFeatured == true]),
+      "availableItems": count(*[_type == "memorabilia" && isAvailable == true])
+    }`
+  );
+}

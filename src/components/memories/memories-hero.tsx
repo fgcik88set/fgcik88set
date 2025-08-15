@@ -1,10 +1,43 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Camera, Clock, Users } from "lucide-react"
+import { getMomentsStats } from "@/sanity/sanity-utils"
+import StatsSkeleton from "@/components/shared/StatsSkeleton"
+
+interface MomentsStats {
+  totalMoments: number
+  totalImages: number
+  yearsActive: number
+  totalReunions: number
+}
 
 export default function MemoriesHero() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const [stats, setStats] = useState<MomentsStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const momentsStats = await getMomentsStats()
+        setStats(momentsStats)
+      } catch (error) {
+        console.error("Error fetching moments stats:", error)
+        // Fallback to default stats
+        setStats({
+          totalMoments: 20,
+          totalImages: 500,
+          yearsActive: 35,
+          totalReunions: 20
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,23 +103,33 @@ export default function MemoriesHero() {
           </div>
 
           {/* Stats cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Camera className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">500+</p>
-              <p className="text-white/80">Photos & Videos</p>
+          {loading ? (
+            <StatsSkeleton count={3} />
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Camera className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {`${stats?.totalImages || 0}+`}
+                </p>
+                <p className="text-white/80">Photos & Videos</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {stats?.yearsActive || 35}
+                </p>
+                <p className="text-white/80">Years of Memories</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {`${stats?.totalReunions || 0}+`}
+                </p>
+                <p className="text-white/80">Reunions & Events</p>
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">35</p>
-              <p className="text-white/80">Years of Memories</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">20+</p>
-              <p className="text-white/80">Reunions & Events</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
