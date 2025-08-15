@@ -13,7 +13,9 @@ import { getMemorabilia } from "../../sanity/sanity-utils";
 export default function MemorabiliaGallery() {
   const sectionRef = useRef<HTMLElement>(null);
   const isMobile = useMobile();
-  const [memorabiliaItems, setMemorabiliaItems] = useState<MemorabiliaItem[]>([]);
+  const [memorabiliaItems, setMemorabiliaItems] = useState<MemorabiliaItem[]>(
+    []
+  );
   const [filteredItems, setFilteredItems] = useState<MemorabiliaItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,23 +26,26 @@ export default function MemorabiliaGallery() {
   // Filter configuration
   const filterConfigs = [
     {
-      type: 'select' as const,
-      label: 'Filter by Category',
+      type: "select" as const,
+      label: "Filter by Category",
       icon: Tag,
-      options: categoryOptions.map(cat => ({ value: cat.id, label: cat.name })),
-      placeholder: 'All Categories'
+      options: categoryOptions.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      })),
+      placeholder: "All Categories",
     },
     {
-      type: 'checkbox' as const,
-      label: 'Availability',
+      type: "checkbox" as const,
+      label: "Availability",
       icon: Package,
-      placeholder: 'In stock only'
-    }
+      placeholder: "In stock only",
+    },
   ];
 
   const [filters, setFilters] = useState<Record<string, string | boolean>>({
     filterbycategory: "",
-    availability: false
+    availability: false,
   });
 
   // Fetch memorabilia from Sanity
@@ -94,7 +99,9 @@ export default function MemorabiliaGallery() {
     }
 
     if (filters.filterbycategory) {
-      filtered = filtered.filter((item) => item.category === filters.filterbycategory);
+      filtered = filtered.filter(
+        (item) => item.category === filters.filterbycategory
+      );
     }
 
     if (filters.availability) {
@@ -114,7 +121,8 @@ export default function MemorabiliaGallery() {
             </h2>
             <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
             <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-              Browse our exclusive collection of Class of &apos;88 memorabilia and own a piece of history.
+              Browse our exclusive collection of Class of &apos;88 memorabilia
+              and own a piece of history.
             </p>
           </div>
           <div className="flex justify-center items-center h-64">
@@ -147,7 +155,8 @@ export default function MemorabiliaGallery() {
           </h2>
           <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            Browse our exclusive collection of Class of &apos;88 memorabilia and own a piece of history.
+            Browse our exclusive collection of Class of &apos;88 memorabilia and
+            own a piece of history.
           </p>
         </div>
 
@@ -174,7 +183,9 @@ export default function MemorabiliaGallery() {
               memorabilia items
             </p>
 
-            {(searchTerm || filters.filterbycategory || filters.availability) && (
+            {(searchTerm ||
+              filters.filterbycategory ||
+              filters.availability) && (
               <div className="flex flex-wrap gap-2">
                 {searchTerm && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
@@ -207,30 +218,15 @@ export default function MemorabiliaGallery() {
             {/* Desktop Grid View */}
             {!isMobile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-                {filteredItems.map((item, index) => {
-                  // Check if this is the last item and if it's not in a complete row
-                  const isLastItem = index === filteredItems.length - 1;
-                  const itemsInLastRow = filteredItems.length % 4;
-                  let colSpanClass = '';
-                  
-                  if (isLastItem && itemsInLastRow > 0 && itemsInLastRow < 4) {
-                    // Calculate how many columns the last card should span
-                    const remainingCols = 4 - itemsInLastRow;
-                    if (remainingCols === 1) colSpanClass = 'xl:col-span-1';
-                    else if (remainingCols === 2) colSpanClass = 'xl:col-span-2';
-                    else if (remainingCols === 3) colSpanClass = 'xl:col-span-3';
-                  }
-                  
-                  return (
-                    <div
-                      key={item.id}
-                      className={`animate-item ${colSpanClass}`}
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <MemorabiliaCard item={item} />
-                    </div>
-                  );
-                })}
+                {filteredItems.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`animate-item`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <MemorabiliaCard item={item} />
+                  </div>
+                ))}
               </div>
             )}
 

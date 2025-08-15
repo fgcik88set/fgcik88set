@@ -62,10 +62,10 @@ export default function Footer() {
 
           <div className="w-full flex-col justify-between items-center lg:w-auto">
             <div>
-              <h3 className="text-xl font-semibold text-center lg:text-left">
+              <h3 className="text-lg font-semibold text-center mb-4 lg:text-left">
                 Stay Connected
               </h3>
-              <p className="text-white text-center lg:text-left">
+              <p className="text-white text-center text-sm lg:text-left">
                 For Dues,Registration and welfare related activities payment{" "}
               </p>
             </div>
