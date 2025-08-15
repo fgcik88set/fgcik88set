@@ -1,6 +1,8 @@
 "use client";
 
-import { CheckoutForm } from "@/components/payment/checkout-form";
+import CheckoutForm from "@/components/payment/checkout-form";
+
+
 
 export default function CheckoutPage() {
   const handleSuccess = (reference: string) => {

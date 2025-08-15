@@ -20,7 +20,7 @@ export default function MemorabiliaCard({ item }: MemorabiliaCardProps) {
 
   return (
     <>
-      <div className="group relative bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
+      <div className="relative group bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden hover:shadow-xl lg:h-[70vh] transition-all duration-500 hover:-translate-y-2">
         {/* Featured Badge */}
         {item.isFeatured && (
           <div className="absolute top-4 left-4 z-10">
@@ -118,7 +118,7 @@ export default function MemorabiliaCard({ item }: MemorabiliaCardProps) {
           )}
 
           {/* Action Buttons */}
-          <div className="w-fit flex items-center gap-3 pt-4 border-t border-slate-100">
+          <div className="absolute bottom-4 w-fit flex items-center gap-3 pt-4 border-t border-slate-100">
             <button
               disabled={!item.isAvailable}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors flex-grow ${

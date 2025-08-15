@@ -15,32 +15,32 @@ export async function GET(request: NextRequest) {
 
     if (dbError) {
       console.error("Database error:", dbError)
-      return NextResponse.json({ error: "Database error" }, { status: 500 })
+      return NextResponse.json({ error: "Database error" }, { status: 400 })
     }
 
     if (!existingPayment) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 })
     }
 
-    // Verify payment with Paystack
-    const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+    // Verify payment with Seerbit checkout API
+    const seerbitResponse = await fetch(`https://seerbitapi.com/api/v2/seerbit/checkout/${reference}`, {
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        "Content-Type": "application/json",
       },
     })
 
-    const paystackData = await paystackResponse.json()
+    const seerbitData = await seerbitResponse.json()
 
-    if (!paystackData.status) {
+    if (seerbitData.code !== "00" && seerbitData.status !== "success") {
       return NextResponse.json({ error: "Payment verification failed" }, { status: 400 })
     }
 
-    const transaction = paystackData.data
+    const transaction = seerbitData.data
 
     // Update payment record in database
     const { data: updatedPayment, error: updateError } = await updatePayment(reference, {
-      transaction_id: transaction.id.toString(),
-      status: transaction.status,
+      transaction_id: transaction.id?.toString() || transaction.transactionId?.toString(),
+      status: transaction.status || "success",
       gateway_response: JSON.stringify(transaction),
     })
 
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         amount: transaction.amount,
         currency: transaction.currency,
         status: transaction.status,
-        paid_at: transaction.paid_at,
+        paid_at: transaction.paidAt || transaction.paid_at,
         email: updatedPayment.user_email,
       },
     })

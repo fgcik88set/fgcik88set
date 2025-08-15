@@ -234,7 +234,7 @@ export default function PaymentPageDisplay() {
         
       >
         <p className="text-blue-100">
-          Secure payments powered by Paystack • Class of 1988 Alumni Association
+          Secure payments powered by Seerbit • Class of 1988 Alumni Association
         </p>
       </div>
     </div>
