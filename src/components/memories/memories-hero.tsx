@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react"
 import { Camera, Clock, Users } from "lucide-react"
 import { getMomentsStats } from "@/sanity/sanity-utils"
 import StatsSkeleton from "@/components/shared/StatsSkeleton"
+import Link from "next/link"
 
 interface MomentsStats {
   totalMoments: number
@@ -64,6 +65,7 @@ export default function MemoriesHero() {
       ref={heroRef}
       className="relative w-full pb-20 pt-32 bg-gradient-to-br from-darkBlue via-darkBlue to-blue-900 text-white overflow-hidden"
     >
+      
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-700/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -90,6 +92,12 @@ export default function MemoriesHero() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
+      <Link
+          href="/"
+          className="absolute -top-10 left-2 md:hidden text-center text-sm text-mainYellow  border-2 border-mainYellow px-4 py-2 rounded-full"
+        >
+          Go Home
+        </Link>
         <div className="text-center max-w-4xl mx-auto">
           <div className="animate-item">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
