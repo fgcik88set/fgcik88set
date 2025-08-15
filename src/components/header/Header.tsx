@@ -286,7 +286,7 @@ export default function Header() {
               <p className="text-white text-lg font-medium">{user?.name}</p>
             </div>
           )}
-          <div className="flex flex-col gap-6 p-4 overflow-y-auto h-[90vh]">
+          <div className="flex flex-col gap-6 p-4 overflow-y-auto h-full md:h-[90vh]">
             {navLinks.map((link) => (
               <div key={link.id} className="border-b border-gray-700 pb-4">
                 {link.dropdownKey ? (
