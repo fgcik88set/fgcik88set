@@ -250,14 +250,7 @@ export default function PaymentPageDisplay() {
                       </h4>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-500 mb-1">
-                      Recommended
-                    </div>
-                    <div className="text-sm font-medium text-mainYellow">
-                      NGN
-                    </div>
-                  </div>
+                  
                 </div>
               </button>
 
