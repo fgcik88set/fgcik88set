@@ -124,30 +124,15 @@ export default function CurrentTrustees() {
         {/* Desktop Grid View */}
         {!isMobile && (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trustees.map((trustee, index) => {
-              // Check if this is the last item and if it's not in a complete row
-              const isLastItem = index === trustees.length - 1;
-              const itemsInLastRow = trustees.length % 4;
-              let colSpanClass = '';
-              
-              if (isLastItem && itemsInLastRow > 0 && itemsInLastRow < 4) {
-                // Calculate how many columns the last card should span
-                const remainingCols = 4 - itemsInLastRow;
-                if (remainingCols === 1) colSpanClass = 'lg:col-span-2';
-                else if (remainingCols === 2) colSpanClass = 'lg:col-span-3';
-                else if (remainingCols === 3) colSpanClass = 'lg:col-span-4';
-              }
-              
-              return (
+            {trustees.map((trustee, index) => (
                 <div 
                   key={trustee.id} 
-                  className={`animate-item ${colSpanClass}`} 
+                  className={`animate-item `} 
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <TrusteeCard trustee={trustee} isCurrent={true} />
                 </div>
-              );
-            })}
+              ))}
           </div>
         )}
 
