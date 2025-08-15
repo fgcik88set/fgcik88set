@@ -1,26 +1,27 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { verifyPaystackSignature } from "@/lib/paystack"
+import { verifySeerbitSignature } from "@/lib/seerbit"
 import { updatePayment, getPaymentByReference } from "@/lib/database"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
-    const signature = request.headers.get("x-paystack-signature")
+    const signature = request.headers.get("x-seerbit-signature")
 
     if (!signature) {
       return NextResponse.json({ error: "Missing signature" }, { status: 400 })
     }
 
     // Verify webhook signature
-    if (!verifyPaystackSignature(body, signature)) {
+    const isValidSignature = verifySeerbitSignature(body, signature)
+    if (!isValidSignature) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
 
     const event = JSON.parse(body)
 
-    // Handle different event types
-    if (event.event === "charge.success") {
-      const transaction = event.data
+    // Handle different event types for Seerbit React package
+    if (event.event === "payment.success" || event.event === "charge.success" || event.event === "success" || event.status === "success") {
+      const transaction = event.data || event
 
       // Check if payment exists in our database
       const { data: existingPayment, error: dbError } = await getPaymentByReference(transaction.reference)
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
 
       // Update payment record
       const { error: updateError } = await updatePayment(transaction.reference, {
-        transaction_id: transaction.id.toString(),
+        transaction_id: transaction.id?.toString() || transaction.transactionId?.toString(),
         status: "success",
         gateway_response: JSON.stringify(transaction),
       })
@@ -47,15 +48,21 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Database update failed" }, { status: 500 })
       }
 
-      // Here you can add additional logic like:
-      // - Send confirmation email
-      // - Update user account
-      // - Trigger order fulfillment
       console.log(`Payment successful for reference: ${transaction.reference}`)
+    }
 
-      // You could also trigger other actions here
-      // await sendPaymentConfirmationEmail(existingPayment.user_email, transaction)
-      // await updateUserMembershipStatus(existingPayment.user_email)
+    // Handle failed payments
+    if (event.event === "payment.failed" || event.event === "charge.failed" || event.event === "failed" || event.status === "failed") {
+      const transaction = event.data || event
+
+      const { data: existingPayment, error: dbError } = await getPaymentByReference(transaction.reference)
+
+      if (!dbError && existingPayment) {
+        await updatePayment(transaction.reference, {
+          status: "failed",
+          gateway_response: JSON.stringify(transaction),
+        })
+      }
     }
 
     return NextResponse.json({ status: "success" })

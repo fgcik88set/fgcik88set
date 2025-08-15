@@ -1,20 +1,17 @@
 "use client"
 
 import React, { useState } from "react"
-import { Loader2, CreditCard } from "lucide-react"
+import { CreditCard } from "lucide-react"
 import { useAuth } from "@/providers/session-provider"
+
+// Import Seerbit hook properly
+import { useSeerbitPayment } from "seerbit-reactjs"
 
 interface CheckoutFormProps {
   initialAmount?: number
   currency?: string
   onSuccess?: (reference: string) => void
   onError?: (error: string) => void
-}
-
-declare global {
-  interface Window {
-    PaystackPop: unknown
-  }
 }
 
 const PRESET_AMOUNTS = [5000, 10000, 15000, 20000]
@@ -25,14 +22,13 @@ const PAYMENT_TYPES = [
   { id: "other", label: "Other Payments", narration: "" }
 ]
 
-export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess, onError }: CheckoutFormProps) {
+export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess, onError }: CheckoutFormProps) {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(initialAmount);
   const [paymentType, setPaymentType] = useState("dues");
   const [narration, setNarration] = useState("Dues and Registration Payment");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Auto-update name and email from session
@@ -64,87 +60,118 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
     setAmount(presetAmount)
   }
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+  // Generate reference for this payment
+  const reference = `sb_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
 
-    if (amount <= 0) {
-      setError("Please enter a valid amount")
-      setLoading(false)
-      return
-    }
-
-    if (!narration.trim()) {
-      setError("Please provide a narration for your payment")
-      setLoading(false)
-      return
-    }
-
-    try {
-      // Initialize payment with backend
-      const response = await fetch("/api/payments/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          amount,
-          currency,
-          narration,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to initialize payment")
-      }
-
-      // Load Paystack inline script
-      const script = document.createElement("script")
-      script.src = "https://js.paystack.co/v1/inline.js"
-      script.onload = () => {
-        interface PaystackSetupOptions {
-          key: string | undefined
-          email: string
-          amount: number
-          currency: string
-          ref: string
-          callback: (response: { reference: string }) => void
-          onClose: () => void
-        }
-        const paystackPop = window.PaystackPop as {
-          setup: (options: PaystackSetupOptions) => { openIframe: () => void }
-        }
-        const handler = paystackPop.setup({
-          key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-          email: email,
-          amount: data.amount,
-          currency: currency,
-          ref: data.reference,
-          callback: (response: { reference: string }) => {
-            // Payment successful
-            onSuccess?.(response.reference)
-            // Redirect to success page
-            window.location.href = `/payment/success?reference=${response.reference}`
-          },
-          onClose: () => {
-            setLoading(false)
-            setError("Payment was cancelled")
-          },
-        })
-        handler.openIframe()
-      }
-      document.head.appendChild(script)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
-      onError?.(err instanceof Error ? err.message : "An error occurred")
-      setLoading(false)
-    }
+  // Seerbit payment options based on their hook documentation
+  const options = {
+    public_key: process.env.NEXT_PUBLIC_SEERBIT_PUBLIC_KEY!,
+    amount: amount,
+    tranref: reference,
+    currency: currency,
+    email: email,
+    full_name: name,
+    mobile_no: "", // Optional - you can add mobile field if needed
+    description: narration,
+    tokenize: false,
+    planId: "",
+    pocketId: "",
+    vendorId: "",
+    customization: {
+      theme: {
+        border_color: "#0c347d",
+        background_color: "#ffffff",
+        button_color: "#0c347d",
+      },
+      payment_method: ["card", "account", "transfer", "wallet", "ussd"],
+      display_fee: true,
+      display_type: "embed", // Using embed as per your example
+      logo: "", // Optional - you can add your logo URL
+    },
   }
+
+  // Callback handlers as per Seerbit hook documentation
+  const close = () => {
+    console.log("Checkout closed");
+    setError("Payment was cancelled");
+  }
+
+  const callback = async (response: { status?: string; code?: string; reference?: string }, closeCheckout: () => void) => {
+    console.log("Payment response:", response);
+    
+    if (response.status === "success" || response.code === "00") {
+      try {
+        // Store successful payment in Supabase
+        const paymentRecord = {
+          reference: response.reference || reference,
+          user_email: email,
+          name: name,
+          narration: narration,
+          amount: amount,
+          currency: currency,
+          status: "success",
+          gateway_response: JSON.stringify(response),
+          transaction_id: response.reference || reference,
+        };
+
+        const { data, error } = await fetch("/api/payments/record", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentRecord),
+        }).then(res => res.json());
+
+        if (error) {
+          console.error("Failed to record payment:", error);
+        } else {
+          console.log("Payment recorded successfully:", data);
+        }
+
+        onSuccess?.(response.reference || reference);
+        // Redirect to success page
+        window.location.href = `/payment/success?reference=${response.reference || reference}`;
+      } catch (err) {
+        console.error("Error recording payment:", err);
+        // Still redirect on success even if recording fails
+        onSuccess?.(response.reference || reference);
+        window.location.href = `/payment/success?reference=${response.reference || reference}`;
+      }
+    } else {
+      // Record failed payment
+      try {
+        const paymentRecord = {
+          reference: reference,
+          user_email: email,
+          name: name,
+          narration: narration,
+          amount: amount,
+          currency: currency,
+          status: "failed",
+          gateway_response: JSON.stringify(response),
+        };
+
+        await fetch("/api/payments/record", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentRecord),
+        });
+      } catch (err) {
+        console.error("Error recording failed payment:", err);
+      }
+
+      setError("Payment failed. Please try again.");
+      onError?.("Payment failed");
+    }
+    
+    // Close checkout after 2 seconds as per your example
+    setTimeout(() => closeCheckout(), 2000);
+  }
+
+  // Initialize Seerbit payment using the hook
+  const initializePayment = useSeerbitPayment(options, callback, close);
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
@@ -156,12 +183,12 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
             Secure Checkout
           </h2>
         </div>
-        <p className="text-gray-600 text-center">Complete your payment securely with Paystack</p>
+        <p className="text-gray-600 text-center">Complete your payment securely with Seerbit</p>
       </div>
 
       {/* Card Content */}
       <div className="p-6">
-        <form onSubmit={handlePayment} className="space-y-6">
+        <div className="space-y-6">
           {/* Name Field */}
           <div className="space-y-2">
             <label htmlFor="name" className="block text-sm font-medium" style={{ color: "#121212" }}>
@@ -174,8 +201,7 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
                 e.target.style.borderColor = "#0c347d";
                 e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
@@ -199,8 +225,7 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
                 e.target.style.borderColor = "#0c347d"
                 e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
@@ -226,7 +251,6 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
                     value={type.id}
                     checked={paymentType === type.id}
                     onChange={(e) => setPaymentType(e.target.value)}
-                    disabled={loading}
                     className="w-4 h-4 text-mainYellow border-gray-300 focus:ring-mainYellow"
                     style={{ accentColor: "#0c347d" }}
                   />
@@ -248,8 +272,7 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
               value={narration}
               onChange={(e) => setNarration(e.target.value)}
               required
-              disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
                 e.target.style.borderColor = "#0c347d"
                 e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
@@ -280,8 +303,7 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
               min="100"
               step="100"
               required
-              disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-lg font-semibold"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-lg font-semibold"
               onFocus={(e) => {
                 e.target.style.borderColor = "#0c347d"
                 e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
@@ -301,8 +323,7 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
                     key={presetAmount}
                     type="button"
                     onClick={() => handlePresetAmountClick(presetAmount)}
-                    disabled={loading}
-                    className={`px-4 py-2 text-sm font-medium rounded-md border transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`px-4 py-2 text-sm font-medium rounded-md border transition-all duration-200 ${
                       amount === presetAmount
                         ? "border-transparent text-white shadow-sm"
                         : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
@@ -312,13 +333,13 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
                       borderColor: amount === presetAmount ? "#0c347d" : undefined,
                     }}
                     onMouseEnter={(e) => {
-                      if (amount !== presetAmount && !loading) {
+                      if (amount !== presetAmount) {
                         e.currentTarget.style.backgroundColor = "#f9fafb"
                         e.currentTarget.style.borderColor = "#0c347d"
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (amount !== presetAmount && !loading) {
+                      if (amount !== presetAmount) {
                         e.currentTarget.style.backgroundColor = "white"
                         e.currentTarget.style.borderColor = "#d1d5db"
                       }
@@ -347,37 +368,20 @@ export function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess
             </div>
           )}
 
+          {/* Payment Button using Seerbit hook */}
           <button
-            type="submit"
-            disabled={loading || !email || amount <= 0 || !narration.trim()}
-            className="w-full flex items-center justify-center px-4 py-3 text-white font-semibold rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
+            type="button"
+            disabled={!email || amount <= 0 || !narration.trim()}
+            onClick={initializePayment}
+            className="w-full flex items-center justify-center px-4 py-3 text-white font-semibold rounded-md transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: loading || !email || amount <= 0 || !narration.trim() ? "#9ca3af" : "#0c347d",
-            }}
-            onMouseEnter={(e) => {
-              if (!loading && email && amount > 0 && narration.trim()) {
-                e.currentTarget.style.backgroundColor = "#0a2d6b"
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading && email && amount > 0 && narration.trim()) {
-                e.currentTarget.style.backgroundColor = "#0c347d"
-              }
+              backgroundColor: !email || amount <= 0 || !narration.trim() ? "#9ca3af" : "#0c347d",
             }}
           >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              `Pay ${currency} ${amount.toLocaleString()}`
-            )}
+            Pay {currency} {amount.toLocaleString()}
           </button>
-        </form>
 
-        <div className="mt-4 text-xs text-gray-500 text-center">
-          <p>🔒 Your payment is secured by Paystack</p>
+          
         </div>
       </div>
     </div>

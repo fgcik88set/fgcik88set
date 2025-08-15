@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { generateReference, formatAmount } from "@/lib/paystack"
+import { generateReference, formatAmount, generateSeerbitHash } from "@/lib/seerbit"
 import { createPayment } from "@/lib/database"
 
 export async function POST(request: NextRequest) {
@@ -28,27 +28,40 @@ export async function POST(request: NextRequest) {
     const reference = generateReference()
     const formattedAmount = formatAmount(amount)
 
-    // Initialize payment with Paystack
-    const paystackResponse = await fetch("https://api.paystack.co/transaction/initialize", {
+    // Generate Seerbit hash for security
+    const hashData = `${process.env.NEXT_PUBLIC_SEERBIT_PUBLIC_KEY}${reference}${formattedAmount}${currency}${email}`
+    const hash = generateSeerbitHash(hashData)
+
+    // Initialize payment with Seerbit - using the correct working endpoint
+    const seerbitResponse = await fetch("https://seerbitapi.com/api/v2/seerbit/checkout", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email,
-        name,
+        publicKey: process.env.NEXT_PUBLIC_SEERBIT_PUBLIC_KEY,
         amount: formattedAmount,
-        currency,
-        reference,
-        callback_url: `${process.env.NEXTAUTH_URL}/payment/success`,
+        currency: currency,
+        country: "NG",
+        reference: reference,
+        email: email,
+        narration: narration,
+        callbackUrl: `${process.env.NEXTAUTH_URL}/payment/success`,
+        hash: hash,
+        paymentType: "card",
+        channelType: "card",
+        deviceType: "web",
+        source: "web",
+        retry: false,
+        redirectUrl: `${process.env.NEXTAUTH_URL}/payment/success`,
       }),
     })
 
-    const paystackData = await paystackResponse.json()
+    const seerbitData = await seerbitResponse.json()
 
-    if (!paystackData.status) {
-      return NextResponse.json({ error: paystackData.message || "Failed to initialize payment" }, { status: 400 })
+    if (seerbitData.code !== "00" && seerbitData.status !== "success") {
+      console.error("Seerbit API Error:", seerbitData)
+      return NextResponse.json({ error: seerbitData.message || "Failed to initialize payment" }, { status: 400 })
     }
 
     // Store payment record in database using Vercel Postgres
@@ -71,8 +84,9 @@ export async function POST(request: NextRequest) {
       status: true,
       reference,
       amount: formattedAmount,
-      authorization_url: paystackData.data.authorization_url,
-      access_code: paystackData.data.access_code,
+      authorization_url: seerbitData.data?.payments?.redirectLink || seerbitData.data?.payments?.checkoutUrl || seerbitData.data?.checkoutUrl,
+      access_code: seerbitData.data?.payments?.code || seerbitData.data?.code,
+      checkout_url: seerbitData.data?.payments?.checkoutUrl || seerbitData.data?.checkoutUrl,
     })
   } catch (error) {
     console.error("Payment initialization error:", error)
