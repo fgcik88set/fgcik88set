@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import {
   Users,
   GraduationCap,
@@ -47,11 +46,8 @@ export default function PaymentPageDisplay() {
     if (gateway === "seerbit") {
       window.location.href = "/payment/checkout";
     } else if (gateway === "paypal") {
-      // TODO: Implement Paystack checkout
-      toast.info("Paystack integration coming soon!", {
-        description: "We're working on integrating Paystack payments. Please use Seerbit for now.",
-        duration: 4000,
-      });
+      // Redirect to Paystack checkout
+      window.location.href = "/payment/paystack-checkout";
     }
     setShowPaymentModal(false);
   };
@@ -254,7 +250,7 @@ export default function PaymentPageDisplay() {
                 </div>
               </button>
 
-              {/* PayPal Option */}
+              {/* Paystack Option */}
               <button
                 onClick={() => handleGatewaySelect("paypal")}
                 className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"

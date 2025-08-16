@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { CreditCard } from "lucide-react"
-import { useAuth } from "@/providers/session-provider"
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, CreditCard } from "lucide-react";
+import { useAuth } from "@/providers/session-provider";
+import Link from "next/link";
 
 // Type declaration for SeerbitPay global
 declare global {
@@ -12,22 +13,39 @@ declare global {
 }
 
 interface CheckoutFormProps {
-  initialAmount?: number
-  currency?: string
-  onSuccess?: (reference: string) => void
-  onError?: (error: string) => void
+  initialAmount?: number;
+  currency?: string;
+  onSuccess?: (reference: string) => void;
+  onError?: (error: string) => void;
 }
 
 const PAYMENT_TYPES = [
-  { id: "dues", label: "Annual Dues", narration: "Annual Dues and Registration Payment" },
-  { id: "donation", label: "Donation", narration: "Donation to Alumni Association" },
-  { id: "event", label: "Event Payment", narration: "Event Registration and Payment" },
-  { id: "other", label: "Other Payments", narration: "" }
-]
+  {
+    id: "dues",
+    label: "Dues & Registration",
+    narration: "Dues and Registration Payment",
+  },
+  {
+    id: "welfare",
+    label: "Welfare",
+    narration: "Welfare Payment",
+  },
+  {
+    id: "event",
+    label: "Event Payment",
+    narration: "Event Registration and Payment",
+  },
+  { id: "other", label: "Other Payments", narration: "" },
+];
 
-const PRESET_AMOUNTS = [1000, 2500, 5000, 10000, 25000, 50000]
+const PRESET_AMOUNTS = [1000, 2500, 5000, 10000, 25000, 50000];
 
-export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", onSuccess: _onSuccess, onError: _onError }: CheckoutFormProps) {
+export default function CheckoutForm({
+  initialAmount = 5000,
+  currency = "NGN",
+  onSuccess: _onSuccess,
+  onError: _onError,
+}: CheckoutFormProps) {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -40,20 +58,20 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
 
   // Ensure we're on client side
   useEffect(() => {
-    setIsClient(true)
-    
+    setIsClient(true);
+
     // Load Seerbit dynamically
     const loadSeerbit = async () => {
       try {
-        await import("seerbit-reactjs")
-        setSeerbitLoaded(true)
+        await import("seerbit-reactjs");
+        setSeerbitLoaded(true);
       } catch (error) {
-        console.error("Failed to load Seerbit:", error)
+        console.error("Failed to load Seerbit:", error);
       }
-    }
+    };
 
-    loadSeerbit()
-  }, [])
+    loadSeerbit();
+  }, []);
 
   // Auto-update name and email from session
   React.useEffect(() => {
@@ -65,7 +83,7 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
 
   // Update narration when payment type changes
   React.useEffect(() => {
-    const selectedType = PAYMENT_TYPES.find(type => type.id === paymentType);
+    const selectedType = PAYMENT_TYPES.find((type) => type.id === paymentType);
     if (selectedType) {
       if (paymentType === "other") {
         setNarration("");
@@ -76,16 +94,16 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
   }, [paymentType]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number.parseFloat(e.target.value) || 0
-    setAmount(value)
-  }
+    const value = Number.parseFloat(e.target.value) || 0;
+    setAmount(value);
+  };
 
   const handlePresetAmountClick = (presetAmount: number) => {
-    setAmount(presetAmount)
-  }
+    setAmount(presetAmount);
+  };
 
   // Generate reference for this payment
-  const reference = `sb_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+  const reference = `sb_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
   // Handle payment initialization
   const handlePaymentClick = async () => {
@@ -96,10 +114,10 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
 
     try {
       // Load Seerbit script dynamically
-      const script = document.createElement('script');
-      script.src = 'https://checkout.seerbitapi.com/api/v2/seerbit.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.seerbitapi.com/api/v2/seerbit.js";
       script.async = true;
-      
+
       script.onload = () => {
         // Seerbit payment options
         const options = {
@@ -126,17 +144,25 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
             display_type: "embed",
             logo: "",
           },
-        }
+        };
 
         // Callback handlers
         const close = () => {
           console.log("Checkout closed");
           setError("Payment was cancelled");
-        }
+        };
 
-        const callback = async (response: { status?: string; code?: string; reference?: string; message?: string }, closeCheckout: () => void) => {
+        const callback = async (
+          response: {
+            status?: string;
+            code?: string;
+            reference?: string;
+            message?: string;
+          },
+          closeCheckout: () => void
+        ) => {
           console.log("Payment response:", response);
-          
+
           if (response.status === "success" || response.code === "00") {
             try {
               // Store successful payment in Supabase
@@ -158,7 +184,7 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify(paymentRecord),
-              }).then(res => res.json());
+              }).then((res) => res.json());
 
               if (error) {
                 console.error("Failed to record payment:", error);
@@ -203,10 +229,10 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
             setError("Payment failed. Please try again.");
             _onError?.("Payment failed");
           }
-          
+
           // Close checkout after 2 seconds
           setTimeout(() => closeCheckout(), 2000);
-        }
+        };
 
         // Initialize Seerbit payment using the global SeerbitPay constructor
         if (window.SeerbitPay) {
@@ -248,20 +274,30 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-200">
       {/* Card Header */}
       <div className="p-6 border-b border-gray-200">
+        <Link
+          href="/payment"
+          className="inline-flex items-center text-mainYellow hover:text-yellow-600 mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Payment
+        </Link>
+
         <div className="flex items-center gap-2 justify-center mb-2">
           <CreditCard className="h-5 w-5" style={{ color: "#0c347d" }} />
           <h2 className="text-xl font-bold" style={{ color: "#0c347d" }}>
             Secure Checkout
           </h2>
         </div>
-        <p className="text-gray-600 text-center">Complete your payment securely with Seerbit</p>
+        <p className="text-gray-600 text-center">
+          Complete your payment securely with Seerbit
+        </p>
       </div>
 
       {/* Card Content */}
@@ -269,7 +305,11 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
         <form className="space-y-6">
           {/* Name Field */}
           <div className="space-y-2">
-            <label htmlFor="name" className="block text-sm font-medium" style={{ color: "#121212" }}>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium"
+              style={{ color: "#121212" }}
+            >
               Name
             </label>
             <input
@@ -279,7 +319,7 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-sm"
               onFocus={(e) => {
                 e.target.style.borderColor = "#0c347d";
                 e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
@@ -293,7 +333,11 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
 
           {/* Email Field */}
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-medium" style={{ color: "#121212" }}>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium"
+              style={{ color: "#121212" }}
+            >
               Email Address
             </label>
             <input
@@ -303,26 +347,32 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-sm"
               onFocus={(e) => {
-                e.target.style.borderColor = "#0c347d"
-                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
+                e.target.style.borderColor = "#0c347d";
+                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db"
-                e.target.style.boxShadow = "none"
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
               }}
             />
           </div>
 
           {/* Payment Type Selection */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium" style={{ color: "#121212" }}>
+            <label
+              className="block text-sm font-medium"
+              style={{ color: "#121212" }}
+            >
               Payment Type
             </label>
             <div className="space-y-2">
               {PAYMENT_TYPES.map((type) => (
-                <label key={type.id} className="flex items-center space-x-3 cursor-pointer">
+                <label
+                  key={type.id}
+                  className="flex items-center space-x-3 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="paymentType"
@@ -340,24 +390,32 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
 
           {/* Narration Field */}
           <div className="space-y-2">
-            <label htmlFor="narration" className="block text-sm font-medium" style={{ color: "#121212" }}>
+            <label
+              htmlFor="narration"
+              className="block text-sm font-medium"
+              style={{ color: "#121212" }}
+            >
               Narration
             </label>
             <input
               id="narration"
               type="text"
-              placeholder={paymentType === "other" ? "Please describe your payment purpose..." : "Payment narration"}
+              placeholder={
+                paymentType === "other"
+                  ? "Please describe your payment purpose..."
+                  : "Payment narration"
+              }
               value={narration}
               onChange={(e) => setNarration(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-sm"
               onFocus={(e) => {
-                e.target.style.borderColor = "#0c347d"
-                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
+                e.target.style.borderColor = "#0c347d";
+                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db"
-                e.target.style.boxShadow = "none"
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
               }}
             />
             {paymentType !== "other" && (
@@ -368,7 +426,10 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
           </div>
 
           <div className="space-y-4">
-            <label className="block text-sm font-medium" style={{ color: "#121212" }}>
+            <label
+              className="block text-sm font-medium"
+              style={{ color: "#121212" }}
+            >
               Amount ({currency})
             </label>
 
@@ -381,14 +442,14 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
               min="100"
               step="100"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-lg font-semibold"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-transparent text-sm font-semibold"
               onFocus={(e) => {
-                e.target.style.borderColor = "#0c347d"
-                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`
+                e.target.style.borderColor = "#0c347d";
+                e.target.style.boxShadow = `0 0 0 2px rgba(12, 52, 125, 0.2)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db"
-                e.target.style.boxShadow = "none"
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
               }}
             />
 
@@ -407,19 +468,21 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
                         : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                     }`}
                     style={{
-                      backgroundColor: amount === presetAmount ? "#0c347d" : undefined,
-                      borderColor: amount === presetAmount ? "#0c347d" : undefined,
+                      backgroundColor:
+                        amount === presetAmount ? "#0c347d" : undefined,
+                      borderColor:
+                        amount === presetAmount ? "#0c347d" : undefined,
                     }}
                     onMouseEnter={(e) => {
                       if (amount !== presetAmount) {
-                        e.currentTarget.style.backgroundColor = "#f9fafb"
-                        e.currentTarget.style.borderColor = "#0c347d"
+                        e.currentTarget.style.backgroundColor = "#f9fafb";
+                        e.currentTarget.style.borderColor = "#0c347d";
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (amount !== presetAmount) {
-                        e.currentTarget.style.backgroundColor = "white"
-                        e.currentTarget.style.borderColor = "#d1d5db"
+                        e.currentTarget.style.backgroundColor = "white";
+                        e.currentTarget.style.borderColor = "#d1d5db";
                       }
                     }}
                   >
@@ -433,7 +496,10 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
             <div className="bg-gray-50 p-3 rounded-md">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Total Amount:</span>
-                <span className="text-xl font-bold" style={{ color: "#0c347d" }}>
+                <span
+                  className="text-xl font-bold"
+                  style={{ color: "#0c347d" }}
+                >
                   {currency} {amount.toLocaleString()}
                 </span>
               </div>
@@ -449,14 +515,21 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
           {/* Payment Button */}
           <button
             type="button"
-            disabled={!email || amount <= 0 || !narration.trim() || !seerbitLoaded}
+            disabled={
+              !email || amount <= 0 || !narration.trim() || !seerbitLoaded
+            }
             onClick={handlePaymentClick}
             className="w-full flex items-center justify-center px-4 py-3 text-white font-semibold rounded-md transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: !email || amount <= 0 || !narration.trim() || !seerbitLoaded ? "#9ca3af" : "#0c347d",
+              backgroundColor:
+                !email || amount <= 0 || !narration.trim() || !seerbitLoaded
+                  ? "#9ca3af"
+                  : "#0c347d",
             }}
           >
-            {!seerbitLoaded ? "Loading..." : `Pay ${currency} ${amount.toLocaleString()}`}
+            {!seerbitLoaded
+              ? "Loading..."
+              : `Pay ${currency} ${amount.toLocaleString()}`}
           </button>
 
           <div className="mt-4 text-xs text-gray-500 text-center">
@@ -465,5 +538,5 @@ export default function CheckoutForm({ initialAmount = 5000, currency = "NGN", o
         </form>
       </div>
     </div>
-  )
+  );
 }
