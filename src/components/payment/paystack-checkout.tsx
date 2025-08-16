@@ -204,27 +204,50 @@ export default function PaystackCheckout({
       window.__PAYSTACK_PUBLIC_KEY__ = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
     }
     
-    // Multiple CDN fallbacks for Paystack with CORS handling
-    const cdnUrls = [
+    // Production-optimized CDN strategy
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    
+    // For production, use the most reliable CDN first
+    const cdnUrls = isDevelopment ? [
       'https://js.paystack.co/v1/inline.js',
+      'https://cdn.paystack.co/v1/inline.js',
+      'https://checkout.paystack.co/v1/inline.js'
+    ] : [
+      'https://js.paystack.co/v1/inline.js', // Most reliable for production
       'https://cdn.paystack.co/v1/inline.js',
       'https://checkout.paystack.co/v1/inline.js'
     ]
     
-    // For development, try to load without CORS restrictions first
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    // Production: Preload script for better performance
+    if (!isDevelopment) {
+      const preloadLink = document.createElement('link')
+      preloadLink.rel = 'preload'
+      preloadLink.as = 'script'
+      preloadLink.href = cdnUrls[0]
+      preloadLink.crossOrigin = 'anonymous'
+      document.head.appendChild(preloadLink)
+    }
     
     let currentCdnIndex = 0
+    let retryCount = 0
+    const maxRetries = 2
     
     const loadScript = (cdnIndex: number) => {
       if (cdnIndex >= cdnUrls.length) {
         console.error("All CDN fallbacks failed")
         
-        // Try to provide a helpful error message
-        if (isDevelopment) {
-          setError("CORS error detected in development. Try: 1) Using Chrome with --disable-web-security, 2) Using Firefox, 3) Testing in production, or 4) Contact support for a development solution.")
+        // Production: Try alternative loading method
+        if (!isDevelopment) {
+          console.log("Attempting alternative script loading method for production...")
+          tryAlternativeLoading()
+          return
+        }
+        
+        // Production-specific error handling
+        if (!isDevelopment) {
+          setError("Payment system temporarily unavailable. Please try again in a few minutes or contact support if the issue persists.")
         } else {
-          setError("Unable to load payment system. This might be due to network issues or firewall restrictions. Please try again later or contact support.")
+          setError("CORS error detected in development. Try: 1) Using Chrome with --disable-web-security, 2) Using Firefox, 3) Testing in production, or 4) Contact support for a development solution.")
         }
         setLoading(false)
         return
@@ -234,12 +257,13 @@ export default function PaystackCheckout({
       script.src = cdnUrls[cdnIndex]
       script.async = true
       
-      // In development, try without crossOrigin first
+      // Production: Always use crossOrigin for security
+      // Development: Try without crossOrigin first
       if (!isDevelopment) {
         script.crossOrigin = "anonymous"
       }
       
-      console.log(`Trying CDN ${cdnIndex + 1}: ${cdnUrls[cdnIndex]} (Development: ${isDevelopment})`)
+      console.log(`Trying CDN ${cdnIndex + 1}: ${cdnUrls[cdnIndex]} (Production: ${!isDevelopment})`)
       
       script.onload = () => {
         clearTimeout(timeout)
@@ -247,7 +271,9 @@ export default function PaystackCheckout({
         console.log("Window.PaystackPop after load:", window.PaystackPop)
         console.log("PaystackPop.setup type:", typeof window.PaystackPop?.setup)
         
-        // Wait a bit more to ensure PaystackPop is fully available
+        // Production: Shorter wait time for better UX
+        const waitTime = isDevelopment ? 1000 : 500
+        
         setTimeout(() => {
           if (window.PaystackPop && typeof window.PaystackPop.setup === 'function') {
             console.log("PaystackPop is ready, initializing...")
@@ -255,18 +281,50 @@ export default function PaystackCheckout({
             initializePaystack()
           } else {
             console.error("PaystackPop.setup is not a function:", window.PaystackPop)
-            setError("Payment system failed to initialize properly. Please try again.")
-            setLoading(false)
+            
+            // Production: Retry logic for initialization issues
+            if (!isDevelopment && retryCount < maxRetries) {
+              retryCount++
+              console.log(`Retrying initialization (attempt ${retryCount}/${maxRetries})...`)
+              setTimeout(() => {
+                if (window.PaystackPop && typeof window.PaystackPop.setup === 'function') {
+                  console.log("PaystackPop ready on retry, initializing...")
+                  setLoading(false)
+                  initializePaystack()
+                } else {
+                  setError("Payment system initialization failed. Please refresh the page and try again.")
+                  setLoading(false)
+                }
+              }, 1000)
+            } else {
+              // Production-specific error message
+              if (!isDevelopment) {
+                setError("Payment system initialization failed. Please refresh the page and try again.")
+              } else {
+                setError("Payment system failed to initialize properly. Please try again.")
+              }
+              setLoading(false)
+            }
           }
-        }, 1000) // Wait 1 second for full initialization
+        }, waitTime)
       }
 
       script.onerror = (error) => {
         console.error(`Failed to load Paystack script from ${cdnUrls[cdnIndex]}:`, error)
         
-        // Check if it's a CORS error
-        if (error.toString().includes('CORS') || error.toString().includes('Access-Control-Allow-Origin')) {
+        // Enhanced CORS error detection for production
+        const errorString = error.toString().toLowerCase()
+        const isCorsError = errorString.includes('cors') || 
+                           errorString.includes('access-control-allow-origin') ||
+                           errorString.includes('blocked by cors policy')
+        
+        if (isCorsError) {
           console.warn(`CORS error detected for ${cdnUrls[cdnIndex]}, trying next CDN...`)
+          
+          // Production: Log CORS issues for debugging
+          if (!isDevelopment) {
+            console.error("Production CORS error detected. This may indicate a CDN configuration issue.")
+          }
         }
         
         // Try next CDN
@@ -277,17 +335,25 @@ export default function PaystackCheckout({
         } else {
           console.error("All CDN fallbacks failed")
           
-          // Provide specific guidance for CORS issues
-          if (isDevelopment) {
-            setError("CORS error detected. This is common in development. Try: 1) Using Chrome with --disable-web-security, 2) Using Firefox, 3) Testing in production, or 4) Contact support for a development solution.")
+          // Production: Try alternative loading method
+          if (!isDevelopment) {
+            console.log("Attempting alternative script loading method for production...")
+            tryAlternativeLoading()
+            return
+          }
+          
+          // Production-specific error guidance
+          if (!isDevelopment) {
+            setError("Payment system is currently unavailable. This may be due to network restrictions or CDN issues. Please try again later or contact support.")
           } else {
-            setError("Failed to load payment system. Please check your internet connection and try again.")
+            setError("CORS error detected. This is common in development. Try: 1) Using Chrome with --disable-web-security, 2) Using Firefox, 3) Testing in production, or 4) Contact support for a development solution.")
           }
           setLoading(false)
         }
       }
 
-      // Add timeout to prevent infinite loading
+      // Production: Shorter timeout for better UX
+      const timeoutDuration = isDevelopment ? 10000 : 8000
       const timeout = setTimeout(() => {
         if (script.parentNode) {
           console.error(`CDN ${cdnIndex + 1} timeout: ${cdnUrls[cdnIndex]}`)
@@ -299,13 +365,63 @@ export default function PaystackCheckout({
             console.log(`Trying next CDN fallback due to timeout...`)
             loadScript(currentCdnIndex)
           } else {
+            // Production: Try alternative loading method
+            if (!isDevelopment) {
+              console.log("Attempting alternative script loading method for production...")
+              tryAlternativeLoading()
+              return
+            }
+            
             setError("Payment system took too long to load. Please try again.")
             setLoading(false)
           }
         }
-      }, 10000) // 10 second timeout per CDN
+      }, timeoutDuration)
 
       document.head.appendChild(script)
+    }
+    
+    // Alternative loading method for production CORS issues
+    const tryAlternativeLoading = () => {
+      console.log("Trying alternative script loading method...")
+      
+      // Method 1: Try loading without crossOrigin
+      const altScript = document.createElement('script')
+      altScript.src = 'https://js.paystack.co/v1/inline.js'
+      altScript.async = true
+      // Don't set crossOrigin for this attempt
+      
+      altScript.onload = () => {
+        console.log("Alternative loading method successful!")
+        setTimeout(() => {
+          if (window.PaystackPop && typeof window.PaystackPop.setup === 'function') {
+            console.log("PaystackPop is ready via alternative method, initializing...")
+            setLoading(false)
+            initializePaystack()
+          } else {
+            console.error("Alternative method failed - PaystackPop not ready")
+            setError("Payment system is currently unavailable. Please try again later or contact support.")
+            setLoading(false)
+          }
+        }, 500)
+      }
+      
+      altScript.onerror = () => {
+        console.error("Alternative loading method also failed")
+        setError("Payment system is currently unavailable. This may be due to network restrictions or CDN issues. Please try again later or contact support.")
+        setLoading(false)
+      }
+      
+      // Add timeout for alternative method
+      setTimeout(() => {
+        if (altScript.parentNode) {
+          altScript.remove()
+          setError("Payment system is currently unavailable. Please try again later or contact support.")
+          setLoading(false)
+        }
+      }, 10000)
+      
+      document.head.appendChild(altScript)
     }
     
     // Start with first CDN
