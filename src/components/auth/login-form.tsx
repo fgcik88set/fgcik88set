@@ -49,16 +49,16 @@ export function LoginForm() {
     }
   }
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await signIn("google", { callbackUrl: "/" })
-    } catch (error) {
-      setError("Google sign in failed")
-      setIsLoading(false)
-      console.log(error)
-    }
-  }
+  // const handleGoogleSignIn = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     await signIn("google", { callbackUrl: "/" })
+  //   } catch (error) {
+  //     setError("Google sign in failed")
+  //     setIsLoading(false)
+  //     console.log(error)
+  //   }
+  // }
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200">
@@ -148,7 +148,7 @@ export function LoginForm() {
         </div>
 
         {/* Google Sign In Button */}
-        <button
+        {/* <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
@@ -173,18 +173,18 @@ export function LoginForm() {
             />
           </svg>
           Continue with Google
-        </button>
+        </button> */}
       </form>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+      {/* <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
         <p className="text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link href="/auth/register" className="text-blue-600 hover:text-blue-500 font-medium transition-colors">
             Sign up
           </Link>
         </p>
-      </div>
+      </div> */}
     </div>
   )
 }

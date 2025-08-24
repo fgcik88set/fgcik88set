@@ -125,7 +125,7 @@ export default function FilterNavbar({
           {/* Filter Toggle for Secondary Filters */}
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors text-sm ${
               isFilterOpen || hasActiveFilters
                 ? "bg-blue-700 text-white border-blue-700"
                 : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"

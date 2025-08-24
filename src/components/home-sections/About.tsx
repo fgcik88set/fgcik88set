@@ -34,6 +34,7 @@ export default function AboutSection() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       className="relative w-full h-auto pt-16 pb-20 overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100"
     >

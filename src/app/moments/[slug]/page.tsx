@@ -1,7 +1,7 @@
 import { getMomentBySlug, getMoments } from "@/sanity/sanity-utils";
 import { notFound } from "next/navigation";
 import MomentsCarousel from "@/components/memories/moments-carousel";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Moment {
@@ -25,7 +25,7 @@ interface MomentPageProps {
 
 export async function generateStaticParams() {
   const moments = await getMoments();
-  
+
   return moments.map((moment: Moment) => ({
     slug: moment.slug,
   }));
@@ -41,10 +41,10 @@ export default async function MomentPage({ params }: MomentPageProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -77,13 +77,8 @@ export default async function MomentPage({ params }: MomentPageProps) {
 
         {/* Carousel Section */}
         <div className="mb-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Gallery
-          </h2>
-          <MomentsCarousel 
-            images={moment.images} 
-            title={moment.title}
-          />
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Gallery</h2>
+          <MomentsCarousel images={moment.images} title={moment.title} />
         </div>
 
         {/* Description Section */}
@@ -98,6 +93,15 @@ export default async function MomentPage({ params }: MomentPageProps) {
           </div>
         </div>
       </div>
+      <div className="flex md:hidden items-center justify-center gap-1 border border-darkBlue p-2 rounded-2xl w-fit mx-auto mb-4">
+        <ChevronLeft className="w-4 h-4 text-darkBlue" />
+        <Link
+          href="/moments"
+          className="text-darkBlue hover:text-darkBlue/90 font-medium transition-colors duration-200"
+        >
+          Go Back
+        </Link>
+      </div>
     </main>
   );
-} 
+}

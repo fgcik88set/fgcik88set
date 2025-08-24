@@ -236,7 +236,7 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <Link
                 href={
-                  status === "authenticated" ? "/payment" : "/auth/register"
+                  status === "authenticated" ? "/payment" : "/auth/login"
                 }
                 className="w-30 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
               >
@@ -347,7 +347,7 @@ export default function Header() {
             ))}
 
             <Link
-              href={status === "authenticated" ? "/payment" : "/auth/register"}
+              href={status === "authenticated" ? "/payment" : "/auth/login"}
               className="w-full bg-white text-darkBlue py-3 px-6 rounded-full text-center font-medium hover:bg-gray-100 mt-4"
               onClick={toggleMenu}
             >

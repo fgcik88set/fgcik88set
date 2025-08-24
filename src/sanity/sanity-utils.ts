@@ -125,12 +125,22 @@ export async function getMoments() {
   });
 
   return client.fetch(
-    groq`*[_type == "moments"] | order(date desc) {
+    groq`*[_type == "moments"] | order(order asc, date desc) {
         "id": _id,
         "title": title,
         "description": description,
         "date": date,
         "slug": slug.current,
+        "isCategory": isCategory,
+        "subCategories": subCategories[]{
+          "title": title,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        },
         "images": images[]{
           "url": asset->url,
           "alt": alt,
@@ -154,6 +164,16 @@ export async function getMomentBySlug(slug: string) {
         "description": description,
         "date": date,
         "slug": slug.current,
+        "isCategory": isCategory,
+        "subCategories": subCategories[]{
+          "title": title,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        },
         "images": images[]{
           "url": asset->url,
           "alt": alt,
@@ -161,6 +181,57 @@ export async function getMomentBySlug(slug: string) {
         }
     }`,
     { slug }
+  );
+}
+
+export async function getMomentCategories() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && isCategory == true] | order(order asc, title asc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "slug": slug.current,
+        "subCategoriesCount": count(subCategories),
+        "subCategories": subCategories[]{
+          "title": title,
+          "slug": slug.current,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        }
+    }`
+  );
+}
+
+export async function getIndividualMoments() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && isCategory != true] | order(order asc, date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`
   );
 }
 
@@ -436,7 +507,7 @@ export async function getMomentsStats() {
   return client.fetch(
     groq`{
       "totalMoments": count(*[_type == "moments"]),
-      "totalImages": sum(*[_type == "moments"]{ "count": count(images) }.count),
+      "totalImages": count(*[_type == "moments"].images[]),
       "yearsActive": 35,
       "totalReunions": count(*[_type == "events" && eventType == "alumni-reunion"])
     }`

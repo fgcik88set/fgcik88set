@@ -27,8 +27,8 @@ const PAYMENT_TYPES = [
   },
   {
     id: "welfare",
-    label: "Welfare",
-    narration: "Welfare Payment",
+    label: "Welfare/Freewill Donation",
+    narration: "Welfare Payment and Freewill Donation",
   },
   {
     id: "event",

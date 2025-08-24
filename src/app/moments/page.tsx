@@ -1,18 +1,16 @@
-import MemoriesGallery from "@/components/memories/memories-gallery"
-import MemoriesHero from "@/components/memories/memories-hero"
-
+// import MemoriesGallery from '@/components/memories/memories-gallery'
+import MemoriesHero from '@/components/memories/memories-hero'
+import MomentsCategories from '@/components/memories/moments-categories'
 
 export const metadata = {
-  title: "Memories | FGC Ikot Ekpene Class of '88",
-  description: "Relive the cherished moments and shared experiences of the FGC Ikot Ekpene Class of '88 alumni.",
+  title: 'Moments | FGC Ikot Ekpene Class of 88',
+  description: 'Explore our precious moments and memories from over the years.',
 }
 
-export default function MemoriesPage() {
-  return (
-    <main className="min-h-screen">
-      <MemoriesHero />
-      <MemoriesGallery />
-      
-    </main>
-  )
+export default function MomentsPage() {
+  return <div>
+     <MemoriesHero />
+     {/* <MemoriesGallery /> */}
+    <MomentsCategories />
+  </div> 
 }

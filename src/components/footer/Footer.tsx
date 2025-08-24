@@ -66,14 +66,14 @@ export default function Footer() {
                 Stay Connected
               </h3>
               <p className="text-white text-center text-sm lg:text-left">
-                For Dues,Registration and welfare-related activities.{" "}
+                Payment of dues, registration and welfare-related activities.{" "}
               </p>
             </div>
             <br />
             <div className="flex items-center justify-center lg:justify-start lg:items-start">
               <Link
                 href={
-                  status === "authenticated" ? "/payment" : "/auth/register"
+                  status === "authenticated" ? "/payment" : "/auth/login"
                 }
                 className="w-fit text-sm text-center bg-white text-darkBlue px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
               >

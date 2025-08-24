@@ -87,7 +87,7 @@ export default function HeroSection() {
 
           <BackgroundButton
             btnWidth="w-fit"
-            link="#"
+            link="#about"
             text="Explore"
           />
         </div>

@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
   },
   experimental: {
   },
+  // Transpile ESM packages for reliable bundling in production
+  transpilePackages: [
+    'sanity',
+    'next-sanity'
+  ],
 };
 
 export default nextConfig;
