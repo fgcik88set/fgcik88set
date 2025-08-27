@@ -66,7 +66,8 @@ export default function Footer() {
                 Stay Connected
               </h3>
               <p className="text-white text-center text-sm lg:text-left">
-                Payment of dues, registration and welfare-related activities.{" "}
+                Payment of dues, registration {" "}
+                and welfare-related activities.
               </p>
             </div>
             <br />
