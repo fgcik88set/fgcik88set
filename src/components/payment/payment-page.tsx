@@ -10,7 +10,7 @@ import {
   Info,
   X,
   Shield,
-  Globe,
+  // Globe,
 } from "lucide-react";
 
 export default function PaymentPageDisplay() {
@@ -251,7 +251,7 @@ export default function PaymentPageDisplay() {
               </button>
 
               {/* Paystack Option */}
-              <button
+              {/* <button
                 onClick={() => handleGatewaySelect("paypal")}
                 className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"
               >
@@ -267,7 +267,7 @@ export default function PaymentPageDisplay() {
                     </div>
                   </div>
                 </div>
-              </button>
+              </button> */}
             </div>
 
             {/* Security Notice */}
