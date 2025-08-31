@@ -2,8 +2,8 @@ import { createClient, groq } from "next-sanity";
 
 export async function getCurrentExecutives() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -23,8 +23,8 @@ export async function getCurrentExecutives() {
 
 export async function getPastExecutives() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -48,8 +48,8 @@ export async function getPastExecutives() {
 
 export async function getCurrentBOT() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -69,8 +69,8 @@ export async function getCurrentBOT() {
 
 export async function getPastBOT() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -94,8 +94,8 @@ export async function getPastBOT() {
 
 export async function getPastTrustees() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -119,8 +119,8 @@ export async function getPastTrustees() {
 
 export async function getMoments() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -152,8 +152,8 @@ export async function getMoments() {
 
 export async function getMomentBySlug(slug: string) {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -186,8 +186,8 @@ export async function getMomentBySlug(slug: string) {
 
 export async function getMomentCategories() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -214,8 +214,8 @@ export async function getMomentCategories() {
 
 export async function getIndividualMoments() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -237,8 +237,8 @@ export async function getIndividualMoments() {
 
 export async function getEvents() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -267,8 +267,8 @@ export async function getEvents() {
 
 export async function getUpcomingEvents() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -297,8 +297,8 @@ export async function getUpcomingEvents() {
 
 export async function getPastEvents() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -327,8 +327,8 @@ export async function getPastEvents() {
 
 export async function getEventBySlug(slug: string) {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -358,8 +358,8 @@ export async function getEventBySlug(slug: string) {
 
 export async function getMemorabilia() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -386,8 +386,8 @@ export async function getMemorabilia() {
 
 export async function getMemorabiliaByCategory(category: string) {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -419,8 +419,8 @@ export async function getMemorabiliaByCategory(category: string) {
 
 export async function getFeaturedMemorabilia() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -447,8 +447,8 @@ export async function getFeaturedMemorabilia() {
 
 export async function getMemorabiliaBySlug(slug: string) {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -477,8 +477,8 @@ export async function getMemorabiliaBySlug(slug: string) {
 // New functions for statistics
 export async function getEventsStats() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -499,8 +499,8 @@ export async function getEventsStats() {
 
 export async function getMomentsStats() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
@@ -516,8 +516,8 @@ export async function getMomentsStats() {
 
 export async function getMemorabiliaStats() {
   const client = createClient({
-    projectId: "nb6nouyz",
-    dataset: "production",
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: "2025-07-18",
   });
 
