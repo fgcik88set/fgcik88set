@@ -10,7 +10,7 @@ import { useAuth } from "@/providers/session-provider";
 
 export default function Footer() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-   const { status } = useAuth();
+  const { status } = useAuth();
 
   const toggleSection = (section: string) => {
     if (expandedSection === section) {
@@ -66,16 +66,13 @@ export default function Footer() {
                 Stay Connected
               </h3>
               <p className="text-white text-center text-sm lg:text-left">
-                Payment of dues, registration {" "}
-                and welfare-related activities.
+                Payment of dues, registration and welfare-related activities.
               </p>
             </div>
             <br />
             <div className="flex items-center justify-center lg:justify-start lg:items-start">
               <Link
-                href={
-                  status === "authenticated" ? "/payment" : "/auth/login"
-                }
+                href={status === "authenticated" ? "/payment" : "/auth/login"}
                 className="w-fit text-sm text-center bg-white text-darkBlue px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
               >
                 Make Payment
@@ -83,7 +80,6 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
 
         {/* Main footer links - mobile accordion */}
         <div className="lg:hidden">
@@ -120,29 +116,34 @@ export default function Footer() {
         </div>
 
         {/* Social links and copyright */}
-        <div className="py-4 flex flex-col md:flex-row justify-center items-center gap-6 border-t border-white">
-          <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-sm text-white">
+        <div className="bg-white w-full h-px my-4"></div>
+
+        <div className="py-4 flex flex-col md:flex-row justify-between items-center text-sm">
+          <div className="md:w-[30%]">
             <p>© {currentYear} FGC IK set 1988. All rights reserved.</p>
-            <div className="flex gap-4">
-              {status === "authenticated" && <Link
+          </div>
+          
+          <div className="md:w-[40%] flex justify-between items-center gap-4">
+            {status === "authenticated" && (
+              <Link
                 href="https://drive.google.com/file/d/1LjZ80oAYSu6WYIgF-lQDsa4_M0QoNvbn/view?usp=drive_link"
                 className="hover:text-mainYellow transition-colors"
               >
                 Download Constitution
-              </Link>}
-              <Link
-                href="/privacy-policy"
-                className="hover:text-mainYellow transition-colors"
-              >
-                Privacy Policy
               </Link>
-              <Link
-                href="/terms"
-                className="hover:text-mainYellow transition-colors"
-              >
-                Terms of Use
-              </Link>
-            </div>
+            )}
+            <Link
+              href="/privacy-policy"
+              className="hover:text-mainYellow transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-mainYellow transition-colors"
+            >
+              Terms of Use
+            </Link>
           </div>
         </div>
       </div>
