@@ -1,14 +1,57 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { currentExecutives } from "../constants/executives-data";
+import { useRef, useEffect, useState } from "react";
 import ExecutiveCard from "./executive-card";
 import { useMobile } from "@/hooks/use-mobile";
 import ExecutiveCarousel from "./executive-carousel";
+import { getCurrentExecutives } from "@/sanity/sanity-utils";
+import { ExecutiveProps } from "../constants/executives-data";
+import { BackgroundButton } from "../buttons/Buttons";
 
 export default function CurrentExecutives() {
   const sectionRef = useRef<HTMLElement>(null);
   const isMobile = useMobile();
+  const [executives, setExecutives] = useState<ExecutiveProps[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExecutives = async () => {
+      try {
+        const data = await getCurrentExecutives();
+
+        // Sort executives to show President and Vice President first
+        const sortedExecutives = data.sort(
+          (a: ExecutiveProps, b: ExecutiveProps) => {
+            const positionOrder = {
+              President: 1,
+              "Vice President": 2,
+              Secretary: 3,
+              Treasurer: 4,
+              "Public Relations Officer": 5,
+              "Welfare Officer": 6,
+              "Projects Coordinator": 7,
+              "Social Secretary": 8,
+            };
+
+            const aOrder =
+              positionOrder[a.position as keyof typeof positionOrder] || 999;
+            const bOrder =
+              positionOrder[b.position as keyof typeof positionOrder] || 999;
+
+            return aOrder - bOrder;
+          }
+        );
+
+        setExecutives(sortedExecutives);
+      } catch (error) {
+        console.error("Error fetching executives:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExecutives();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -31,6 +74,33 @@ export default function CurrentExecutives() {
     };
   }, []);
 
+  if (loading) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              July 2023 - August 2025
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              Current <span className="text-darkBlue">Executive Team</span>
+            </h2>
+            <div className="w-24 h-1 bg-darkBlue mx-auto mb-6"></div>
+            <p className="md:text-lg text-slate-600 max-w-3xl mx-auto">
+              Our current leadership team brings together diverse expertise and
+              unwavering commitment to advance our alumni community&#39;s
+              mission and vision.
+            </p>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-darkBlue"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       ref={sectionRef}
@@ -46,11 +116,11 @@ export default function CurrentExecutives() {
         <div className="absolute bottom-40 left-10 w-24 h-24 border-[10px] border-amber-200/10 rounded-lg rotate-45"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-item">
           <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            Current Term 2023-2025
+            July 2023 - August 2025
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Current <span className="text-darkBlue">Executive Team</span>
@@ -66,10 +136,10 @@ export default function CurrentExecutives() {
         {/* Desktop Grid View */}
         {!isMobile && (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {currentExecutives.map((executive, index) => (
+            {executives.map((executive: ExecutiveProps, index: number) => (
               <div
                 key={executive.id}
-                className="animate-item"
+                className={`animate-item`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <ExecutiveCard executive={executive} isCurrent={true} />
@@ -81,13 +151,18 @@ export default function CurrentExecutives() {
         {/* Mobile view */}
         {isMobile && (
           <div className="animate-item">
-            <ExecutiveCarousel
-              executives={currentExecutives}
-              isCurrent={true}
-            />
+            <ExecutiveCarousel executives={executives} isCurrent={true} />
           </div>
         )}
       </div>
+
+      {!loading && <div className="mt-10 flex justify-center">
+        <BackgroundButton
+          text="View Past Excecutives"
+          link="/executives/past"
+          btnWidth="w-full lg:w-1/4"
+        />
+      </div>}
     </section>
   );
 }

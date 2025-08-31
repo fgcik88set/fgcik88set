@@ -1,0 +1,532 @@
+import { createClient, groq } from "next-sanity";
+
+export async function getCurrentExecutives() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "currentExecutives"]{
+        "id": _id,
+        "name": name,
+        "position": position,
+        "term": yearHeld,
+        "email": email,
+        "linkedIn": linkedIn,
+        "image": image.asset->url,
+        "imageAlt": image.alt,
+    }`
+  );
+}
+
+export async function getPastExecutives() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "pastExecutives"]{
+        "id": _id,
+        "yearRange": yearRange,
+        "executives": executives[]{
+          "id": _key,
+          "name": name,
+          "position": position,
+          "term": ^.yearRange,
+          "email": email,
+          "linkedIn": linkedIn,
+          "image": image.asset->url,
+          "imageAlt": image.alt,
+        }
+    }`
+  );
+}
+
+export async function getCurrentBOT() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "currentBOT"]{
+        "id": _id,
+        "name": name,
+        "position": position,
+        "term": yearHeld,
+        "email": email,
+        "linkedIn": linkedIn,
+        "image": image.asset->url,
+        "imageAlt": image.alt,
+    }`
+  );
+}
+
+export async function getPastBOT() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "pastBOT"]{
+        "id": _id,
+        "yearRange": yearRange,
+        "BOT": BOT[]{
+          "id": _key,
+          "name": name,
+          "position": position,
+          "term": ^.yearRange,
+          "email": email,
+          "linkedIn": linkedIn,
+          "image": image.asset->url,
+          "imageAlt": image.alt, 
+        }
+    }`
+  );
+}
+
+export async function getPastTrustees() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "pastTrustees"]{
+        "id": _id,
+        "yearRange": yearRange,
+        "trustees": trustees[]{
+          "id": _key,
+          "name": name,
+          "position": position,
+          "term": ^.yearRange,
+          "email": email,
+          "linkedIn": linkedIn,
+          "image": image.asset->url,
+          "imageAlt": image.alt,
+        }
+    }`
+  );
+}
+
+export async function getMoments() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments"] | order(order asc, date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "isCategory": isCategory,
+        "subCategories": subCategories[]{
+          "title": title,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        },
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`
+  );
+}
+
+export async function getMomentBySlug(slug: string) {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && slug.current == $slug][0] {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "isCategory": isCategory,
+        "subCategories": subCategories[]{
+          "title": title,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        },
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`,
+    { slug }
+  );
+}
+
+export async function getMomentCategories() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && isCategory == true] | order(order asc, title asc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "slug": slug.current,
+        "subCategoriesCount": count(subCategories),
+        "subCategories": subCategories[]{
+          "title": title,
+          "slug": slug.current,
+          "description": description,
+          "images": images[]{
+            "url": asset->url,
+            "alt": alt,
+            "caption": caption,
+          }
+        }
+    }`
+  );
+}
+
+export async function getIndividualMoments() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "moments" && isCategory != true] | order(order asc, date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "slug": slug.current,
+        "images": images[]{
+          "url": asset->url,
+          "alt": alt,
+          "caption": caption,
+        }
+    }`
+  );
+}
+
+export async function getEvents() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "events"] | order(date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "endDate": endDate,
+        "location": location,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "eventStatus": eventStatus,
+        "eventType": eventType,
+        "isFeatured": isFeatured,
+        "registrationRequired": registrationRequired,
+        "maxAttendees": maxAttendees,
+        "slug": slug.current,
+    }`
+  );
+}
+
+export async function getUpcomingEvents() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "events" && (eventStatus == "upcoming" || eventStatus == "ongoing")] | order(date asc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "endDate": endDate,
+        "location": location,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "eventStatus": eventStatus,
+        "eventType": eventType,
+        "isFeatured": isFeatured,
+        "registrationRequired": registrationRequired,
+        "maxAttendees": maxAttendees,
+        "slug": slug.current,
+    }`
+  );
+}
+
+export async function getPastEvents() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "events" && eventStatus == "past"] | order(date desc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "endDate": endDate,
+        "location": location,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "eventStatus": eventStatus,
+        "eventType": eventType,
+        "isFeatured": isFeatured,
+        "registrationRequired": registrationRequired,
+        "maxAttendees": maxAttendees,
+        "slug": slug.current,
+    }`
+  );
+}
+
+export async function getEventBySlug(slug: string) {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "events" && slug.current == $slug][0] {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "date": date,
+        "endDate": endDate,
+        "location": location,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "eventStatus": eventStatus,
+        "eventType": eventType,
+        "isFeatured": isFeatured,
+        "registrationRequired": registrationRequired,
+        "maxAttendees": maxAttendees,
+        "slug": slug.current,
+    }`,
+    { slug }
+  );
+}
+
+export async function getMemorabilia() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "memorabilia"] | order(isFeatured desc, title asc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "price": price,
+        "category": category,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "slug": slug.current,
+        "isAvailable": isAvailable,
+        "isFeatured": isFeatured,
+        "stockQuantity": stockQuantity,
+        "tags": tags,
+    }`
+  );
+}
+
+export async function getMemorabiliaByCategory(category: string) {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  const query = category === 'all' 
+    ? groq`*[_type == "memorabilia"] | order(isFeatured desc, title asc)`
+    : groq`*[_type == "memorabilia" && category == $category] | order(isFeatured desc, title asc)`;
+
+  return client.fetch(
+    groq`${query} {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "price": price,
+        "category": category,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "slug": slug.current,
+        "isAvailable": isAvailable,
+        "isFeatured": isFeatured,
+        "stockQuantity": stockQuantity,
+        "tags": tags,
+    }`,
+    { category }
+  );
+}
+
+export async function getFeaturedMemorabilia() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "memorabilia" && isFeatured == true] | order(title asc) {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "price": price,
+        "category": category,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "slug": slug.current,
+        "isAvailable": isAvailable,
+        "isFeatured": isFeatured,
+        "stockQuantity": stockQuantity,
+        "tags": tags,
+    }`
+  );
+}
+
+export async function getMemorabiliaBySlug(slug: string) {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`*[_type == "memorabilia" && slug.current == $slug][0] {
+        "id": _id,
+        "title": title,
+        "description": description,
+        "price": price,
+        "category": category,
+        "image": {
+          "url": image.asset->url,
+          "alt": image.alt,
+          "caption": image.caption,
+        },
+        "slug": slug.current,
+        "isAvailable": isAvailable,
+        "isFeatured": isFeatured,
+        "stockQuantity": stockQuantity,
+        "tags": tags,
+    }`,
+    { slug }
+  );
+}
+
+// New functions for statistics
+export async function getEventsStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalEvents": count(*[_type == "events"]),
+      "annualEvents": count(*[_type == "events" && date >= $currentYearStart && date <= $currentYearEnd]),
+      "totalParticipants": sum(*[_type == "events"].maxAttendees),
+      "cities": array::distinct(*[_type == "events"].location),
+      "yearsActive": 35
+    }`,
+    { 
+      currentYearStart: new Date(new Date().getFullYear(), 0, 1).toISOString(),
+      currentYearEnd: new Date(new Date().getFullYear(), 11, 31).toISOString()
+    }
+  );
+}
+
+export async function getMomentsStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalMoments": count(*[_type == "moments"]),
+      "totalImages": count(*[_type == "moments"].images[]),
+      "yearsActive": 35,
+      "totalReunions": count(*[_type == "events" && eventType == "alumni-reunion"])
+    }`
+  );
+}
+
+export async function getMemorabiliaStats() {
+  const client = createClient({
+    projectId: "nb6nouyz",
+    dataset: "production",
+    apiVersion: "2025-07-18",
+  });
+
+  return client.fetch(
+    groq`{
+      "totalItems": count(*[_type == "memorabilia"]),
+      "categories": array::distinct(*[_type == "memorabilia"].category),
+      "featuredItems": count(*[_type == "memorabilia" && isFeatured == true]),
+      "availableItems": count(*[_type == "memorabilia" && isAvailable == true])
+    }`
+  );
+}

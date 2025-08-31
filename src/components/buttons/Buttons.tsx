@@ -5,7 +5,7 @@ export const BackgroundButton = (props: ButtonProps) => {
     return (
       <Link
         href={props.link}
-        className={`${props.btnWidth} flex items-center justify-center bg-darkBlue text-white border border-shadeThree rounded-2xl py-4 px-6`}
+        className={`w-fit flex items-center justify-center bg-darkBlue text-white border border-shadeThree rounded-2xl py-4 px-6`}
       >
         {props.text}
       </Link>

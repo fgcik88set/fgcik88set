@@ -1,84 +1,147 @@
-"use client"
+"use client";
 
-import { useRef, useEffect, useState } from "react"
-import { Search, Filter, X, Calendar, User } from "lucide-react"
-import ExecutiveCard from "./executive-card"
-import ExecutiveCarousel from "./executive-carousel"
+import { useRef, useEffect, useState } from "react";
+import ExecutiveCard from "./executive-card";
+import ExecutiveCarousel from "./executive-carousel";
+import FilterNavbar from "../shared/FilterNavbar";
 
-import { useMobile } from "../../hooks/use-mobile"
-import { pastExecutives } from "../constants/executives-data"
+import { useMobile } from "../../hooks/use-mobile";
+import { getPastExecutives } from "@/sanity/sanity-utils";
+import { ExecutiveProps } from "../constants/executives-data";
+import { Search, Calendar, User } from "lucide-react";
+import { BackgroundButton } from "../buttons/Buttons";
+
+interface YearGroup {
+  id: string;
+  yearRange: string;
+  executives: ExecutiveProps[];
+}
 
 export default function PastExecutives() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const isMobile = useMobile()
-  const [filteredExecutives, setFilteredExecutives] = useState(pastExecutives)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedTerm, setSelectedTerm] = useState("")
-  const [selectedPosition, setSelectedPosition] = useState("")
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null);
+  const isMobile = useMobile();
+  const [allExecutives, setAllExecutives] = useState<ExecutiveProps[]>([]);
+  const [filteredExecutives, setFilteredExecutives] = useState<
+    ExecutiveProps[]
+  >([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Get unique terms and positions for filters
-  const terms = [...new Set(pastExecutives.map((exec) => exec.term))].sort((a, b) => {
-    // Sort terms in descending order (newest first)
-    const aStart = Number.parseInt(a.split("-")[0])
-    const bStart = Number.parseInt(b.split("-")[0])
-    return bStart - aStart
-  })
-  const positions = [...new Set(pastExecutives.map((exec) => exec.position))].sort()
+  // Fetch data from Sanity
+  useEffect(() => {
+    const fetchPastExecutives = async () => {
+      try {
+        const data = await getPastExecutives();
+        // Flatten the executives array from each year range
+        const flattenedExecutives = data.flatMap((yearGroup: YearGroup) =>
+          yearGroup.executives.map((exec: ExecutiveProps) => ({
+            ...exec,
+            id: `${yearGroup.id}-${exec.id}`, // Create unique ID
+          }))
+        );
+        setAllExecutives(flattenedExecutives);
+        setFilteredExecutives(flattenedExecutives);
+      } catch (error) {
+        console.error("Error fetching past executives:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPastExecutives();
+  }, []);
+
+  // Get unique year ranges and positions for filters
+  const yearRanges = [...new Set(allExecutives.map((exec) => exec.term))]
+    .sort((a, b) => {
+      // Sort year ranges in descending order (newest first)
+      const aStart = Number.parseInt(a.split("-")[0]);
+      const bStart = Number.parseInt(b.split("-")[0]);
+      return bStart - aStart;
+    })
+    .map((yearRange) => ({ value: yearRange, label: yearRange }));
+
+  const positions = [...new Set(allExecutives.map((exec) => exec.position))]
+    .sort()
+    .map((position) => ({ value: position, label: position }));
+
+  // Filter configuration
+  const filterConfigs = [
+    {
+      type: "select" as const,
+      label: "Filter by Year Range",
+      icon: Calendar,
+      options: yearRanges,
+      placeholder: "All Year Ranges",
+    },
+    {
+      type: "select" as const,
+      label: "Filter by Position",
+      icon: User,
+      options: positions,
+      placeholder: "All Positions",
+    },
+  ];
+
+  const [filters, setFilters] = useState<Record<string, string | boolean>>({
+    filterbyyearrange: "2021-2023",
+    filterbyposition: "",
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in")
+            entry.target.classList.add("animate-fade-in");
           }
-        })
+        });
       },
-      { threshold: 0.1 },
-    )
+      { threshold: 0.1 }
+    );
 
-    const animatedElements = sectionRef.current?.querySelectorAll(".animate-item")
-    animatedElements?.forEach((el) => observer.observe(el))
+    const animatedElements =
+      sectionRef.current?.querySelectorAll(".animate-item");
+    animatedElements?.forEach((el) => observer.observe(el));
 
     return () => {
-      animatedElements?.forEach((el) => observer.unobserve(el))
-    }
-  }, [])
+      animatedElements?.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
 
   // Filter executives based on search and filters
   useEffect(() => {
-    let filtered = pastExecutives
+    let filtered = allExecutives;
 
     if (searchTerm) {
       filtered = filtered.filter(
-        (exec) =>
+        (exec: ExecutiveProps) =>
           exec.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          exec.position.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+          exec.position.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    if (selectedTerm) {
-      filtered = filtered.filter((exec) => exec.term === selectedTerm)
+    if (filters.filterbyyearrange) {
+      filtered = filtered.filter(
+        (exec: ExecutiveProps) => exec.term === filters.filterbyyearrange
+      );
     }
 
-    if (selectedPosition) {
-      filtered = filtered.filter((exec) => exec.position === selectedPosition)
+    if (filters.filterbyposition) {
+      filtered = filtered.filter(
+        (exec: ExecutiveProps) => exec.position === filters.filterbyposition
+      );
     }
 
-    setFilteredExecutives(filtered)
-  }, [searchTerm, selectedTerm, selectedPosition])
-
-  const clearFilters = () => {
-    setSearchTerm("")
-    setSelectedTerm("")
-    setSelectedPosition("")
-  }
-
-  const hasActiveFilters = searchTerm || selectedTerm || selectedPosition
+    setFilteredExecutives(filtered);
+  }, [searchTerm, filters, allExecutives]);
 
   return (
-    <section id="past" ref={sectionRef} className="relative pb-20 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+    <section
+      id="past"
+      ref={sectionRef}
+      className="relative py-20 bg-gradient-to-b from-white to-slate-50 overflow-hidden"
+    >
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-100/30 blur-3xl"></div>
@@ -94,177 +157,141 @@ export default function PastExecutives() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
             Past <span className="text-blue-700">Executives</span>
           </h2>
           <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
           <p className="md:text-lg text-slate-600 max-w-3xl mx-auto">
-            Honoring the leaders who have shaped our alumni association throughout the years. Their dedication and
-            vision continue to inspire our community.
+            Honoring the leaders who have shaped our alumni association
+            throughout the years. Their dedication and vision continue to
+            inspire our community.
           </p>
         </div>
 
-        {/* Search and Filter Section */}
-        <div className="mb-12 animate-item">
-          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              {/* Search */}
-              <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search by name or position..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Filter Toggle */}
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
-                  isFilterOpen || hasActiveFilters
-                    ? "bg-blue-700 text-white border-blue-700"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                }`}
-              >
-                <Filter className="w-5 h-5" />
-                Filters
-                {hasActiveFilters && (
-                  <span className="bg-amber-400 text-blue-900 text-xs px-2 py-1 rounded-full font-medium">
-                    {[searchTerm, selectedTerm, selectedPosition].filter(Boolean).length}
-                  </span>
-                )}
-              </button>
-
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-3 text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                  Clear
-                </button>
-              )}
-            </div>
-
-            {/* Filter Options */}
-            {isFilterOpen && (
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Term Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <Calendar className="w-4 h-4" />
-                      Filter by Term
-                    </label>
-                    <select
-                      value={selectedTerm}
-                      onChange={(e) => setSelectedTerm(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">All Terms</option>
-                      {terms.map((term) => (
-                        <option key={term} value={term}>
-                          {term}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Position Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <User className="w-4 h-4" />
-                      Filter by Position
-                    </label>
-                    <select
-                      value={selectedPosition}
-                      onChange={(e) => setSelectedPosition(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">All Positions</option>
-                      {positions.map((position) => (
-                        <option key={position} value={position}>
-                          {position}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
           </div>
-        </div>
+        )}
+
+        {/* Search and Filter Section */}
+        {!loading && (
+          <FilterNavbar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            filterConfigs={filterConfigs}
+            searchPlaceholder="Search by name or position..."
+          />
+        )}
 
         {/* Results Summary */}
-        <div className="mb-8 animate-item">
-          <div className="flex items-center justify-between">
-            <p className="text-slate-600">
-              Showing <span className="font-semibold text-blue-700">{filteredExecutives.length}</span> of{" "}
-              <span className="font-semibold">{pastExecutives.length}</span> past executives
-            </p>
+        {!loading && (
+          <div className="mb-8 animate-item">
+            <div className="flex items-center ">
+              <p className="text-slate-600">
+                Showing{" "}
+                <span className="font-semibold text-blue-700">
+                  {filteredExecutives.length}
+                </span>{" "}
+                of <span className="font-semibold">{allExecutives.length}</span>{" "}
+                past executives
+              </p>
 
-            {hasActiveFilters && (
-              <div className="flex flex-wrap gap-2">
-                {searchTerm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Search: &quot;{searchTerm}&quot;
-                  </span>
-                )}
-                {selectedTerm && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Term: {selectedTerm}</span>
-                )}
-                {selectedPosition && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Position: {selectedPosition}
-                  </span>
-                )}
-              </div>
-            )}
+              {(searchTerm ||
+                filters.filterbyyearrange ||
+                filters.filterbyposition) && (
+                <div className="flex flex-wrap gap-2">
+                  {searchTerm && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Search: &quot;{searchTerm}&quot;
+                    </span>
+                  )}
+
+                  {filters.filterbyposition && (
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Position: {filters.filterbyposition}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <p className="text-darkBlue underline text-center cursor-pointer">
+              View Achievements
+            </p>
           </div>
-        </div>
+        )}
 
         {/* Executives Display */}
-        {filteredExecutives.length > 0 ? (
+        {!loading && filteredExecutives.length > 0 ? (
           <>
             {/* Desktop Grid View */}
             {!isMobile && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredExecutives.map((executive, index) => (
-                  <div key={executive.id} className="animate-item" style={{ animationDelay: `${index * 0.05}s` }}>
-                    <ExecutiveCard executive={executive} isCurrent={false} />
-                  </div>
-                ))}
+                {filteredExecutives.map(
+                  (executive: ExecutiveProps, index: number) => (
+                    <div
+                      key={executive.id}
+                      className={`animate-item`}
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <ExecutiveCard executive={executive} isCurrent={false} />
+                    </div>
+                  )
+                )}
               </div>
             )}
 
             {/* Mobile Carousel View */}
             {isMobile && (
               <div className="animate-item">
-                <ExecutiveCarousel executives={filteredExecutives} isCurrent={false} />
+                <ExecutiveCarousel
+                  executives={filteredExecutives}
+                  isCurrent={false}
+                />
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-16 animate-item">
-            <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-12 h-12 text-slate-400" />
+          !loading && (
+            <div className="text-center py-16 animate-item">
+              <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-12 h-12 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                No executives found
+              </h3>
+              <p className="text-slate-600 mb-4">
+                Try adjusting your search terms or filters to find what
+                you&#39;re looking for.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilters({ filterbyyearrange: "", filterbyposition: "" });
+                }}
+                className="text-blue-700 hover:text-blue-800 font-medium"
+              >
+                Clear all filters
+              </button>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">No executives found</h3>
-            <p className="text-slate-600 mb-4">
-              Try adjusting your search terms or filters to find what you&#39;re looking for.
-            </p>
-            <button onClick={clearFilters} className="text-blue-700 hover:text-blue-800 font-medium">
-              Clear all filters
-            </button>
-          </div>
+          )
         )}
       </div>
+
+      {!loading && (
+        <div className="mt-10 flex justify-center">
+          <BackgroundButton
+            text="View Current Excecutives"
+            link="/executives/current"
+            btnWidth="w-full lg:w-1/4"
+          />
+        </div>
+      )}
     </section>
-  )
+  );
 }

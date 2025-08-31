@@ -68,8 +68,8 @@ export const footerSections = [
       id: "1",
       title: "About Us",
       links: [
-        { href: "#", label: "Our Story" },
-        { href: "#", label: "Events" },
+        { href: "/about", label: "Our Story" },
+        { href: "/events", label: "Events" },
         // { href: "/history", label: "Our History" },
         // { href: "/achievements", label: "Achievements" }
       ]
@@ -78,8 +78,10 @@ export const footerSections = [
       id: "2",
       title: "Leadership",
       links: [
-        { href: "#", label: "All Executives" },
-        { href: "#", label: "Board of Trustees" },
+        { href: "/executives/current", label: "Current Excos" },
+        { href: "/executives/past", label: "Past Excos" },
+        { href: "/board-of-trustees/current", label: "Current Board of Trustees" },
+        { href: "/board-of-trustees/past", label: "Past Board of Trustees" },
         // { href: "/committees", label: "Committees" },
         // { href: "/past-presidents", label: "Past Presidents" }
       ]
@@ -88,8 +90,8 @@ export const footerSections = [
       id: "3",
       title: "Resources",
       links: [
-        { href: "#", label: "Memories" },
-        { href: "#", label: "Memorabilia" },
+        { href: "/moments", label: "Memories" },
+        { href: "/memorabilia", label: "Memorabilia" },
         
       ]
     },

@@ -8,6 +8,7 @@ import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
 import type { RegisterData } from "@/types/auth"
+import { toast } from "sonner"
 
 export function RegisterForm() {
   const [formData, setFormData] = useState<RegisterData>({
@@ -56,6 +57,7 @@ export function RegisterForm() {
         setError(data.error || "Registration failed")
       } else {
         setSuccess("Account created successfully! Redirecting to login...")
+        toast.success(`Welcome email sent successfully to ${formData.email}`);
         setTimeout(() => {
           router.push("/auth/login")
         }, 2000)
@@ -71,7 +73,7 @@ export function RegisterForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/dashboard" })
+      await signIn("google", { callbackUrl: "/" })
     } catch (error) {
       setError("Google sign in failed")
       setIsLoading(false)

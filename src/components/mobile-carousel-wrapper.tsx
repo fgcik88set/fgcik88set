@@ -79,7 +79,7 @@ export default function MobileCarouselWrapper({ children, breakpoint = 768, titl
 
   // If not mobile, render children normally in a grid
   if (!isMobile) {
-    return <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">{children}</div>
+    return <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">{children}</div>
   }
 
   // On mobile, render as carousel

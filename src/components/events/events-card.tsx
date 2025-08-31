@@ -27,14 +27,28 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
     })
   }
 
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+  }
+
   const getCategoryStyle = (categoryId: string) => {
     const category = eventCategories.find((cat) => cat.id === categoryId)
     return category?.color || "bg-blue-100 text-blue-800"
   }
 
-  const getRegistrationProgress = () => {
-    if (!event.capacity || !event.registered) return 0
-    return (event.registered / event.capacity) * 100
+  const getStatusColor = (status: string) => {
+    const statusColors = {
+      upcoming: "bg-green-100 text-green-800",
+      ongoing: "bg-yellow-100 text-yellow-800",
+      past: "bg-red-100 text-red-800",
+      cancelled: "bg-gray-100 text-gray-800"
+    }
+    return statusColors[status as keyof typeof statusColors] || "bg-blue-100 text-blue-800"
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -64,7 +78,7 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
       onClick={handleCardClick}
     >
       {/* Featured Badge */}
-      {event.featured && (
+      {event.isFeatured && (
         <div className="absolute top-4 left-4 z-10">
           <div className="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
             <Star className="w-3 h-3" />
@@ -73,10 +87,17 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
         </div>
       )}
 
-      {/* Category Badge */}
+      {/* Status Badge */}
       <div className="absolute top-4 right-4 z-10">
-        <div className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getCategoryStyle(event.category)}`}>
-          {event.category}
+        <div className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(event.eventStatus)}`}>
+          {event.eventStatus}
+        </div>
+      </div>
+
+      {/* Category Badge */}
+      <div className="absolute top-16 right-4 z-10">
+        <div className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getCategoryStyle(event.eventType)}`}>
+          {eventCategories.find(cat => cat.id === event.eventType)?.name || event.eventType}
         </div>
       </div>
 
@@ -86,10 +107,10 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
 
         {!imageError ? (
           <Image
-            src={event.image || "/placeholder.svg?height=400&width=600"}
-            alt={event.title}
+            src={event.image.url || "/placeholder.svg?height=400&width=600"}
+            alt={event.image.alt || event.title}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            className="object-contain transition-transform duration-700 group-hover:scale-110"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -124,54 +145,36 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
 
         <div className="flex items-center gap-2 mb-3 text-slate-600">
           <Clock className="w-4 h-4" />
-          <span className="text-sm">{event.time}</span>
+          <span className="text-sm">{formatTime(event.date)}</span>
+          {event.endDate && (
+            <span className="text-xs text-slate-500">- {formatTime(event.endDate)}</span>
+          )}
         </div>
 
         {/* Location */}
         <div className="flex items-center gap-2 mb-4 text-slate-600">
           <MapPin className="w-4 h-4" />
           <span className="text-sm">{event.location}</span>
-          {event.isVirtual && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Virtual</span>}
         </div>
 
         {/* Description */}
         <p className="text-slate-600 text-sm mb-4 line-clamp-3">{event.description}</p>
 
-        {/* Registration Progress (for upcoming events) */}
-        {isUpcoming && event.capacity && event.registered && (
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-slate-600">Registration</span>
-              <span className="text-blue-700 font-medium">
-                {event.registered}/{event.capacity}
-              </span>
+        {/* Event Details */}
+        <div className="space-y-2 mb-4">
+          {event.registrationRequired && (
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Ticket className="w-4 h-4" />
+              <span>Registration Required</span>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${getRegistrationProgress()}%` }}
-              ></div>
+          )}
+          {event.maxAttendees && (
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Users className="w-4 h-4" />
+              <span>Max: {event.maxAttendees} attendees</span>
             </div>
-          </div>
-        )}
-
-        {/* Highlights Preview */}
-        {event.highlights && event.highlights.length > 0 && (
-          <div className="mb-4">
-            <h4 className="text-sm font-semibold text-slate-800 mb-2">Highlights</h4>
-            <ul className="space-y-1">
-              {event.highlights.slice(0, 2).map((highlight, index) => (
-                <li key={index} className="text-xs text-slate-600 flex items-start">
-                  <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 mr-2 flex-shrink-0"></div>
-                  {highlight}
-                </li>
-              ))}
-              {event.highlights.length > 2 && (
-                <li className="text-xs text-blue-600 font-medium">+{event.highlights.length - 2} more highlights</li>
-              )}
-            </ul>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
@@ -191,7 +194,7 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
               className="flex items-center gap-2 px-4 py-2 text-sm rounded-lg font-medium transition-colors bg-slate-100 text-slate-700 hover:bg-slate-200"
             >
               <Ticket className="w-4 h-4" />
-              Register
+              {event.registrationRequired ? 'Register' : 'RSVP'}
             </button>
           ) : (
             <button

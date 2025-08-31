@@ -1,35 +1,39 @@
-"use client"
+"use client";
 
-import { useRef, useEffect } from "react"
-import { Users, Award, Calendar } from "lucide-react"
+import { useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function TrusteesHero() {
-  const heroRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  const isCurrentBOT = pathname === "/board-of-trustees/current";
+  const isPastBOT = pathname === "/board-of-trustees/past";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in")
+            entry.target.classList.add("animate-fade-in");
           }
-        })
+        });
       },
-      { threshold: 0.1 },
-    )
+      { threshold: 0.1 }
+    );
 
-    const animatedElements = heroRef.current?.querySelectorAll(".animate-item")
-    animatedElements?.forEach((el) => observer.observe(el))
+    const animatedElements = heroRef.current?.querySelectorAll(".animate-item");
+    animatedElements?.forEach((el) => observer.observe(el));
 
     return () => {
-      animatedElements?.forEach((el) => observer.unobserve(el))
-    }
-  }, [])
+      animatedElements?.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
 
   return (
     <div
       ref={heroRef}
-      className="relative w-full pb-20 pt-32 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
+      className="relative w-full pt-36 bg-gradient-to-br from-darkBlue via-blue-800 to-darkBlue text-white overflow-hidden"
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -60,36 +64,25 @@ export default function TrusteesHero() {
         <div className="text-center max-w-4xl mx-auto">
           <div className="animate-item">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              <span className="text-mainYellow">
+                {isCurrentBOT
+                  ? "Current "
+                  : isPastBOT
+                    ? "Past "
+                    : ""}
+              </span>
               Board of <span className="text-mainYellow">Trustees</span>
             </h1>
             <div className="w-32 h-1 bg-mainYellow mx-auto mb-8"></div>
             <p className="md:text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Meet the distinguished trustees who provide strategic oversight and governance for our alumni association.
-              These visionary leaders guide our long-term direction and ensure the sustainability of our mission across
-              generations.
+              {isCurrentBOT && "Meet the distinguished trustees who provide strategic oversight and governance for our alumni association.These visionary leaders guide our long-term direction and ensure the sustainability of our mission across generations."}
+                {isPastBOT && "Discover the legacy of our past trustees whose dedication and leadership have shaped the foundation and growth of our alumni association. Their contributions continue to inspire and guide our community forward."}
             </p>
           </div>
 
-          {/* Stats cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">8</p>
-              <p className="text-white/80">Current Trustees</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Award className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">25+</p>
-              <p className="text-white/80">Past Trustees</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Calendar className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <p className="text-2xl font-bold mb-2">35</p>
-              <p className="text-white/80">Years of Governance</p>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>
-  )
+  );
 }

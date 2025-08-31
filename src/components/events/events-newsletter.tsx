@@ -73,7 +73,7 @@ export default function EventsNewsletter() {
                   placeholder="Your email address"
                   className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-amber-400"
                 />
-                <button className="w-full bg-amber-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-amber-300 transition-colors font-medium">
+                <button className="bg-amber-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-amber-300 transition-colors font-medium">
                   Subscribe to Updates
                 </button>
               </div>
@@ -104,7 +104,7 @@ export default function EventsNewsletter() {
                   rows={3}
                   className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-amber-400"
                 ></textarea>
-                <button className="w-full bg-amber-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-amber-300 transition-colors font-medium">
+                <button className="w-fit bg-amber-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-amber-300 transition-colors font-medium">
                   Submit Suggestion
                 </button>
               </div>

@@ -36,7 +36,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full h-[90vh] lg:h-screen pt-32 md:pt-20 overflow-hidden">
+    <section className="relative w-full lg:h-screen pt-32 md:pt-20 overflow-hidden">
       {/* Decorative background elements */}
       <div ref={decorRef} className="absolute inset-0 pointer-events-none">
         {/* Top-right decorative circle */}
@@ -86,8 +86,8 @@ export default function HeroSection() {
           </p>
 
           <BackgroundButton
-            btnWidth="w-full lg:w-1/2"
-            link="#"
+            btnWidth="w-fit"
+            link="#about"
             text="Explore"
           />
         </div>

@@ -1,5 +1,4 @@
 import { BackgroundButton } from "../buttons/Buttons";
-import { MemoriesData } from "../constants/data";
 import MemoriesSection from "../memories/Memories";
 import SectionHeaderText from "../typography/SectionHeaderText";
 
@@ -14,13 +13,13 @@ export default function MemoriesSectionDisplay() {
         </p>
 
         <div className="mt-6">
-          <MemoriesSection items={MemoriesData} />
+          <MemoriesSection />
         </div>
 
         <div className="flex justify-center">
           <BackgroundButton
             text="View More"
-            link="/executives"
+            link="/moments"
             btnWidth="w-full lg:w-1/4"
           />
         </div>

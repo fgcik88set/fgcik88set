@@ -1,17 +1,46 @@
 "use client";
 
 import Image from "next/image";
-import { NostalgicGalleryProps } from "../constants/interfaces";
 import { useEffect, useRef, useState } from "react";
-import { BiChevronLeft, BiChevronRight, BiPause, BiPlay } from "react-icons/bi";
+import { Calendar } from "lucide-react";
+import { getMoments } from "@/sanity/sanity-utils";
 
-export default function MemoriesSection({ items }: NostalgicGalleryProps) {
+interface Moment {
+  id: string;
+  title: string;
+  date: string;
+  images: Array<{
+    url: string;
+    alt: string;
+    caption?: string;
+  }>;
+}
+
+export default function MemoriesSection() {
+  const [moments, setMoments] = useState<Moment[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Fetch moments from Sanity
+  useEffect(() => {
+    const fetchMoments = async () => {
+      try {
+        setLoading(true);
+        const data = await getMoments();
+        // Only take the first 8 moments for homepage display
+        setMoments(data.slice(0, 3));
+      } catch (err) {
+        console.error("Error fetching moments:", err);
+        setMoments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoments();
+  }, []);
 
   // Check if we're on mobile
   useEffect(() => {
@@ -27,15 +56,14 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
     };
   }, []);
 
-
   const goToPrevious = () => {
     const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? items.length - 1 : currentIndex - 1;
+    const newIndex = isFirstSlide ? moments.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
   const goToNext = () => {
-    const isLastSlide = currentIndex === items.length - 1;
+    const isLastSlide = currentIndex === moments.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
@@ -44,90 +72,73 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
     setCurrentIndex(slideIndex);
   };
 
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short'
+    });
   };
 
-  // Handle touch events for swiping
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+  if (loading) {
+    return (
+      <div className="py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="aspect-square bg-gray-200 rounded-lg animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {
-      // Swipe left
-      goToNext();
-    }
-
-    if (touchStart - touchEnd < -50) {
-      // Swipe right
-      goToPrevious();
-    }
-  };
-
-  // Handle video refs
-  const setVideoRef = (element: HTMLVideoElement | null, index: number) => {
-    videoRefs.current[index] = element;
-  };
+  if (moments.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-gray-500">No moments available</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="py-8">
+    <div className="py-8" ref={sectionRef}>
       {/* Mobile Carousel View */}
       <div className={`${isMobile ? "block" : "hidden"}`}>
-        <div
-          className="relative h-[60vh] overflow-hidden rounded-lg shadow-lg bg-gray-100"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {items.map((item, index) => (
+        <div className="relative h-[60vh] overflow-hidden rounded-lg shadow-lg bg-gray-100">
+          {moments.map((moment, index) => (
             <div
-              key={item.id}
+              key={moment.id}
               className={`absolute top-0 left-0 w-full h-full transition-opacity duration-500 ${
                 index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
-              {item.type === "image" ? (
-                <div className="relative w-full h-full">
+              <div className="relative w-full h-full">
+                {moment.images && moment.images.length > 0 ? (
                   <Image
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
-                    layout="fill"
-                    objectFit="cover"
-                    className="w-full h-full object-contain"
+                    src={moment.images[0].url}
+                    alt={moment.images[0].alt || moment.title}
+                    fill
+                    className="object-cover"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white  text-sm">{item.year}</p>
-                    <p className="text-sm text-white font-medium">{item.description}</p>
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-400">No image</span>
                   </div>
-                </div>
-              ) : (
-                <div className="relative w-full h-full">
-                  <video
-                    ref={(el) => setVideoRef(el, index)}
-                    src={item.src}
-                    poster={item.thumbnail}
-                    controls
-                    className="w-full h-full object-contain"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white  text-sm">{item.year}</p>
-                    <p className="text-white font-medium text-sm">{item.description}</p>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="flex items-center gap-2 text-white text-sm mb-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{formatDate(moment.date)}</span>
                   </div>
+                  <p className="text-white font-medium text-lg">{moment.title}</p>
                 </div>
-              )}
+              </div>
             </div>
           ))}
 
           {/* Carousel Controls */}
           <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
-            {items.map((_, index) => (
+            {moments.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
@@ -144,7 +155,9 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
             className="absolute left-2 top-1/2 -translate-y-1/2 bg-darkBlue hover:bg-darkBlue/50 text-white rounded-full p-2 z-20"
             aria-label="Previous slide"
           >
-            <BiChevronLeft className="w-6 h-6" />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
 
           <button
@@ -152,73 +165,48 @@ export default function MemoriesSection({ items }: NostalgicGalleryProps) {
             className="absolute right-2 top-1/2 -translate-y-1/2 bg-darkBlue hover:bg-darkBlue/50 text-white rounded-full p-2 z-20"
             aria-label="Next slide"
           >
-            <BiChevronRight className="w-6 h-6" />
-          </button>
-
-          <button
-            onClick={togglePlayPause}
-            className="absolute top-4 right-4 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-20"
-            aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
-          >
-            {isPlaying ? (
-              <BiPause className="w-5 h-5" />
-            ) : (
-              <BiPlay className="w-5 h-5" />
-            )}
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
       </div>
 
       {/* Desktop Grid View */}
       <div className={`${isMobile ? "hidden" : "block"}`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {items.map((item) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
+          {moments.map((moment) => (
             <div
-              key={item.id}
-              className="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 bg-gray-100 aspect-square"
+              key={moment.id}
+              className="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 bg-gray-100 aspect-square group"
             >
-              {item.type === "image" ? (
-                <div className="relative w-full h-full group">
-                  <Image
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent translate-y-0 group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white font-medium">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
+              {moment.images && moment.images.length > 0 ? (
+                <Image
+                  src={moment.images[0].url}
+                  alt={moment.images[0].alt || moment.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
               ) : (
-                <div className="relative w-full h-full group">
-                  <video
-                    src={item.src}
-                    poster={item.thumbnail}
-                    controls
-                    className="w-full h-full object-cover"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-                    <p className="text-white text-lg font-bold">{item.year}</p>
-                    <p className="text-white font-medium">
-                      {item.description}
-                    </p>
-                  </div>
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">No image</span>
                 </div>
               )}
+              
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                <div className="flex items-center gap-2 text-white text-sm mb-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(moment.date)}</span>
+                </div>
+                <p className="text-white font-medium text-lg">
+                  {moment.title}
+                </p>
+              </div>
             </div>
           ))}
         </div>
-
-        
       </div>
-      
     </div>
   );
 }

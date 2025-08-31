@@ -31,12 +31,14 @@ export function LoginForm() {
         redirect: false,
       })
 
+      console.log("SignIn Result:", result)
+
       if (result?.error) {
         setError("Invalid email or password")
       } else {
         // Get updated session
         await getSession()
-        router.push("/dashboard")
+        router.push("/")
         router.refresh()
       }
     } catch (error) {
@@ -47,16 +49,16 @@ export function LoginForm() {
     }
   }
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await signIn("google", { callbackUrl: "/dashboard" })
-    } catch (error) {
-      setError("Google sign in failed")
-      setIsLoading(false)
-      console.log(error)
-    }
-  }
+  // const handleGoogleSignIn = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     await signIn("google", { callbackUrl: "/" })
+  //   } catch (error) {
+  //     setError("Google sign in failed")
+  //     setIsLoading(false)
+  //     console.log(error)
+  //   }
+  // }
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200">
@@ -136,17 +138,17 @@ export function LoginForm() {
         </button>
 
         {/* Divider */}
-        <div className="my-6 relative">
+        {/* <div className="my-6 relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-white px-2 text-gray-500">Or continue with</span>
           </div>
-        </div>
+        </div> */}
 
         {/* Google Sign In Button */}
-        <button
+        {/* <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
@@ -171,18 +173,18 @@ export function LoginForm() {
             />
           </svg>
           Continue with Google
-        </button>
+        </button> */}
       </form>
 
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+      {/* <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
         <p className="text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link href="/auth/register" className="text-blue-600 hover:text-blue-500 font-medium transition-colors">
             Sign up
           </Link>
         </p>
-      </div>
+      </div> */}
     </div>
   )
 }

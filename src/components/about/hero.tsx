@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react"
 import Image from "next/image"
-import AboutHeroImg from "../../../public/images/abt_Us.webp"
+import AboutHeroImg from "../../../public/images/team2geda.webp"
 
 export default function AboutHero() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -28,14 +28,14 @@ export default function AboutHero() {
   }, [])
 
   return (
-    <div ref={heroRef} className="relative w-full h-[70vh] overflow-hidden flex items-center justify-center">
+    <div ref={heroRef} className="relative w-full h-[100vh] overflow-hidden flex items-center justify-center">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <Image
           src={AboutHeroImg}
           alt="FGC Ikot Ekpene Campus"
           fill
-          className="object-cover"
+          className=""
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-darkBlue/80 to-darkBlue/40"></div>

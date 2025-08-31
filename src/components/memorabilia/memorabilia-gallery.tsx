@@ -1,24 +1,69 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Search, Filter, X, Tag, Package } from "lucide-react";
+import { Tag, Package, Search } from "lucide-react";
+import FilterNavbar from "../shared/FilterNavbar";
 
 import { useMobile } from "../../hooks/use-mobile";
-import { categories, memorabiliaItems } from "../constants/memorabilia-data";
+import { categories, MemorabiliaItem } from "../constants/memorabilia-data";
 import MemorabiliaCard from "./memorabilia-card";
 import MemorabiliaCarousel from "./memorabilia-carousel";
+import { getMemorabilia } from "../../sanity/sanity-utils";
 
 export default function MemorabiliaGallery() {
   const sectionRef = useRef<HTMLElement>(null);
   const isMobile = useMobile();
-  const [filteredItems, setFilteredItems] = useState(memorabiliaItems);
+  const [memorabiliaItems, setMemorabiliaItems] = useState<MemorabiliaItem[]>(
+    []
+  );
+  const [filteredItems, setFilteredItems] = useState<MemorabiliaItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [showInStockOnly, setShowInStockOnly] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Get unique categories for filters
   const categoryOptions = categories.filter((cat) => cat.id !== "all");
+
+  // Filter configuration
+  const filterConfigs = [
+    {
+      type: "select" as const,
+      label: "Filter by Category",
+      icon: Tag,
+      options: categoryOptions.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      })),
+      placeholder: "All Categories",
+    },
+    {
+      type: "checkbox" as const,
+      label: "Availability",
+      icon: Package,
+      placeholder: "In stock only",
+    },
+  ];
+
+  const [filters, setFilters] = useState<Record<string, string | boolean>>({
+    filterbycategory: "",
+    availability: false,
+  });
+
+  // Fetch memorabilia from Sanity
+  useEffect(() => {
+    const fetchMemorabilia = async () => {
+      try {
+        const data = await getMemorabilia();
+        setMemorabiliaItems(data);
+        setFilteredItems(data);
+      } catch (error) {
+        console.error("Error fetching memorabilia:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemorabilia();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,29 +93,45 @@ export default function MemorabiliaGallery() {
     if (searchTerm) {
       filtered = filtered.filter(
         (item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedCategory) {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
+    if (filters.filterbycategory) {
+      filtered = filtered.filter(
+        (item) => item.category === filters.filterbycategory
+      );
     }
 
-    if (showInStockOnly) {
-      filtered = filtered.filter((item) => item.inStock);
+    if (filters.availability) {
+      filtered = filtered.filter((item) => item.isAvailable);
     }
 
     setFilteredItems(filtered);
-  }, [searchTerm, selectedCategory, showInStockOnly]);
+  }, [searchTerm, filters, memorabiliaItems]);
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedCategory("");
-    setShowInStockOnly(false);
-  };
-
-  const hasActiveFilters = searchTerm || selectedCategory || showInStockOnly;
+  if (loading) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              Our <span className="text-blue-700">Memorabilia</span> Collection
+            </h2>
+            <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto">
+              Browse our exclusive collection of Class of &apos;88 memorabilia
+              and own a piece of history.
+            </p>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -87,135 +148,27 @@ export default function MemorabiliaGallery() {
         <div className="absolute bottom-40 left-10 w-24 h-24 border-[10px] border-amber-200/10 rounded-lg rotate-45"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Our <span className="text-blue-700">Collection</span>
+            Our <span className="text-blue-700">Memorabilia</span> Collection
           </h2>
           <div className="w-24 h-1 bg-blue-700 mx-auto mb-6"></div>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            Discover our carefully curated collection of memorabilia that
-            celebrates our shared heritage and keeps our memories alive for
-            generations to come.
+            Browse our exclusive collection of Class of &apos;88 memorabilia and
+            own a piece of history.
           </p>
         </div>
 
         {/* Search and Filter Section */}
-        <div className="mb-12 animate-item">
-          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              {/* Search */}
-              <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search memorabilia..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Filter Toggle */}
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
-                  isFilterOpen || hasActiveFilters
-                    ? "bg-blue-700 text-white border-blue-700"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                }`}
-              >
-                <Filter className="w-5 h-5" />
-                Filters
-                {hasActiveFilters && (
-                  <span className="bg-amber-400 text-blue-900 text-xs px-2 py-1 rounded-full font-medium">
-                    {
-                      [searchTerm, selectedCategory, showInStockOnly].filter(
-                        Boolean
-                      ).length
-                    }
-                  </span>
-                )}
-              </button>
-
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-3 text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                  Clear
-                </button>
-              )}
-            </div>
-
-            {/* Filter Options */}
-            {isFilterOpen && (
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Category Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <Tag className="w-4 h-4" />
-                      Filter by Category
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-darkBlue appearance-none"
-                      >
-                        <option value="">All Categories</option>
-                        {categoryOptions.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg
-                          className="w-4 h-4 text-slate-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Stock Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <Package className="w-4 h-4" />
-                      Availability
-                    </label>
-                    <div className="flex items-center gap-3 pt-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={showInStockOnly}
-                          onChange={(e) => setShowInStockOnly(e.target.checked)}
-                          className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-slate-700">
-                          In stock only
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <FilterNavbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filters={filters}
+          setFilters={setFilters}
+          filterConfigs={filterConfigs}
+          searchPlaceholder="Search memorabilia items..."
+        />
 
         {/* Results Summary */}
         <div className="mb-8 animate-item">
@@ -227,27 +180,30 @@ export default function MemorabiliaGallery() {
               </span>{" "}
               of{" "}
               <span className="font-semibold">{memorabiliaItems.length}</span>{" "}
-              items
+              memorabilia items
             </p>
 
-            {hasActiveFilters && (
+            {(searchTerm ||
+              filters.filterbycategory ||
+              filters.availability) && (
               <div className="flex flex-wrap gap-2">
                 {searchTerm && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     Search: &quot;{searchTerm}&quot;
                   </span>
                 )}
-                {selectedCategory && (
+                {filters.filterbycategory && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     Category:{" "}
                     {
-                      categoryOptions.find((cat) => cat.id === selectedCategory)
-                        ?.name
+                      categoryOptions.find(
+                        (cat) => cat.id === filters.filterbycategory
+                      )?.name
                     }
                   </span>
                 )}
-                {showInStockOnly && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                {filters.availability && (
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                     In Stock Only
                   </span>
                 )}
@@ -256,17 +212,17 @@ export default function MemorabiliaGallery() {
           </div>
         </div>
 
-        {/* Items Display */}
+        {/* Memorabilia Display */}
         {filteredItems.length > 0 ? (
           <>
             {/* Desktop Grid View */}
             {!isMobile && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
                 {filteredItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className="animate-item"
-                    style={{ animationDelay: `${index * 0.05}s` }}
+                    className={`animate-item`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <MemorabiliaCard item={item} />
                   </div>
@@ -287,14 +243,17 @@ export default function MemorabiliaGallery() {
               <Search className="w-12 h-12 text-slate-400" />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              No items found
+              No memorabilia found
             </h3>
             <p className="text-slate-600 mb-4">
-              Try adjusting your search terms or filters to find what you&#39;re
-              looking for.
+              Try adjusting your search terms or filters to find what
+              you&apos;re looking for.
             </p>
             <button
-              onClick={clearFilters}
+              onClick={() => {
+                setSearchTerm("");
+                setFilters({ filterbycategory: "", availability: false });
+              }}
               className="text-blue-700 hover:text-blue-800 font-medium"
             >
               Clear all filters

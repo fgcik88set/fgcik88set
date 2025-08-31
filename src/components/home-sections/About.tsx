@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import Image from "next/image";
 import SectionHeaderText from "../typography/SectionHeaderText";
 import { BackgroundButton } from "../buttons/Buttons";
-import about from "../../../public/images/abtus.webp";
+import AboutHeroImg from "../../../public/images/team2geda.webp"
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -34,6 +34,7 @@ export default function AboutSection() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       className="relative w-full h-auto pt-16 pb-20 overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100"
     >
@@ -80,10 +81,9 @@ export default function AboutSection() {
               <div className="relative overflow-hidden rounded-xl shadow-xl">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/20 to-transparent mix-blend-overlay"></div>
                 <Image
-                  src={about}
+                  src={AboutHeroImg}
                   alt="About us"
-                  layout="intrinsic"
-                  className="rounded-xl"
+                  className="rounded-xl "
                 />
 
                 {/* Subtle overlay for depth */}
@@ -119,7 +119,7 @@ export default function AboutSection() {
               <BackgroundButton
                 text="Learn More"
                 link="/about"
-                btnWidth="w-full lg:w-1/2"
+                btnWidth="w-fit"
               />
             </div>
           </div>

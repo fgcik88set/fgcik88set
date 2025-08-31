@@ -1,25 +1,73 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Search, Filter, X, Calendar, Tag } from "lucide-react";
-import { expandedMemoriesData } from "../constants/memories-data";
+import { Calendar } from "lucide-react";
 import SectionHeaderText from "../typography/SectionHeaderText";
-import MemoriesSection from "./Memories";
+import FilterNavbar from "../shared/FilterNavbar";
+import MomentsCard from "./moments-card";
+import { getMoments } from "@/sanity/sanity-utils";
+
+interface Moment {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  slug: string;
+  images: Array<{
+    url: string;
+    alt: string;
+    caption?: string;
+  }>;
+}
 
 export default function MemoriesGallery() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [filteredMemories, setFilteredMemories] =
-    useState(expandedMemoriesData);
+  const [moments, setMoments] = useState<Moment[]>([]);
+  const [filteredMoments, setFilteredMoments] = useState<Moment[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get unique years and types for filters
+  // Fetch moments from Sanity
+  useEffect(() => {
+    const fetchMoments = async () => {
+      try {
+        setLoading(true);
+        const data = await getMoments();
+        setMoments(data);
+        setFilteredMoments(data);
+      } catch (err) {
+        setError("Failed to load moments");
+        console.error("Error fetching moments:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoments();
+  }, []);
+
+  // Get unique years for filters
   const years = [
-    ...new Set(expandedMemoriesData.map((memory) => memory.year)),
-  ].sort((a, b) => (b ?? "").localeCompare(a ?? ""));
-  //   const types = [...new Set(expandedMemoriesData.map((memory) => memory.type))]
+    ...new Set(
+      moments.map((moment) => new Date(moment.date).getFullYear().toString())
+    ),
+  ].sort((a, b) => parseInt(b) - parseInt(a));
+
+  // Filter configuration
+  const filterConfigs = [
+    {
+      type: 'select' as const,
+      label: 'Filter by Year',
+      icon: Calendar,
+      options: years.map(year => ({ value: year, label: year })),
+      placeholder: 'All Years'
+    }
+  ];
+
+  const [filters, setFilters] = useState<Record<string, string | boolean>>({
+    filterbyyear: ""
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,39 +90,73 @@ export default function MemoriesGallery() {
     };
   }, []);
 
-  // Filter memories based on search and filters
+  // Filter moments based on search and filters
   useEffect(() => {
-    let filtered = expandedMemoriesData;
+    let filtered = moments;
 
     if (searchTerm) {
       filtered = filtered.filter(
-        (memory) =>
-          (memory.description
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ??
-            false) ||
-          memory.alt.toLowerCase().includes(searchTerm.toLowerCase())
+        (moment) =>
+          moment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          moment.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedYear) {
-      filtered = filtered.filter((memory) => memory.year === selectedYear);
+    if (filters.filterbyyear) {
+      filtered = filtered.filter((moment) => 
+        new Date(moment.date).getFullYear().toString() === filters.filterbyyear
+      );
     }
 
-    if (selectedType) {
-      filtered = filtered.filter((memory) => memory.type === selectedType);
-    }
+    setFilteredMoments(filtered);
+  }, [searchTerm, filters, moments]);
 
-    setFilteredMemories(filtered);
-  }, [searchTerm, selectedYear, selectedType]);
+  if (loading) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <SectionHeaderText text="Reliving The Moments" />
+            <p className="text-slate-600 max-w-3xl mx-auto italic">
+              A collection of treasured memories that remind us of our shared
+              journey, friendships, and the legacy we continue to build together.
+            </p>
+          </div>
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedYear("");
-    setSelectedType("");
-  };
-
-  const hasActiveFilters = searchTerm || selectedYear || selectedType;
+  if (error) {
+    return (
+      <section className="relative py-20 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div className="w-[95%] mx-auto relative z-10">
+          <div className="text-center py-16">
+            <div className="bg-red-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Error loading moments
+            </h3>
+            <p className="text-slate-600 mb-4">
+              {error}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-blue-700 hover:text-blue-800 font-medium"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -91,7 +173,7 @@ export default function MemoriesGallery() {
         <div className="absolute bottom-40 left-10 w-24 h-24 border-[10px] border-blue-200/10 rounded-lg rotate-45"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="w-[95%] mx-auto relative z-10">
         <div className="text-center mb-16 animate-item">
           <SectionHeaderText text="Reliving The Moments" />
           <p className="text-slate-600 max-w-3xl mx-auto italic">
@@ -101,133 +183,14 @@ export default function MemoriesGallery() {
         </div>
 
         {/* Search and Filter Section */}
-        <div className="mb-12 animate-item">
-          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              {/* Search */}
-              <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search memories..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Filter Toggle */}
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
-                  isFilterOpen || hasActiveFilters
-                    ? "bg-blue-700 text-white border-blue-700"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                }`}
-              >
-                <Filter className="w-5 h-5" />
-                Filters
-                {hasActiveFilters && (
-                  <span className="bg-amber-400 text-blue-900 text-xs px-2 py-1 rounded-full font-medium">
-                    {
-                      [searchTerm, selectedYear, selectedType].filter(Boolean)
-                        .length
-                    }
-                  </span>
-                )}
-              </button>
-
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-3 text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                  Clear
-                </button>
-              )}
-            </div>
-
-            {/* Filter Options */}
-            {isFilterOpen && (
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Year Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <Calendar className="w-4 h-4" />
-                      Filter by Year
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-darkBlue appearance-none"
-                      >
-                        <option value="">All Years</option>
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg
-                          className="w-4 h-4 text-slate-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Type Filter */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
-                      <Tag className="w-4 h-4" />
-                      Filter by Type
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-darkBlue appearance-none"
-                      >
-                        <option value="" className="text-xs">All Types</option>
-                        <option value="image">Photos</option>
-                        <option value="video">Videos</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg
-                          className="w-4 h-4 text-slate-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <FilterNavbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filters={filters}
+          setFilters={setFilters}
+          filterConfigs={filterConfigs}
+          searchPlaceholder="Search moments..."
+        />
 
         {/* Results Summary */}
         <div className="mb-8 animate-item">
@@ -235,30 +198,25 @@ export default function MemoriesGallery() {
             <p className="text-slate-600">
               Showing{" "}
               <span className="font-semibold text-blue-700">
-                {filteredMemories.length}
+                {filteredMoments.length}
               </span>{" "}
               of{" "}
               <span className="font-semibold">
-                {expandedMemoriesData.length}
+                {moments.length}
               </span>{" "}
-              memories
+              moments
             </p>
 
-            {hasActiveFilters && (
+            {(searchTerm || filters.filterbyyear) && (
               <div className="flex flex-wrap gap-2">
                 {searchTerm && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     Search: &quot;{searchTerm}&quot;
                   </span>
                 )}
-                {selectedYear && (
+                {filters.filterbyyear && (
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Year: {selectedYear}
-                  </span>
-                )}
-                {selectedType && (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Type: {selectedType === "image" ? "Photos" : "Videos"}
+                    Year: {filters.filterbyyear}
                   </span>
                 )}
               </div>
@@ -266,25 +224,34 @@ export default function MemoriesGallery() {
           </div>
         </div>
 
-        {/* Memories Display */}
-        {filteredMemories.length > 0 ? (
+        {/* Moments Display */}
+        {filteredMoments.length > 0 ? (
           <div className="animate-item">
-            <MemoriesSection items={filteredMemories} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-6">
+              {filteredMoments.map((moment) => (
+                <MomentsCard key={moment.id} moment={moment} />
+              ))}
+            </div>
           </div>
         ) : (
           <div className="text-center py-16 animate-item">
             <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-12 h-12 text-slate-400" />
+              <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              No memories found
+              No moments found
             </h3>
             <p className="text-slate-600 mb-4">
               Try adjusting your search terms or filters to find what you&#39;re
               looking for.
             </p>
             <button
-              onClick={clearFilters}
+              onClick={() => {
+                setSearchTerm("");
+                setFilters({ filterbyyear: "" });
+              }}
               className="text-blue-700 hover:text-blue-800 font-medium"
             >
               Clear all filters

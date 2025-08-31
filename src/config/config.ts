@@ -1,0 +1,1 @@
+export const SEERBIT_PUBLIC_KEY = process.env.NEXT_PUBLIC_SEERBIT_PUBLIC_KEY;

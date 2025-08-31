@@ -1,10 +1,44 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Camera, Clock, Users } from "lucide-react"
+import { getMomentsStats } from "@/sanity/sanity-utils"
+import StatsSkeleton from "@/components/shared/StatsSkeleton"
+import Link from "next/link"
+
+interface MomentsStats {
+  totalMoments: number
+  totalImages: number
+  yearsActive: number
+  totalReunions: number
+}
 
 export default function MemoriesHero() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const [stats, setStats] = useState<MomentsStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const momentsStats = await getMomentsStats()
+        setStats(momentsStats)
+      } catch (error) {
+        console.error("Error fetching moments stats:", error)
+        // Fallback to default stats
+        setStats({
+          totalMoments: 20,
+          totalImages: 500,
+          yearsActive: 35,
+          totalReunions: 20
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -31,6 +65,7 @@ export default function MemoriesHero() {
       ref={heroRef}
       className="relative w-full pb-20 pt-32 bg-gradient-to-br from-darkBlue via-darkBlue to-blue-900 text-white overflow-hidden"
     >
+      
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-700/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -57,6 +92,12 @@ export default function MemoriesHero() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
+      <Link
+          href="/"
+          className="absolute -top-10 left-2 md:hidden text-center text-sm text-mainYellow  border-2 border-mainYellow px-4 py-2 rounded-full"
+        >
+          Go Home
+        </Link>
         <div className="text-center max-w-4xl mx-auto">
           <div className="animate-item">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -70,23 +111,33 @@ export default function MemoriesHero() {
           </div>
 
           {/* Stats cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Camera className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">500+</div>
-              <div className="text-white/80">Photos & Videos</div>
+          {loading ? (
+            <StatsSkeleton count={3} />
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6 mt-16 animate-item">
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Camera className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {`${stats?.totalImages || 0}+`}
+                </p>
+                <p className="text-white/80">Photos & Videos</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {stats?.yearsActive || 35}
+                </p>
+                <p className="text-white/80">Years of Memories</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+                <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
+                <p className="text-2xl font-bold mb-2">
+                  {`${stats?.totalReunions || 0}+`}
+                </p>
+                <p className="text-white/80">Reunions & Events</p>
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Clock className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">35</div>
-              <div className="text-white/80">Years of Memories</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-              <Users className="w-10 h-10 text-mainYellow mx-auto mb-4" />
-              <div className="text-2xl font-bold mb-2">20+</div>
-              <div className="text-white/80">Reunions & Events</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

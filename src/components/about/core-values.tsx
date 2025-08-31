@@ -31,37 +31,43 @@ export default function CoreValues() {
   const values = [
     {
       icon: <Heart className="w-8 h-8 text-red-500" />,
-      title: "Compassion",
+      title: "Excellence",
       description:
-        "We care deeply about our members, alma mater, and communities, showing empathy and support in all our endeavors.",
+        "We pursue the highest standards in leadership, education, and alumni engagement",
     },
     {
       icon: <Users className="w-8 h-8 text-blue-600" />,
       title: "Unity",
       description:
-        "We stand together as one family, embracing our diversity while celebrating our shared experiences and heritage.",
+        "We foster strong, lifelong connections rooted in shared heritage and mutual respect",
     },
     {
       icon: <Lightbulb className="w-8 h-8 text-amber-500" />,
       title: "Innovation",
       description:
-        "We encourage creative thinking and novel approaches to addressing challenges and creating opportunities.",
+        " We embrace creativity and forward-thinking solutions to drive progress.",
     },
     {
       icon: <Award className="w-8 h-8 text-purple-600" />,
-      title: "Excellence",
-      description: "We strive for the highest standards in all our personal, professional, and community endeavors.",
+      title: "Leadership",
+      description: " We lead with integrity, purpose, and a commitment to positive change",
     },
     {
       icon: <Handshake className="w-8 h-8 text-green-600" />,
-      title: "Integrity",
-      description: "We uphold honesty, transparency, and ethical conduct in all our interactions and initiatives.",
+      title: "Empowerment",
+      description: "We uplift others through education, mentorship, and opportunity",
     },
     {
       icon: <Globe className="w-8 h-8 text-teal-500" />,
-      title: "Service",
+      title: "⁠Legacy",
       description:
-        "We are committed to giving back to society and making a positive impact in our communities and beyond.",
+        "We honor the traditions of FGC Ikot Ekpene while shaping a bold, global future",
+    },
+    {
+      icon: <Globe className="w-8 h-8 text-teal-500" />,
+      title: "Global Connection",
+      description:
+        "We build bridges across borders, creating a network of impact and collaboration",
     },
   ]
 
@@ -82,7 +88,7 @@ export default function CoreValues() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {values.map((value, index) => (
             <div
               key={index}

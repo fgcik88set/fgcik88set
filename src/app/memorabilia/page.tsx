@@ -1,4 +1,4 @@
-import MemorabiliaCategories from "@/components/memorabilia/memorabilia-categories"
+// import MemorabiliaCategories from "@/components/memorabilia/memorabilia-categories"
 import MemorabiliaGallery from "@/components/memorabilia/memorabilia-gallery"
 import MemorabiliaHero from "@/components/memorabilia/memorabilia-hero"
 import MemorabiliaOrdering from "@/components/memorabilia/memorabilia-ordering"
@@ -14,7 +14,7 @@ export default function MemorabiliaPage() {
     <main className="min-h-screen">
       <MemorabiliaHero />
       <MemorabiliaGallery />
-      <MemorabiliaCategories />
+      {/* <MemorabiliaCategories /> */}
       <MemorabiliaOrdering />
     </main>
   )

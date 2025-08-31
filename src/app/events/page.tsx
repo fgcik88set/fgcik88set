@@ -1,7 +1,6 @@
 import EventsHero from "@/components/events/events-hero"
-import EventsNewsletter from "@/components/events/events-newsletter"
-import PastEvents from "@/components/events/past-events"
-import UpcomingEvents from "@/components/events/upcoming-events"
+import EventsSection from "@/components/events/events-section"
+
 
 export const metadata = {
   title: "Events | FGC Ikot Ekpene Class of '88",
@@ -12,9 +11,9 @@ export default function EventsPage() {
   return (
     <main className="min-h-screen">
       <EventsHero />
-      <UpcomingEvents />
-      <PastEvents />
-      <EventsNewsletter />
+      <EventsSection />
+      
+      
     </main>
   )
 }

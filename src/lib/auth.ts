@@ -1,8 +1,22 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import bcrypt from "bcryptjs"
-import { sql } from "@vercel/postgres"
+
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
+import { Pool } from "pg";
+
+
+const sslConfig = process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+
+
+// Create PostgreSQL pool
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL_NO_SSL,
+  ssl: sslConfig,
+});
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,34 +28,45 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
+        let client;
         try {
-          const result = await sql`
-            SELECT * FROM users WHERE email = ${credentials.email}
-          `
+          client = await pool.connect();
 
-          const user = result.rows[0]
+          // Get user from database
+          const result = await client.query(
+            "SELECT * FROM users WHERE email = $1",
+            [credentials.email]
+          );
+
+          const user = result.rows[0];
 
           if (!user) {
-            return null
+            return null;
           }
 
-          const passwordsMatch = await bcrypt.compare(credentials.password, user.password)
+          // Compare passwords
+          const passwordsMatch = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
 
           if (!passwordsMatch) {
-            return null
+            return null;
           }
 
           return {
             id: user.id,
             email: user.email,
             name: user.name,
-          }
+          };
         } catch (error) {
-          console.error("Auth error:", error)
-          return null
+          console.error("Auth error:", error);
+          return null;
+        } finally {
+          if (client) client.release();
         }
       },
     }),
@@ -52,48 +77,66 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Add user ID to token on initial sign in
       if (user) {
-        token.id = user.id
+        token.id = user.id;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.sub || (token.id as string)
+      // Add user ID to session
+      if (session.user) {
+        session.user.id = token.id as string;
       }
-      return session
+      return session;
     },
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        let client;
         try {
-          // Check if user exists
-          const existingUser = await sql`
-            SELECT * FROM users WHERE email = ${user.email}
-          `
+          client = await pool.connect();
 
-          if (existingUser.rows.length === 0) {
+          // Check if user exists
+          const userCheck = await client.query(
+            "SELECT id FROM users WHERE email = $1",
+            [user.email]
+          );
+
+          if (userCheck.rows.length === 0) {
             // Create new user for OAuth
-            await sql`
-              INSERT INTO users (email, name, provider, provider_id, created_at)
-              VALUES (${user.email}, ${user.name}, ${account.provider}, ${account.providerAccountId}, NOW())
-            `
+            await client.query(
+              `INSERT INTO users (email, name, provider, provider_id, created_at)
+               VALUES ($1, $2, $3, $4, NOW())`,
+              [
+                user.email,
+                user.name || user.email.split("@")[0],
+                account.provider,
+                account.providerAccountId,
+              ]
+            );
           }
-          return true
+          return true;
         } catch (error) {
-          console.error("OAuth sign in error:", error)
-          return false
+          console.error("OAuth sign in error:", error);
+          return false;
+        } finally {
+          if (client) client.release();
         }
       }
-      return true
+      return true;
     },
   },
   pages: {
     signIn: "/auth/login",
+    error: "/auth/login",
   },
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-}
+  debug: process.env.NODE_ENV === "development",
+};
 
-export default NextAuth(authOptions)
+
+export default NextAuth(authOptions);
+
