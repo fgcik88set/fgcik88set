@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: "FGC Ikot Ekpene Class of 1988 <onboarding@resend.dev>",
+      from: "FGC Ikot Ekpene Class of 1988 <welcome@fgcik1988set.org>",
       to: [email],
       subject: "Welcome to FGC Ikot Ekpene Class of 1988 Alumni Portal",
       html: `
@@ -14,7 +14,7 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to FGC Ikot Ekpene Alumni Portal</title>
+          <title>Welcome to FGC Ikot Ekpene 1988 set Alumni Portal</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #121212; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #0c347d 0%, #1e40af 100%); padding: 40px 20px; text-align: center; border-radius: 10px 10px 0 0;">
@@ -34,6 +34,7 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
             <p style="margin-bottom: 20px; font-size: 16px;">
               We're thrilled to have you join the Federal Government College Ikot Ekpene Class of 1988 Alumni Portal. 
               Your registration has been successfully completed!
+              Please proceed to change your password by clicking <a href="${process.env.NEXTAUTH_URL}/auth/login">here.</a>
             </p>
             
             <div style="background: #f8fafc; padding: 25px; border-radius: 8px; border-left: 4px solid #f7e707; margin: 25px 0;">
@@ -82,7 +83,7 @@ export const sendPasswordResetEmail = async (email: string, name: string, resetT
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "FGC Ikot Ekpene Class of 1988 <onboarding@resend.dev>",
+      from: "FGC Ikot Ekpene Class of 1988 <welcome@fgcik1988set.org>",
       to: [email],
       subject: "Reset Your Password - FGC Ikot Ekpene Alumni Portal",
       html: `
