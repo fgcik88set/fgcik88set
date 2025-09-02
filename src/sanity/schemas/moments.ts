@@ -85,7 +85,7 @@ const momentsSchema = defineType({
         },
       ],
       hidden: ({ document }) => document?.isCategory !== true,
-      validation: Rule => Rule.required().min(1),
+      // validation: Rule => Rule.required().min(1),
     }),
     defineField({
       name: 'images',
