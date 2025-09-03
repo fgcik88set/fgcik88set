@@ -1,7 +1,7 @@
 import { getMomentBySlug, getMoments } from "@/sanity/sanity-utils";
 import { notFound } from "next/navigation";
 import MomentsCarousel from "@/components/memories/moments-carousel";
-import { Calendar, ArrowLeft, ChevronLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Moment {
@@ -39,38 +39,31 @@ export default async function MomentPage({ params }: MomentPageProps) {
     notFound();
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   });
+  // };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="w-[95%] mx-auto py-6">
+
+      <div className="w-[95%] mx-auto pt-32 pb-12">
+        {/* Moment Header */}
+        <div className="mb-8">
           <Link
             href="/moments"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 text-sm mb-3"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Moments
           </Link>
-        </div>
-      </div>
 
-      <div className="w-[95%] mx-auto py-12">
-        {/* Moment Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-            <Calendar className="w-4 h-4" />
-            <span>{formatDate(moment.date)}</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
             {moment.title}
           </h1>
         </div>

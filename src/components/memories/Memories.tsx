@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Calendar } from "lucide-react";
+// import { Calendar } from "lucide-react";
 import { getMoments } from "@/sanity/sanity-utils";
 
 interface Moment {
@@ -72,13 +72,13 @@ export default function MemoriesSection() {
     setCurrentIndex(slideIndex);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short'
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-US', {
+  //     year: 'numeric',
+  //     month: 'short'
+  //   });
+  // };
 
   if (loading) {
     return (
@@ -126,10 +126,10 @@ export default function MemoriesSection() {
                   </div>
                 )}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                  <div className="flex items-center gap-2 text-white text-sm mb-2">
+                  {/* <div className="flex items-center gap-2 text-white text-sm mb-2">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(moment.date)}</span>
-                  </div>
+                  </div> */}
                   <p className="text-white font-medium text-lg">{moment.title}</p>
                 </div>
               </div>
@@ -195,10 +195,10 @@ export default function MemoriesSection() {
               
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-                <div className="flex items-center gap-2 text-white text-sm mb-2">
+                {/* <div className="flex items-center gap-2 text-white text-sm mb-2">
                   <Calendar className="w-4 h-4" />
                   <span>{formatDate(moment.date)}</span>
-                </div>
+                </div> */}
                 <p className="text-white font-medium text-lg">
                   {moment.title}
                 </p>

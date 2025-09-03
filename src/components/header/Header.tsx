@@ -32,7 +32,6 @@ export default function Header() {
   const headerRef = useRef<HTMLDivElement>(null);
   const { user, status } = useAuth();
 
-
   const getPageTitle = (path: string): string => {
     switch (path) {
       // case "/":
@@ -103,7 +102,7 @@ export default function Header() {
   const navLinks = [
     { id: 1, href: "/", label: "Home" },
     { id: 2, href: "/about", label: "About" },
-    
+
     {
       id: 3,
       href: "#",
@@ -131,8 +130,12 @@ export default function Header() {
     { id: 5, href: "/moments", label: "Moments" },
     { id: 6, href: "/memorabilia", label: "Memorabilia" },
     { id: 7, href: "/events", label: "Events" },
-    
   ];
+
+  const isActivePath = (currentPath: string, basePath: string) => {
+    if (basePath === "/") return currentPath === basePath;
+    return currentPath === basePath || currentPath.startsWith(basePath + "/");
+  };
 
   const activeLinkStyle = "text-mainYellow font-semibold";
 
@@ -147,7 +150,10 @@ export default function Header() {
     >
       <div className="w-full">
         <nav className="flex justify-between items-center h-[10vh] md:h-[12vh] px-4 py-2 relative">
-          <Link href="/" className="flex items-center gap-2 w-[15%] md:w-[6%] bg-white rounded-full">
+          <Link
+            href="/"
+            className="flex items-center gap-2 w-[15%] md:w-[6%] bg-white rounded-full"
+          >
             <Image src={logo} alt="FGCIK Logo" priority />
           </Link>
 
@@ -186,8 +192,8 @@ export default function Header() {
                           pathname.startsWith(`/${link.dropdownKey}`)
                             ? activeLinkStyle
                             : isScrolled
-                            ? "text-white hover:text-gray-300"
-                            : "text-black hover:text-darkBlue"
+                              ? "text-white hover:text-gray-300"
+                              : "text-black hover:text-darkBlue"
                         }`}
                       >
                         {link.label}
@@ -220,11 +226,11 @@ export default function Header() {
                     <Link
                       href={link.href}
                       className={`transition-colors ${
-                        pathname === link.href
+                        isActivePath(pathname, link.href)
                           ? activeLinkStyle
                           : isScrolled
-                          ? "text-white hover:text-gray-300"
-                          : "text-black hover:text-darkBlue"
+                            ? "text-white hover:text-gray-300"
+                            : "text-black hover:text-darkBlue"
                       }`}
                     >
                       {link.label}
@@ -235,9 +241,7 @@ export default function Header() {
             </div>
             <div className="flex items-center gap-4">
               <Link
-                href={
-                  status === "authenticated" ? "/payment" : "/auth/login"
-                }
+                href={status === "authenticated" ? "/payment" : "/auth/login"}
                 className="w-30 bg-darkBlue text-sm py-3 px-6 border rounded-full text-white hover:bg-opacity-90 transition-colors text-center"
               >
                 Payment
@@ -334,7 +338,7 @@ export default function Header() {
                   <Link
                     href={link.href}
                     className={`block py-2 ${
-                      pathname === link.href
+                      isActivePath(pathname, link.href)
                         ? activeLinkStyle
                         : "text-white hover:text-gray-300"
                     }`}

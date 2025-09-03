@@ -1,7 +1,7 @@
 import { getMomentCategories } from "@/sanity/sanity-utils";
 import { notFound } from "next/navigation";
 import MomentsCarousel from "@/components/memories/moments-carousel";
-import { ArrowLeft, Image as ImageIcon } from "lucide-react";
+import {  Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 interface MomentImage {
@@ -92,13 +92,13 @@ export default async function SubcategoryPage({ params }: PageProps) {
             <span>/</span>
             <span className="text-gray-500">{subcategory.title}</span>
           </div>
-          <Link
+          {/* <Link
             href={`/moments/category/${category.slug}`}
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to {category.title}
-          </Link>
+          </Link> */}
         </div>
       </div>
 
