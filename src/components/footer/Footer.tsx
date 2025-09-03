@@ -7,6 +7,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import Image from "next/image";
 import logo from "../../../public/logo/FGCIK-Logo-Final.png";
 import { useAuth } from "@/providers/session-provider";
+import { BsFacebook } from "react-icons/bs";
 
 export default function Footer() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -100,7 +101,7 @@ export default function Footer() {
               {expandedSection === section.id && (
                 <ul className="space-y-2 pb-4">
                   {section.links.map((link, index) => (
-                    <li key={index}>
+                    <li className="text-sm" key={index}>
                       <Link
                         href={link.href}
                         className="text-white hover:text-mainYellow transition-colors"
@@ -115,6 +116,17 @@ export default function Footer() {
           ))}
         </div>
 
+        <div className="flex justify-center md:w-[20%] mx-auto text-white mt-4">
+          <Link
+            className="flex items-center gap-1 text-sm"
+            href="https://www.facebook.com/groups/292434054151648/"
+            target="_blank"
+          >
+            <BsFacebook className="w-6 h-6" />
+            <p className="underline">Visit Our Facebook Community</p>
+          </Link>
+        </div>
+
         {/* Social links and copyright */}
         <div className="bg-white w-full h-px my-4"></div>
 
@@ -122,8 +134,10 @@ export default function Footer() {
           <div className="md:w-[30%]">
             <p>© {currentYear} FGC IK set 1988. All rights reserved.</p>
           </div>
-          
-          <div className="md:w-[40%] flex justify-between items-center gap-4">
+
+          <div
+            className={`${status === "authenticated" ? "md:w-[40%]" : "md:w-[20%]"} flex flex-col md:flex-row justify-between items-center gap-4 mt-3 md:mt-0`}
+          >
             {status === "authenticated" && (
               <Link
                 href="https://drive.google.com/file/d/1LjZ80oAYSu6WYIgF-lQDsa4_M0QoNvbn/view?usp=drive_link"
@@ -139,7 +153,7 @@ export default function Footer() {
               Privacy Policy
             </Link>
             <Link
-              href="/terms"
+              href="/terms-of-use"
               className="hover:text-mainYellow transition-colors"
             >
               Terms of Use

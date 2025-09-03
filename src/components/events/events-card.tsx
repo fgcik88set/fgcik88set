@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Image from "next/image"
-import { Calendar, MapPin, Users, Clock, Star, ExternalLink, Ticket } from "lucide-react"
+import { Calendar, MapPin, Users, Star, ExternalLink, Ticket } from "lucide-react"
 import { Event, eventCategories } from "../constants/events-data"
 
 
@@ -17,24 +17,24 @@ interface EventCardProps {
 export default function EventCard({ event, isUpcoming, onViewDetails }: EventCardProps) {
   const [imageError, setImageError] = useState(false)
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
+  // const formatDate = (dateString: string) => {
+  //   const date = new Date(dateString)
+  //   return date.toLocaleDateString("en-US", {
+  //     weekday: "long",
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   })
+  // }
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    })
-  }
+  // const formatTime = (dateString: string) => {
+  //   const date = new Date(dateString)
+  //   return date.toLocaleTimeString("en-US", {
+  //     hour: "numeric",
+  //     minute: "2-digit",
+  //     hour12: true,
+  //   })
+  // }
 
   const getCategoryStyle = (categoryId: string) => {
     const category = eventCategories.find((cat) => cat.id === categoryId)
@@ -138,7 +138,7 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
       {/* Content Section */}
       <div className="p-6">
         {/* Date and Time */}
-        <div className="flex items-center gap-2 mb-3 text-blue-700">
+        {/* <div className="flex items-center gap-2 mb-3 text-blue-700">
           <Calendar className="w-4 h-4" />
           <span className="text-sm font-medium">{formatDate(event.date)}</span>
         </div>
@@ -149,7 +149,7 @@ export default function EventCard({ event, isUpcoming, onViewDetails }: EventCar
           {event.endDate && (
             <span className="text-xs text-slate-500">- {formatTime(event.endDate)}</span>
           )}
-        </div>
+        </div> */}
 
         {/* Location */}
         <div className="flex items-center gap-2 mb-4 text-slate-600">

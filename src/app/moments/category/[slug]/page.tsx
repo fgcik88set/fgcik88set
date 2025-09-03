@@ -53,7 +53,7 @@ export default async function CategoryPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen mt-20 py-16">
+    <div className="min-h-screen mt-20 py-10 md:py-16">
       <div className="w-[95%] mx-auto px-4">
         <div className="">
           {/* Back Button */}

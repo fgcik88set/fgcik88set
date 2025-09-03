@@ -319,12 +319,12 @@ export default function MomentsCategories() {
                       {truncateDescription(moment.description)}
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-500">
-                      {moment.date && (
+                      {/* {moment.date && (
                         <span className="flex items-center">
                           <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                           {new Date(moment.date).toLocaleDateString()}
                         </span>
-                      )}
+                      )} */}
                       <span className="text-blue-600 font-medium">
                         {moment.images?.length || 0}{" "}
                         {moment.images?.length === 1 ? "image" : "images"}
