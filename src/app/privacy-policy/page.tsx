@@ -47,12 +47,24 @@ export default function PrivacyPolicy() {
       title: 'Why we process your data (purposes & lawful bases)',
       content: (
         <ul className="list-inside list-disc space-y-1 pl-5 text-gray-700">
-          <li>Provide and operate the alumni platform — contract/legitimate interests.</li>
-          <li>Personalise your experience — legitimate interests/consent for non-essential cookies.</li>
-          <li>Administer communications — legitimate interests/consent where required.</li>
-          <li>Process payments/donations/dues — contract/legal obligation.</li>
-          <li>Ensure security and prevent abuse — legitimate interests/legal obligation.</li>
-          <li>Comply with law, respond to lawful requests, and enforce our Terms — legal obligation/legitimate interests.</li>
+          <li>
+            Provide and operate the alumni platform (authentication, profiles, directory, events) — contract/legitimate interests.
+          </li>
+          <li>
+            Personalise your experience — legitimate interests/consent for non-essential cookies.
+          </li>
+          <li>
+            Administer communications (announcements, event information, service updates) — legitimate interests/consent where required.
+          </li>
+          <li>
+            Process payments/donations/dues — contract/legal obligation.
+          </li>
+          <li>
+            Ensure security and prevent abuse (e.g., spam/misuse monitoring) — legitimate interests/legal obligation.
+          </li>
+          <li>
+            Comply with law, respond to lawful requests, and enforce our Terms — legal obligation/legitimate interests.
+          </li>
         </ul>
       ),
     },
@@ -67,18 +79,20 @@ export default function PrivacyPolicy() {
     {
       title: 'When we share your data',
       content: (
-        <ul className="list-inside list-disc space-y-1 pl-5 text-gray-700">
-          <li>We do not sell personal data.</li>
-          <li>
-            <strong>Service providers/Processors:</strong> hosting, analytics, email/SMS, payment processing and customer support—bound by data-processing agreements.
-          </li>
-          <li>
-            <strong>Other members:</strong> your profile fields as you configure them (e.g., name, class set, photo), directory visibility and any content you publish.
-          </li>
-          <li>
-            <strong>Legal/disclosure:</strong> to comply with law, enforce our terms, protect users, investigate security incidents, or in connection with a reorganisation/transition of the association.
-          </li>
-        </ul>
+        <>
+          <p>We do not sell personal data. We may share limited data with:</p>
+          <ul className="mt-2 list-inside list-disc space-y-1 pl-5 text-gray-700">
+            <li>
+              <strong>Service providers/Processors:</strong> hosting, analytics, email/SMS, payment processing and customer support—bound by data-processing agreements.
+            </li>
+            <li>
+              <strong>Other members:</strong> your profile fields as you configure them (e.g., name, class set, photo), directory visibility and any content you publish.
+            </li>
+            <li>
+              <strong>Legal/disclosure:</strong> to comply with law, enforce our terms, protect users, investigate security incidents, or in connection with a reorganisation/transition of the association.
+            </li>
+          </ul>
+        </>
       ),
     },
     {
@@ -100,16 +114,29 @@ export default function PrivacyPolicy() {
     {
       title: 'Your rights',
       content: (
-        <ul className="list-inside list-disc space-y-1 pl-5 text-gray-700">
-          <li>Access your personal data and receive a copy.</li>
-          <li>Rectify inaccurate or incomplete data.</li>
-          <li>Erasure in certain circumstances.</li>
-          <li>Object to processing or withdraw consent where relied upon.</li>
-          <li>Restrict processing in certain cases.</li>
-          <li>Data portability of data you provided in a structured, commonly used format.</li>
-          <li>Not be subject to solely automated decisions that have legal or similarly significant effects.</li>
-          <li>Complain to the Nigeria Data Protection Commission (NDPC) or your local regulator.</li>
-        </ul>
+        <>
+          <p>Subject to applicable law (NDPA/GDPR), you may have the right to:</p>
+          <ul className="mt-2 list-inside list-disc space-y-1 pl-5 text-gray-700">
+            <li>Access your personal data and receive a copy.</li>
+            <li>Rectify inaccurate or incomplete data.</li>
+            <li>Erase data in certain circumstances.</li>
+            <li>Object to processing or withdraw consent where relied upon.</li>
+            <li>Restrict processing in certain cases.</li>
+            <li>Portability of data you provided in a structured, commonly used format.</li>
+            <li>Not be subject to solely automated decisions that have legal or similarly significant effects.</li>
+            <li>Complain to the Nigeria Data Protection Commission (NDPC) or your local regulator.</li>
+          </ul>
+          <p className="mt-2">
+            To exercise any right, contact us at{' '}
+            <a
+              href="mailto:fgcik88set@gmail.com"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              fgcik88set@gmail.com
+            </a>
+            , and we may ask you to verify your identity.
+          </p>
+        </>
       ),
     },
     {
@@ -176,7 +203,10 @@ export default function PrivacyPolicy() {
           </p>
           <p>
             <strong>Email:</strong>{' '}
-            <a href="mailto:fgcik88set@gmail.com" className="text-blue-600 underline hover:text-blue-800">
+            <a
+              href="mailto:fgcik88set@gmail.com"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
               fgcik88set@gmail.com
             </a>
           </p>
@@ -203,68 +233,38 @@ export default function PrivacyPolicy() {
     {
       title: 'U.S. State Privacy Rights (California and others)',
       content: (
-        <ul className="list-inside list-disc space-y-1 pl-5 text-gray-700">
-          <li>
-            <strong>Right to Know:</strong> request details about the categories and specific pieces of personal information we have collected about you in the last 12 months.
-          </li>
-          <li>
-            <strong>Right to Delete:</strong> request that we delete personal information we hold about you, subject to certain exceptions (e.g., completing a transaction, complying with law).
-          </li>
-          <li>
-            <strong>Right to Correct:</strong> request corrections to inaccurate personal information.
-          </li>
-          <li>
-            <strong>Right to Opt-Out of Sale/Sharing:</strong> We do not sell or share personal information for monetary value. If our practices change, you will be notified and given an opportunity to opt out.
-          </li>
-          <li>
-            <strong>Right to Non-Discrimination:</strong> We will not discriminate against you for exercising your privacy rights.
-          </li>
-        </ul>
-      ),
-    },
-    {
-      title: 'Terms of Use',
-      content: (
-        <div>
+        <>
           <p>
-            <strong>Effective Date: 1 September 2025</strong>
-          </p>
-          <p>
-            By registering, accessing or using this platform, you agree to be bound by these Terms of Use. If you do not agree, you must not use the platform.
+            If you are a resident of California or another U.S. state with similar consumer privacy laws (such as Colorado, Virginia, Utah, or Connecticut), you may have the following additional rights under applicable law:
           </p>
           <ul className="mt-2 list-inside list-disc space-y-1 pl-5 text-gray-700">
             <li>
-              <strong>Eligibility:</strong> Membership is primarily open to alumni of Federal Government College, Ikot Ekpene, Class of 1988, and such other categories as approved by the Alumni Executives.
+              <strong>Right to Know:</strong> request details about the categories and specific pieces of personal information we have collected about you in the last 12 months.
             </li>
             <li>
-              <strong>Accounts & Registration:</strong> Provide accurate and complete information; you are responsible for your credentials.
+              <strong>Right to Delete:</strong> request that we delete personal information we hold about you, subject to certain exceptions (e.g., completing a transaction, complying with law).
             </li>
             <li>
-              <strong>Acceptable Use:</strong> No unlawful, harmful, defamatory, abusive, harassing, fraudulent or misleading purposes.
+              <strong>Right to Correct:</strong> request corrections to inaccurate personal information.
             </li>
             <li>
-              <strong>Content & Intellectual Property:</strong> You retain rights to your content; grant us a worldwide, non-exclusive, royalty-free licence to host and share it.
+              <strong>Right to Opt-Out of Sale/Sharing:</strong> We do not sell or share personal information for monetary value. If our practices change, you will be notified and given an opportunity to opt out.
             </li>
             <li>
-              <strong>Privacy:</strong> Our collection and use of personal data is governed by this Privacy Policy.
-            </li>
-            <li>
-              <strong>Events, Payments & Donations:</strong> Processed via third-party providers; we do not store full card details.
-            </li>
-            <li>
-              <strong>Termination:</strong> We may suspend or terminate accounts that violate these Terms.
-            </li>
-            <li>
-              <strong>Governing Law & Dispute Resolution:</strong> Nigerian law; disputes resolved in Nigerian courts.
+              <strong>Right to Non-Discrimination:</strong> We will not discriminate against you for exercising your privacy rights.
             </li>
           </ul>
-          <p className="mt-4">
-            <strong>Contact:</strong>{' '}
-            <a href="mailto:fgcik88set@gmail.com" className="text-blue-600 underline hover:text-blue-800">
+          <p className="mt-2">
+            To exercise these rights, contact us at{' '}
+            <a
+              href="mailto:fgcik88set@gmail.com"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
               fgcik88set@gmail.com
             </a>
+            . If you submit a request, we may ask you to verify your identity before processing it.
           </p>
-        </div>
+        </>
       ),
     },
   ];
