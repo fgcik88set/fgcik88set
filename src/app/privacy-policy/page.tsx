@@ -315,7 +315,7 @@ export default function PrivacyPolicy() {
                 className="rounded-md bg-white p-5 text-sm"
               >
                 <h3 className="mb-2 text-lg font-semibold text-blue-700">
-                  {index + 1}) {section.title}
+                  {index + 1} {section.title}
                 </h3>
                 <div className="prose text-gray-700">{section.content}</div>
               </section>

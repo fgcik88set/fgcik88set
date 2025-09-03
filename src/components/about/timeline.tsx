@@ -51,38 +51,38 @@ const timelineEvents = [
     },
     {
         id: 4,
-        year: "2003",
-        title: "Scholarship Program Launch",
+        year: "2016",
+        title: " ⁠⁠Lagos Reunion",
         description:
-            "We establish our first scholarship program to support deserving students at FGC Ikot Ekpene, giving back to our alma mater.",
+            "The reunion was more than a social gathering — it was a testament to enduring bonds. Attendees came from near and far, carving time from their busy lives to reconnect.",
     },
     {
         id: 5,
-        year: "2008",
-        title: "20th Anniversary Celebration",
+        year: "2018",
+        title: "⁠⁠Uyo Reunion",
         description:
             "A landmark celebration marking two decades since graduation, featuring the launch of our mentorship program and community development initiatives.",
     },
     {
         id: 6,
-        year: "2013",
-        title: "Alumni Center Project",
+        year: "2019",
+        title: "Alumni Project - Toilet",
         description:
-            "We commence fundraising for the construction of an alumni center at FGC Ikot Ekpene to serve as a hub for alumni activities and student support.",
+            "A grand project impacting lives of students of FGC Ikot Ekpene and creating convenience.",
     },
     {
         id: 7,
-        year: "2018",
-        title: "30th Anniversary & Global Network",
+        year: "2023",
+        title: "⁠50 Years Anniversary Grand Reunion",
         description:
-            "Our 30th anniversary marks the expansion of our network globally, with chapters established across continents and a digital platform connecting all members.",
+            "A milestone celebration marking 50 years since the founding of FGC Ikot Ekpene, and a proud moment for the Class of ’88 to join in honoring the school’s golden legacy. This event will bring together generations of alumni, teachers, and friends to reflect on the journey, celebrate achievements, and share in the joy of unity.",
     },
     {
         id: 8,
-        year: "2023",
-        title: "Legacy Project",
+        year: "2024",
+        title: "Calabar Reunion",
         description:
-            "Launch of our most ambitious initiative yet: a comprehensive educational support program including infrastructure development, teacher training, and student scholarships.",
+            "Beyond the fun and festivities, the reunion also served as a moment to strengthen bonds and commit to future projects that support both the class and their alma mater. ",
     },
 ]
 
