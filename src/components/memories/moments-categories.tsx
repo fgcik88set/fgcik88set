@@ -159,7 +159,7 @@ export default function MomentsCategories() {
         {/* Tab Navigation */}
         <div className="mb-8">
           <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit mx-auto">
-            <button
+            {/* <button
               onClick={() => setActiveTab('categories')}
               className={`px-6 py-3 rounded-md font-medium transition-all duration-200 ${
                 activeTab === 'categories'
@@ -176,7 +176,7 @@ export default function MomentsCategories() {
                   </span>
                 )}
               </div>
-            </button>
+            </button> */}
             <button
               onClick={() => setActiveTab('moments')}
               className={`px-6 py-3 rounded-md font-medium transition-all duration-200 ${
