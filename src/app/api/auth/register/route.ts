@@ -1,4 +1,4 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -6,16 +6,6 @@ import { Pool } from "pg"; // Use pg instead of @vercel/postgres
 import { sendWelcomeEmail } from "@/lib/email";
 import { toast } from "sonner";
 
-// const sslConfig =
-//   process.env.NODE_ENV === "production"
-//     ? {
-//         ca: process.env.SUPABASE_CA_CERT,
-//         rejectUnauthorized: false, // Only verify if CA exists
-//       }
-//     : {
-//         // Development: Skip verification for self-signed certs
-//         rejectUnauthorized: false,
-//       };
 
 const sslConfig =
   process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
