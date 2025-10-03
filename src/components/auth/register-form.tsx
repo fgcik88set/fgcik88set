@@ -1,41 +1,40 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
+import { useState } from "react";
 // import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { signIn } from "next-auth/react"
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
-import type { RegisterData } from "@/types/auth"
-import { toast } from "sonner"
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import type { RegisterData } from "@/types/auth";
+import { toast } from "sonner";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState<RegisterData>({
     name: "",
     email: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-//   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  //   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   // const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
 
     // Validation
-    
 
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters")
-      setIsLoading(false)
-      return
+      setError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -49,44 +48,47 @@ export function RegisterForm() {
           email: formData.email,
           password: formData.password,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Registration failed")
+        setError(data.error || "Registration failed");
       } else {
-        setSuccess("Account created successfully! Redirecting to login...")
+        setSuccess("Account created successfully! Redirecting to login...");
         toast.success(`Welcome email sent successfully to ${formData.email}`);
+        setFormData({ name: "", email: "", password: "" });
         // setTimeout(() => {
         //   router.push("/auth/login")
         // }, 2000)
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
-      console.log(error)
+      setError("An error occurred. Please try again.");
+      console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await signIn("google", { callbackUrl: "/" })
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
-      setError("Google sign in failed")
-      setIsLoading(false)
-      console.log(error)
+      setError("Google sign in failed");
+      setIsLoading(false);
+      console.log(error);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200">
       {/* Header */}
       <div className="px-6 py-6 border-b border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-        <p className="text-sm text-gray-600 mt-1">Join our alumni community and stay connected</p>
+        <p className="text-sm text-gray-600 mt-1">
+          Join our alumni community and stay connected
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="px-6 py-6">
@@ -106,7 +108,10 @@ export function RegisterForm() {
 
         {/* Name Field */}
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Full Name
           </label>
           <div className="relative">
@@ -117,7 +122,9 @@ export function RegisterForm() {
               placeholder="Enter your full name"
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               required
             />
           </div>
@@ -125,7 +132,10 @@ export function RegisterForm() {
 
         {/* Email Field */}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Email
           </label>
           <div className="relative">
@@ -136,7 +146,9 @@ export function RegisterForm() {
               placeholder="Enter your email"
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
             />
           </div>
@@ -144,7 +156,10 @@ export function RegisterForm() {
 
         {/* Password Field */}
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Password
           </label>
           <div className="relative">
@@ -155,7 +170,9 @@ export function RegisterForm() {
               placeholder="Create a password"
               className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
             />
             <button
@@ -163,7 +180,11 @@ export function RegisterForm() {
               className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -209,7 +230,9 @@ export function RegisterForm() {
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-gray-500">Or continue with</span>
+            <span className="bg-white px-2 text-gray-500">
+              Or continue with
+            </span>
           </div>
         </div>
 
@@ -246,11 +269,14 @@ export function RegisterForm() {
       <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-blue-600 hover:text-blue-500 font-medium transition-colors">
+          <Link
+            href="/auth/login"
+            className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
+          >
             Sign in
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }
