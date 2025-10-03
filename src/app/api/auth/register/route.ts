@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg"; // Use pg instead of @vercel/postgres
 import { sendWelcomeEmail } from "@/lib/email";
-import { toast } from "sonner";
 
 
 const sslConfig =
@@ -66,17 +65,7 @@ export async function POST(request: NextRequest) {
     const user = result.rows[0];
 
     // Send welcome email (don't wait for it to complete)
-    sendWelcomeEmail(email, name).catch((error) => {
-      if (!error) {
-        toast.success(`Welcome email sent successfully to ${email}`);
-        return;
-      } else {
-        toast.error("Failed to send welcome email:");
-        console.error(error);
-      }
-
-      // Don't fail the registration if email fails
-    });
+    sendWelcomeEmail(email, name).catch(console.error);
 
     return NextResponse.json({
       message: "User created successfully",
