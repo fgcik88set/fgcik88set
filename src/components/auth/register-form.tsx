@@ -55,9 +55,9 @@ export function RegisterForm() {
       if (!response.ok) {
         setError(data.error || "Registration failed");
       } else {
-        setSuccess("Account created successfully! Redirecting to login...");
-        toast.success(`Welcome email sent successfully to ${formData.email}`);
         setFormData({ name: "", email: "", password: "" });
+        toast.success(`Welcome email sent successfully to ${formData.email}`);
+
         // setTimeout(() => {
         //   router.push("/auth/login")
         // }, 2000)
