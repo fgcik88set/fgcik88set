@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { signIn } from "next-auth/react"
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
@@ -21,7 +21,7 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const router = useRouter()
+  // const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,9 +58,9 @@ export function RegisterForm() {
       } else {
         setSuccess("Account created successfully! Redirecting to login...")
         toast.success(`Welcome email sent successfully to ${formData.email}`);
-        setTimeout(() => {
-          router.push("/auth/login")
-        }, 2000)
+        // setTimeout(() => {
+        //   router.push("/auth/login")
+        // }, 2000)
       }
     } catch (error) {
       setError("An error occurred. Please try again.")
