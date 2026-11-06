@@ -84,7 +84,7 @@ export default function PastExecutives() {
   ];
 
   const [filters, setFilters] = useState<Record<string, string | boolean>>({
-    filterbyyearrange: "2021-2023",
+    filterbyyearrange: "2023-2025",
     filterbyposition: "",
   });
 

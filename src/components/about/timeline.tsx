@@ -84,6 +84,13 @@ const timelineEvents = [
         description:
             "Beyond the fun and festivities, the reunion also served as a moment to strengthen bonds and commit to future projects that support both the class and their alma mater. ",
     },
+    {
+        id: 9,
+        year: "2026",
+        title: "Enugu Reunion",
+        description:
+            "Between the music, the stories and the shared meals, a quieter purpose took shape. The classmates resolved to keep their bond active, channeling it into initiatives that will serve both their set and the school they still call home",
+    },
 ]
 
   return (
